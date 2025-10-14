@@ -1,6 +1,7 @@
-let canvas;
-let ctx;
-let character = new Character();
+let canvas;                       // Canvas-Element anlegen
+let ctx;                          // Context-Element anlegen (2D/3D) 
+
+let world = new World();           // Welt anlegen
 
 
 function init() {
@@ -8,8 +9,8 @@ function init() {
     canvas = document.getElementById("canvas");
     ctx = canvas.getContext("2d");                  // im 2D-Format
 
-    console.log("My Charakter: ", character);
-    
+    console.log("My Charakter is: ", world.character);
+
 
     // Charakter-Bild laden ... dauert etwas, weshalb "ctx.drawImage" in eine TIMEOUT-Funktion gepackt wird ...
     // character.src = "../assets/img/2_charakter_pepe/2_walk/W-21.png";
