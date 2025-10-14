@@ -1,13 +1,11 @@
-let canvas;                       // Canvas-Element anlegen
-let ctx;                          // Context-Element anlegen (2D/3D) 
-
-let world = new World();           // Welt anlegen
+let canvas;              // Canvas-Element anlegen
+let world;               // Variable für die Welt (World) anlegen
 
 
 function init() {
     //grundsätzliche Einbindung für canvas und Darstellungsart (2D/3D) ...
     canvas = document.getElementById("canvas");
-    ctx = canvas.getContext("2d");                  // im 2D-Format
+    world = new World(canvas);              // Welt anlegen und Canvas (id canvas) übergeben
 
     console.log("My Charakter is: ", world.character);
 

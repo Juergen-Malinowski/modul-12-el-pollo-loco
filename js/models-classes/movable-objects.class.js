@@ -1,7 +1,9 @@
 class MovableObject {
-    x = 120;
-    y = 400;
+    x = 50;
+    y = 300;
     img;
+    heigth = 150;
+    width = 100;
 
     // Pfad zu den Bildern der Objekte zuweisen ...
     loadImage(path) {
