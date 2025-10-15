@@ -17,12 +17,11 @@ class Character extends MovableObject {
         '../assets/img/2_charakter_pepe/2_walk/W-26.png',
     ];
 
-    correntImage = 0;   // Nr. aktuelles Bildes der Animation
+
 
     constructor() {
         super().loadImage('../assets/img/2_charakter_pepe/2_walk/W-21.png');
         this.loadImages(this.imagesWalking);
-
         this.anmimate();
     }
 
@@ -37,7 +36,7 @@ class Character extends MovableObject {
             let path = this.imagesWalking[i];  // Pfad des aktuellen Bildes der Animation
             this.img = this.imageCache[path];  // Pfad des Bildes der Animation laden
             this.correntImage++;               // Nr. des aktuellen Bildes der Animation erhöhen
-        }, 150);                               // Intervall in ms (1000 ms hier), in der die Animation neu gezeichnet wird
+        }, 150);                               // Intervall in ms (150 ms hier), in der die Animation neu gezeichnet wird
     };
 
     jump() {

@@ -6,6 +6,8 @@ class MovableObject {
     width = 100;
     imageCache = {};
 
+    correntImage = 0;   // Nr. aktuelles Bildes der Animation        
+
     loadImage(path) {
         this.img = new Image();  // Image-Objekt anlegen
         this.img.src = path;     // Pfad zuweisen
