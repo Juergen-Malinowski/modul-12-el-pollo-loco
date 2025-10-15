@@ -15,8 +15,10 @@ class World {
     ];
 
     // Hintergrundobjekte anlegen ...
-    backgroundObjects = [
-        new BackgroundObject('../assets/img/5_hintergrund/layers/1_first_layer/1.png'),
+    backgroundObjects = [     
+        new BackgroundObject('../assets/img/5_hintergrund/layers/3_third_layer/1.png', 0),
+        new BackgroundObject('../assets/img/5_hintergrund/layers/2_second_layer/1.png', 0),
+        new BackgroundObject('../assets/img/5_hintergrund/layers/1_first_layer/1.png', 0),
     ];
 
 
@@ -35,20 +37,18 @@ class World {
         // Canvas löschen vor dem Neuzeichnen ...
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-        // Charakter NEU zeichnen ...
-        this.addToMap(this.character);
-
-
-        // mit der Schleife alle Feinde (enemies) durchlaufen und zeichnen ...
-        // enemy = einzelner Feind (Chicken) bzw. Datensatzelement in enemies-Array
-        this.addObjectsToMap(this.enemies);
+        // mit der Schleife alle Hintergrundobjekte (backgroundObjects) durchlaufen und zeichnen ...
+        this.addObjectsToMap(this.backgroundObjects);
 
         // mit der Schleife alle Wolken (clouds) durchlaufen und zeichnen ...
         this.addObjectsToMap(this.clouds);
 
-        // mit der Schleife alle Hintergrundobjekte (backgroundObjects) durchlaufen und zeichnen ...
-        this.addObjectsToMap(this.backgroundObjects);
+        // Charakter NEU zeichnen ...
+        this.addToMap(this.character);
 
+        // mit der Schleife alle Feinde (enemies) durchlaufen und zeichnen ...
+        // enemy = einzelner Feind (Chicken) bzw. Datensatzelement in enemies-Array
+        this.addObjectsToMap(this.enemies);
 
         // Variable "self" anlegen, die auf die Welt (World) zeigt, 
         // da "this" direkt in der requestAnimationFrame-Funktion nicht mehr funktioniert ...
