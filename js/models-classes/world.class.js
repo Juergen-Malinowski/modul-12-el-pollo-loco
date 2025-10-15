@@ -15,7 +15,8 @@ class World {
     ];
 
     // Hintergrundobjekte anlegen ...
-    backgroundObjects = [     
+    backgroundObjects = [
+        new BackgroundObject('../assets/img/5_hintergrund/layers/air.png', 0),
         new BackgroundObject('../assets/img/5_hintergrund/layers/3_third_layer/1.png', 0),
         new BackgroundObject('../assets/img/5_hintergrund/layers/2_second_layer/1.png', 0),
         new BackgroundObject('../assets/img/5_hintergrund/layers/1_first_layer/1.png', 0),
