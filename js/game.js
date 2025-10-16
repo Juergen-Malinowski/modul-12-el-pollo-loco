@@ -1,7 +1,8 @@
 
 let canvas;                     // Canvas-Element anlegen
 let world;                      // Variable für die Welt (World) anlegen
-// let keyboard = new Keyboard()  ;  // Variable für Rückmeldung Keyboard anlegen
+let keyboard = new Keyboard();  // Variable für Rückmeldung Keyboard anlegen
+
 
 
 function init() {
@@ -15,32 +16,35 @@ function init() {
     // }, 1000);
 };
 
-window.addEventListener ("keydown", (e) => {
+window.addEventListener("keydown", (e) => {
     // ACHTUNG:  "keypress" ist veraltet und wird nicht zu 100 % unterstützt. Deshalb "keydown" !!!
     console.log(e);
     switch (e.key) {
         case 'ArrowLeft':        // KEY = linker Pfeil / KEYCODE = 37
-            
+            keyboard.LEFT = true;
             break;
         case 'ArrowRight':       // KEY = rechter Pfeil / KEYCODE = 39
-            
+            keyboard.RIGHT = true;
             break;
         case 'ArrowUp':          // KEY = linker Pfeil / KEYCODE = 38
-            
+            keyboard.UP = true;
             break;
         case 'ArrowDown':        // KEY = linker Pfeil / KEYCODE = 40
-            
+            keyboard.DOWN = true;
             break;
-        case 'Space':            // KEY = linker Pfeil / KEYCODE = 32
-            
-            break;           
+        case ' ':            // KEY = linker Pfeil / KEYCODE = 32
+            keyboard.SPACE = true;
+            break;
         case 'Shift':            // KEY = linker Pfeil / KEYCODE = 16
-            
-            break;                                                    
+            keyboard.SHIFT = true;
+            break;
         case 'Enter':            // KEY = linker Pfeil / KEYCODE = 13
-            
-            break;       
+            keyboard.ENTER = true;
+            break;
         default:
             break;
     }
-}); 
+});
+
+
+

@@ -5,6 +5,8 @@ class Keyboard {
     UP = false;
     DOWN = false;
     SPACE = false;
+    SHIFT = false;
+    ENTER = false; 
 
 
     constructor() {
