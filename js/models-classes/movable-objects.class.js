@@ -5,6 +5,7 @@ class MovableObject {
     heigth = 150;
     width = 100;
     imageCache = {};
+    speed = 0.1;
 
     correntImage = 0;   // Nr. aktuelles Bildes der Animation        
 
@@ -24,12 +25,16 @@ class MovableObject {
     }
 
 
+    moveLeft() {
+        setInterval(() => {
+            this.x -= this.speed;  // Modifikation der x-Position (Wolke bewegt sich nach links)
+            // (17ms = 0,017s bzw. 60 Frames pro Sek. bzw. 1000/60 = 17 ms / 60 Frames pro Sek. ist so das Maximum in Spielen)
+        }, 1000 / 60);                 // Intervall in ms (17 ms hier), in der die Wolke neu gezeichnet wird 
+    }
+
     moveRight() {
         console.log("Moving right");
 
     }
 
-    moveLeft() {
-
-    }
 }
