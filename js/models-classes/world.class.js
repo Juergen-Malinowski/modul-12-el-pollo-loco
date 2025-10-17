@@ -3,46 +3,19 @@ class World {
     character = new Character();  // Charakter anlegen
 
     // Feinde anlgen ...
-    enemies = [
-        new Chicken(),
-        new Chicken(),
-        new Chicken(),
-    ];
+    enemies = level1.enemies;
 
     // Wolken anlegen ...
-    clouds = [
-        new Cloud(),
-    ];
+    clouds = level1.clouds;
 
     // Hintergrundobjekte anlegen ...
-    backgroundObjects = [
-        // Einfügen TEIL 2 (links) des START-Hintergrundes ... ACHTUNG, X-Startpunkt -720 (720px VOR Bild 1) ...        
-        new BackgroundObject('../assets/img/5_hintergrund/layers/air.png', -720),
-        new BackgroundObject('../assets/img/5_hintergrund/layers/3_third_layer/2.png', -720),
-        new BackgroundObject('../assets/img/5_hintergrund/layers/2_second_layer/2.png', -720),
-        new BackgroundObject('../assets/img/5_hintergrund/layers/1_first_layer/2.png', -720),
-        // START-SCREEC vom Game ...
-        new BackgroundObject('../assets/img/5_hintergrund/layers/air.png', 0),
-        new BackgroundObject('../assets/img/5_hintergrund/layers/3_third_layer/1.png', 0),
-        new BackgroundObject('../assets/img/5_hintergrund/layers/2_second_layer/1.png', 0),
-        new BackgroundObject('../assets/img/5_hintergrund/layers/1_first_layer/1.png', 0),
-        // Einfügen TEIL 2 (rechts) des START-Hintergrundes ... ACHTUNG, X-Startpunkt 720 (am Ende Bild 1) ...
-        new BackgroundObject('../assets/img/5_hintergrund/layers/air.png', 720),
-        new BackgroundObject('../assets/img/5_hintergrund/layers/3_third_layer/2.png', 720),
-        new BackgroundObject('../assets/img/5_hintergrund/layers/2_second_layer/2.png', 720),
-        new BackgroundObject('../assets/img/5_hintergrund/layers/1_first_layer/2.png', 720),
-        // je nach LÄNGE des Levels hier nun wieder START mit dem START-Bildschirm und dann so weiter ...
-        new BackgroundObject('../assets/img/5_hintergrund/layers/air.png', 1440),
-        new BackgroundObject('../assets/img/5_hintergrund/layers/3_third_layer/1.png', 1440),
-        new BackgroundObject('../assets/img/5_hintergrund/layers/2_second_layer/1.png', 1440),
-        new BackgroundObject('../assets/img/5_hintergrund/layers/1_first_layer/1.png', 1440),
-    ];
+    backgroundObjects = level1.backgroundObjects;
 
 
     canvas;          // Canvas-Element anlegen
     ctx;             // Context-Element anlegen (2D/3D)
     keyboard;        // Variable keyboard anlegen (Bewegungen Charakter)
-    cameraX = 0;   // Variable zur Modifikation der X-Achse für den gezeigten Hintergrundausschnitt
+    cameraX = 0;     // Variable zur Modifikation der X-Achse für den gezeigten Hintergrundausschnitt
 
     constructor(canvas, keyboard) {
         this.ctx = canvas.getContext("2d");    // im 2D-Format
@@ -62,6 +35,7 @@ class World {
         // Canvas löschen vor dem Neuzeichnen ...
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
+        // Charakter-Spiegelung ?
         this.ctx.translate(this.cameraX, 0);
 
         // mit der Schleife alle Hintergrundobjekte (backgroundObjects) durchlaufen und zeichnen ...
@@ -77,6 +51,7 @@ class World {
         // enemy = einzelner Feind (Chicken) bzw. Datensatzelement in enemies-Array
         this.addObjectsToMap(this.enemies);
 
+        // Charakter-RÜCK-Spiegelung ?
         this.ctx.translate(-this.cameraX, 0);
 
         // Variable "self" anlegen, die auf die Welt (World) zeigt, 

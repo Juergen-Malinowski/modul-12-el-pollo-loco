@@ -6,8 +6,9 @@ class Character extends MovableObject {
 
     heigth = 330;   // Höhe des Charakters
     width = 150;    // Breite des Charakters
-    y = 130;        // Startposition des Charakters auf der Y-Achse
-    speed = 10;     // Bewegungsweite 10px pro Zeitinvervall des Charakters
+    y = 130;        // Startposition des Charakters auf der Y-Achse (Höhenposition)
+    x = 200;        // Startposition des Charakters auf der X-Achse (links/rechts)
+    speed = 20;     // Bewegungsweite 20px pro Zeitinvervall des Charakters
     world;          // Übergabe der Bewegungsparameter aus der "world.class.js", welche sie von "game.js" erhalten hat
 
     imagesWalking = [
@@ -29,22 +30,25 @@ class Character extends MovableObject {
 
     anmimate() {
 
-        setInterval(() => {                        // Intervall-Funktion, die die Animation steuert ...
+        setInterval(() => {        // Intervall-Funktion, die die Animation steuert ...
             // WALKING-SPEED Charakter festlegen bzw. initialisieren ...
-            if (this.world.keyboard.RIGHT) {
+            if (this.world.keyboard.RIGHT && this.x < 2010) {
+                //"this.x < 2010" verhindert, dass Charakter rechts aus dem Bild läuft.
+                //2010 = die letzte Startposition für Hintergrund (1440px) + Breite Bild (720px) - Breite Charakter-Bild (150px)
                 this.x += this.speed;
                 this.otherDirection = false;
             }
 
-            if (this.world.keyboard.LEFT) {
+            if (this.world.keyboard.LEFT && this.x > 0) {
+                //this.x > 0 verhindert, dass Charakter links aus dem Bild läuft
                 this.x -= this.speed;
                 this.otherDirection = true;
             }
-            // Hintergrund-Verschiebung (Variable "cameraX") auf Bewegung des Charakters anpassen ...
-            this.world.cameraX = -this.x;
+            // Hintergrund-Verschiebung (Variable "cameraX") auf Bewegung des Charakters anpassen !
+            this.world.cameraX = -this.x +200;  // +200 für korrekte Position im Bildschirm gemäß STARTPOSITION oben !
         }, 100);
 
-        setInterval(() => {                        // Intervall-Funktion, die die Animation steuert ...
+        setInterval(() => {          // Intervall-Funktion, die die Animation steuert ...
 
             if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
 
