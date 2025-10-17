@@ -25,11 +25,18 @@ class World {
 
     canvas;       // Canvas-Element anlegen
     ctx;          // Context-Element anlegen (2D/3D)
+    keyboard;     // Variable keyboard anlegen (Bewegungen Charakter)
 
-    constructor(canvas) {
+    constructor(canvas, keyboard) {
         this.ctx = canvas.getContext("2d");    // im 2D-Format
         this.canvas = canvas;                  // Canvas-Parameter wird der Variable "canvas" (this.canvas) zugewiesen
+        this.keyboard = keyboard;              // Parameter "keyboard" in Variable "this.keyboard" übernehmen
+        this.setWorld();
         this.draw();                           // Welt zeichnen
+    }
+
+    setWorld () {
+        this.character.world = this;
     }
 
 

@@ -6,6 +6,7 @@ class MovableObject {
     width = 100;
     imageCache = {};
     speed = 0.1;
+    otherDirection = false;
 
     correntImage = 0;   // Nr. aktuelles Bildes der Animation        
 
