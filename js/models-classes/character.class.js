@@ -33,11 +33,15 @@ class Character extends MovableObject {
             // WALKING-SPEED Charakter festlegen bzw. initialisieren ...
             if (this.world.keyboard.RIGHT) {
                 this.x += this.speed;
+                this.otherDirection = false;
             }
 
             if (this.world.keyboard.LEFT) {
                 this.x -= this.speed;
+                this.otherDirection = true;
             }
+            // Hintergrund-Verschiebung (Variable "cameraX") auf Bewegung des Charakters anpassen ...
+            this.world.cameraX = -this.x;
         }, 100);
 
         setInterval(() => {                        // Intervall-Funktion, die die Animation steuert ...
