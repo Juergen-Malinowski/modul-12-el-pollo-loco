@@ -8,7 +8,7 @@ class Character extends MovableObject {
     width = 150;    // Breite des Charakters
     y = 130;        // Startposition des Charakters auf der Y-Achse (Höhenposition)
     x = 200;        // Startposition des Charakters auf der X-Achse (links/rechts)
-    speed = 20;     // Bewegungsweite 20px pro Zeitinvervall des Charakters
+    speed = 100;     // Bewegungsweite 20px pro Zeitinvervall des Charakters
     world;          // Übergabe der Bewegungsparameter aus der "world.class.js", welche sie von "game.js" erhalten hat
 
     imagesWalking = [
@@ -32,9 +32,12 @@ class Character extends MovableObject {
 
         setInterval(() => {        // Intervall-Funktion, die die Animation steuert ...
             // WALKING-SPEED Charakter festlegen bzw. initialisieren ...
-            if (this.world.keyboard.RIGHT && this.x < 2010) {
-                //"this.x < 2010" verhindert, dass Charakter rechts aus dem Bild läuft.
-                //2010 = die letzte Startposition für Hintergrund (1440px) + Breite Bild (720px) - Breite Charakter-Bild (150px)
+            if (this.world.keyboard.RIGHT && this.x < this.world.level.levelEndX) {
+                //"this.x < this.world.level.levelEndX" (Wert=2000) verhindert, 
+                // dass Charakter rechts aus dem Bild läuft.
+                //2000 = die letzte Startposition für Hintergrund (1440px) 
+                // + Breite Bild (720px) - Breite Charakter-Bild (150px) 
+                // - 410px (Damit am ENDE ein voller Background noch zu sehen ist !!!)
                 this.x += this.speed;
                 this.otherDirection = false;
             }

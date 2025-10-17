@@ -1,16 +1,7 @@
 class World {
 
     character = new Character();  // Charakter anlegen
-
-    // Feinde anlgen ...
-    enemies = level1.enemies;
-
-    // Wolken anlegen ...
-    clouds = level1.clouds;
-
-    // Hintergrundobjekte anlegen ...
-    backgroundObjects = level1.backgroundObjects;
-
+    level = level1;               // "level" übernimmt die Variablen und deren Inhalt aus "level1.js"
 
     canvas;          // Canvas-Element anlegen
     ctx;             // Context-Element anlegen (2D/3D)
@@ -21,12 +12,12 @@ class World {
         this.ctx = canvas.getContext("2d");    // im 2D-Format
         this.canvas = canvas;                  // Canvas-Parameter wird der Variable "canvas" (this.canvas) zugewiesen
         this.keyboard = keyboard;              // Parameter "keyboard" in Variable "this.keyboard" übernehmen
-        this.setWorld();
+        this.setWorld();                       // weist dem Character.world die aktuell angelegte Welt mit "this" zu
         this.draw();                           // Welt zeichnen
     }
 
     setWorld() {
-        this.character.world = this;
+        this.character.world = this;           // "this" ist die aktuell angelegte Welt
     }
 
 
@@ -39,17 +30,17 @@ class World {
         this.ctx.translate(this.cameraX, 0);
 
         // mit der Schleife alle Hintergrundobjekte (backgroundObjects) durchlaufen und zeichnen ...
-        this.addObjectsToMap(this.backgroundObjects);
+        this.addObjectsToMap(this.level.backgroundObjects);
 
         // mit der Schleife alle Wolken (clouds) durchlaufen und zeichnen ...
-        this.addObjectsToMap(this.clouds);
+        this.addObjectsToMap(this.level.clouds);
 
         // Charakter NEU zeichnen ...
         this.addToMap(this.character);
 
         // mit der Schleife alle Feinde (enemies) durchlaufen und zeichnen ...
         // enemy = einzelner Feind (Chicken) bzw. Datensatzelement in enemies-Array
-        this.addObjectsToMap(this.enemies);
+        this.addObjectsToMap(this.level.enemies);
 
         // Charakter-RÜCK-Spiegelung ?
         this.ctx.translate(-this.cameraX, 0);
