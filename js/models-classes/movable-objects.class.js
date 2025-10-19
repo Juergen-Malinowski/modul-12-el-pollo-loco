@@ -25,6 +25,16 @@ class MovableObject {
         });
     }
 
+    playAnimation(images) {
+        // WALK-ANIMATION ...
+        // %-Zeichen ist der "Modulo"-Operator (Restwert einer Division) ...
+        // correntImage beginnt bei 0 und imageWalking.length ist 6 (Anzahl der Bilder der Animation)
+        // i wird dann 0,1,2,3,4,5 und beginnt dann wieder bei 0,1,2,3,4,5 usw.
+        let i = this.correntImage % this.imagesWalking.length;
+        let path = images[i];  // Pfad des aktuellen Bildes der Animation
+        this.img = this.imageCache[path];  // Pfad des Bildes der Animation laden
+        this.correntImage++;               // Nr. des aktuellen Bildes der Animation erhöhen
+    }
 
     moveLeft() {
         setInterval(() => {

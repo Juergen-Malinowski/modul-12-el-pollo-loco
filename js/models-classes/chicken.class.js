@@ -18,17 +18,14 @@ class Chicken extends MovableObject {
         this.x = 350 + Math.random() * 200;       // Startposition des Huhns auf der X-Achse
         this.speed = 0.2 + Math.random() * 0.3;   // Jedes Huhn bekommt eine individuelle Geschwindigkeit
         this.loadImages(this.imagesWalking);      // Bewegungsbild laden   
-        this.anmimate();                          // Huhn bewegen
+        this.animate();                          // Huhn bewegen
     }
 
-    anmimate() {
-        this.moveLeft();                       // Hühner nach links bewegen / "speed" steuert Geschwindigkeit
-        setInterval(() => {                    // Intervall-Funktion, die die Animation steuert ...
-            let i = this.correntImage % this.imagesWalking.length;
-            let path = this.imagesWalking[i];  // Pfad des aktuellen Bildes der Animation
-            this.img = this.imageCache[path];  // Pfad des Bildes der Animation laden
-            this.correntImage++;               // Nr. des aktuellen Bildes der Animation erhöhen
-        }, 120);                               // Intervall in ms (150 ms hier), in der die Animation neu gezeichnet wird
+    animate() {
+        this.moveLeft();                         // Hühner nach links bewegen / "speed" steuert Geschwindigkeit
+        setInterval(() => {                      // Intervall-Funktion, die die Animation steuert ...
+        this.playAnimation(this.imagesWalking);  // Funktion generiert nun die Bilder
+        }, 120);                                 // Intervall in ms (120 ms hier), in der die Animation neu gezeichnet wird
     };
 
 }

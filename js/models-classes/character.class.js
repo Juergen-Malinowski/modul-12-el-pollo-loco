@@ -25,10 +25,10 @@ class Character extends MovableObject {
     constructor() {
         super().loadImage('../assets/img/2_charakter_pepe/2_walk/W-21.png');
         this.loadImages(this.imagesWalking);
-        this.anmimate();
+        this.animate();
     }
 
-    anmimate() {
+    animate() {
 
         setInterval(() => {        // Intervall-Funktion, die die Animation steuert ...
             // WALKING-SPEED Charakter festlegen bzw. initialisieren ...
@@ -57,14 +57,7 @@ class Character extends MovableObject {
 
                 // this.x += this.speed;
 
-                // WALK-ANIMATION ...
-                // %-Zeichen ist der "Modulo"-Operator (Restwert einer Division) ...
-                // correntImage beginnt bei 0 und imageWalking.length ist 6 (Anzahl der Bilder der Animation)
-                // i wird dann 0,1,2,3,4,5 und beginnt dann wieder bei 0,1,2,3,4,5 usw.
-                let i = this.correntImage % this.imagesWalking.length;
-                let path = this.imagesWalking[i];  // Pfad des aktuellen Bildes der Animation
-                this.img = this.imageCache[path];  // Pfad des Bildes der Animation laden
-                this.correntImage++;               // Nr. des aktuellen Bildes der Animation erhöhen
+                this.playAnimation(this.imagesWalking);    // Funktion generiert nun die Bilder
             }
         }, 150);                                   // Intervall in ms (150 ms hier), in der die Animation neu gezeichnet wird
 
