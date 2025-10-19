@@ -17,8 +17,8 @@ class MovableObject {
     }
 
     applyGravity() {
-        setInterval(() => {
-            if (this.isAboveGround()) {
+        setInterval(() => { 
+            if (this.isAboveGround() || this.speedY > 0 ) {
                 // nur solange der Charakter noch nicht den BODEN erreicht hat ...
                 this.y -= this.speedY;              // Fallgeschwindigkeit übergeben
                 this.speedY -= this.acceleration;   // Erhöhung Fallgeschwindigkeit

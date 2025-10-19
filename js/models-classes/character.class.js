@@ -30,6 +30,7 @@ class Character extends MovableObject {
         '../assets/img/2_charakter_pepe/3_jump/J-37.png',
         '../assets/img/2_charakter_pepe/3_jump/J-38.png',
         '../assets/img/2_charakter_pepe/3_jump/J-39.png',
+        '../assets/img/2_charakter_pepe/3_jump/J-31.png',  
     ];
 
 
@@ -60,6 +61,11 @@ class Character extends MovableObject {
                 this.x -= this.speed;
                 this.otherDirection = true;
             }
+
+            if (this.world.keyboard.SPACE) {
+                this.speedY = 20;
+            }
+
             // Hintergrund-Verschiebung (Variable "cameraX") auf Bewegung des Charakters anpassen !
             this.world.cameraX = -this.x + 200;  // +200 für korrekte Position im Bildschirm gemäß STARTPOSITION oben !
         }, 100);
