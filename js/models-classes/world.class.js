@@ -63,26 +63,6 @@ class World {
         });
     }
 
-
-    // bewegliche Objekte (movableObject) werden der Welt (World) hinzugefügt ( Aufruf durch draw() ) ...
-    addToMap(movableObject) {
-        // WENN "otherDirection" = TRUE ... dann OBJECT spiegeln ...
-        if (movableObject.otherDirection) {
-            this.ctx.save();                         // aktuelle EINSTELLUNGEN des Kontextes speichern
-            this.ctx.translate(movableObject.img.width, 0);
-            this.ctx.scale(-1, 1);                   // spiegelt das Object
-            movableObject.x = movableObject.x * -1;  // X-Koordinate umkehren            
-        }
-        // OBJEKT jetzt zeichnen ...
-        this.ctx.drawImage(movableObject.img, movableObject.x, movableObject.y,
-            movableObject.width, movableObject.heigth);
-        if (movableObject.otherDirection) {
-            movableObject.x = movableObject.x * -1;  // X-Koordinate wieder umkehren            
-            this.ctx.restore();            // aktuelle EINSTELLUNGEN des Kontextes wieder laden
-        }
-    }
-
-
     // bewegliche Objekte (movableObject) werden der Welt (World) hinzugefügt ( Aufruf durch draw() ) ...
     addToMap(movableObject) {
         if (movableObject.otherDirection) {
@@ -99,12 +79,6 @@ class World {
                 movableObject.width, movableObject.heigth);
         }
     }
-
-
-
-
-
-
 }
 
 
