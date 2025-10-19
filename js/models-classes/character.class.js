@@ -6,7 +6,7 @@ class Character extends MovableObject {
 
     heigth = 330;   // Höhe des Charakters
     width = 150;    // Breite des Charakters
-    y = 130;        // Startposition des Charakters auf der Y-Achse (Höhenposition)
+    y = 0;        // Startposition des Charakters auf der Y-Achse (Höhenposition) = 130
     x = 200;        // Startposition des Charakters auf der X-Achse (links/rechts)
     speed = 100;     // Bewegungsweite 20px pro Zeitinvervall des Charakters
     world;          // Übergabe der Bewegungsparameter aus der "world.class.js", welche sie von "game.js" erhalten hat
@@ -25,6 +25,7 @@ class Character extends MovableObject {
     constructor() {
         super().loadImage('../assets/img/2_charakter_pepe/2_walk/W-21.png');
         this.loadImages(this.imagesWalking);
+        this.applyGravity();
         this.animate();
     }
 

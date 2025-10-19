@@ -4,17 +4,32 @@ class MovableObject {
     img;
     heigth = 150;
     width = 100;
-    imageCache = {};
-    speed = 0.1;
-    otherDirection = false;
-
+    imageCache = {};         // speichert die Pfade zu den Bilddateien
+    speed = 0.1;             // Modify-Faktor für Wolkenbewegung
+    otherDirection = false;  // in welche Richtigung bewegt sich das Objekt ... FALSE = nach rechts
+    speedY = 0;              // Start Fallgeschwindigkeit
+    acceleration = 4;        // Beschleunigung im Fall
     correntImage = 0;   // Nr. aktuelles Bildes der Animation        
+
+    isAboveGround() {
+        // GIBT den Punkt zurück, an dem das Objekt den Boden berührt und Fall abgeschlossen ist
+        return this.y < 130;
+    }
+
+    applyGravity() {
+        setInterval(() => {
+            if (this.isAboveGround()) {
+                // nur solange der Charakter noch nicht den BODEN erreicht hat ...
+                this.y -= this.speedY;              // Fallgeschwindigkeit übergeben
+                this.speedY -= this.acceleration;   // Erhöhung Fallgeschwindigkeit
+            }
+        }, 50);
+    }
 
     loadImage(path) {
         this.img = new Image();  // Image-Objekt anlegen
         this.img.src = path;     // Pfad zuweisen
     }
-
 
     // Pfad zu den Bildern der Objekte zuweisen ...
     loadImages(arr) {
@@ -47,5 +62,7 @@ class MovableObject {
         console.log("Moving right");
 
     }
+
+
 
 }
