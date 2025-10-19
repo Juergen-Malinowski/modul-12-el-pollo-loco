@@ -2,7 +2,6 @@ class World {
 
     character = new Character();  // Charakter anlegen
     level = level1;               // "level" übernimmt die Variablen und deren Inhalt aus "level1.js"
-
     canvas;          // Canvas-Element anlegen
     ctx;             // Context-Element anlegen (2D/3D)
     keyboard;        // Variable keyboard anlegen (Bewegungen Charakter)
