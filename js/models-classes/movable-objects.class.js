@@ -23,7 +23,7 @@ class MovableObject {
                 this.y -= this.speedY;              // Fallgeschwindigkeit übergeben
                 this.speedY -= this.acceleration;   // Erhöhung Fallgeschwindigkeit
             }
-        }, 50);
+        }, 30);
     }
 
     loadImage(path) {

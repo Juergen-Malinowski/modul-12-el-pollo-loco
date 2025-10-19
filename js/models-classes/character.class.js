@@ -20,11 +20,23 @@ class Character extends MovableObject {
         '../assets/img/2_charakter_pepe/2_walk/W-26.png',
     ];
 
+    imagesJumping = [
+        '../assets/img/2_charakter_pepe/3_jump/J-31.png',
+        '../assets/img/2_charakter_pepe/3_jump/J-32.png',
+        '../assets/img/2_charakter_pepe/3_jump/J-33.png',
+        '../assets/img/2_charakter_pepe/3_jump/J-34.png',
+        '../assets/img/2_charakter_pepe/3_jump/J-35.png',
+        '../assets/img/2_charakter_pepe/3_jump/J-36.png',
+        '../assets/img/2_charakter_pepe/3_jump/J-37.png',
+        '../assets/img/2_charakter_pepe/3_jump/J-38.png',
+        '../assets/img/2_charakter_pepe/3_jump/J-39.png',
+    ];
 
 
     constructor() {
         super().loadImage('../assets/img/2_charakter_pepe/2_walk/W-21.png');
         this.loadImages(this.imagesWalking);
+        this.loadImages(this.imagesJumping);
         this.applyGravity();
         this.animate();
     }
@@ -49,18 +61,21 @@ class Character extends MovableObject {
                 this.otherDirection = true;
             }
             // Hintergrund-Verschiebung (Variable "cameraX") auf Bewegung des Charakters anpassen !
-            this.world.cameraX = -this.x +200;  // +200 für korrekte Position im Bildschirm gemäß STARTPOSITION oben !
+            this.world.cameraX = -this.x + 200;  // +200 für korrekte Position im Bildschirm gemäß STARTPOSITION oben !
         }, 100);
 
         setInterval(() => {          // Intervall-Funktion, die die Animation steuert ...
 
-            if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
-
-                // this.x += this.speed;
-
-                this.playAnimation(this.imagesWalking);    // Funktion generiert nun die Bilder
-            }
-        }, 150);                                   // Intervall in ms (150 ms hier), in der die Animation neu gezeichnet wird
+            if (this.isAboveGround()) {
+                // CHARAKTER fällt aus der Luft zu Boden ...
+                this.playAnimation(this.imagesJumping);    // Funktion generiert nun die Bilder                
+            } else {
+                if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
+                    // CHARAKTER geht links / rechts ...
+                    this.playAnimation(this.imagesWalking);    // Funktion generiert nun die Bilder
+                }
+            };
+        }, 150);    // Intervall in ms (150 ms hier), in der die Animation neu gezeichnet wird
 
     };
 
