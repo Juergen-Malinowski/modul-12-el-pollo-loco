@@ -8,9 +8,6 @@ class Keyboard {
     SHIFT = false;
     ENTER = false; 
 
-
-    constructor() {
-
-    }
+    constructor() {}
 
 }

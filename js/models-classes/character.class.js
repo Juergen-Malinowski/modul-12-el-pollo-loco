@@ -10,6 +10,14 @@ class Character extends MovableObject {
     x = 200;        // Startposition des Charakters auf der X-Achse (links/rechts)
     speed = 100;    // Bewegungsweite 20px pro Zeitinvervall des Charakters
     world;          // Übergabe der Bewegungsparameter aus der "world.class.js", welche sie von "game.js" erhalten hat
+    energie = 300;  // Lebens-ENERGIE (Gesundheit, Trefferpunkte)
+
+    offset = {      // Korrektur der Kollision auf den tatsächlichen Körper !
+        top : 130,
+        buttom : 10,
+        left : 40,
+        right : 40,
+    }
 
     imagesWalking = [
         '../assets/img/2_charakter_pepe/2_walk/W-21.png',
@@ -86,8 +94,4 @@ class Character extends MovableObject {
         }, 150);    // Intervall in ms (150 ms hier), in der die Animation neu gezeichnet wird
 
     };
-
-    jump() {
-
-    }
 }

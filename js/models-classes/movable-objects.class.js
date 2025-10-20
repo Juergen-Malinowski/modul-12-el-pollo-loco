@@ -9,7 +9,10 @@ class MovableObject {
     otherDirection = false;  // in welche Richtigung bewegt sich das Objekt ... FALSE = nach rechts
     speedY = 0;              // Start Fallgeschwindigkeit
     acceleration = 4;        // Beschleunigung im Fall
-    correntImage = 0;   // Nr. aktuelles Bildes der Animation        
+    correntImage = 0;        // Nr. aktuelles Bildes der Animation   
+    energie = 100;           // Lebens-ENERGIE (Gesundheit, Trefferpunkte)
+    
+
 
     isAboveGround() {
         // GIBT den Punkt zurück, an dem das Objekt den Boden berührt und Fall abgeschlossen ist
@@ -46,11 +49,22 @@ class MovableObject {
     }
 
     drawFrame(ctx) {
-        ctx.beginPath();
-        ctx.linewidth = "20";
-        ctx.strokeStyle = "blue";
-        ctx.rect(this.x, this.y, this.width, this.heigth);
-        ctx.stroke();
+        if (this instanceof Character || this instanceof Chicken || this instanceof Endboss) {
+            // Collisions-RAHMEN nur um Charakter, Chicken und Endboss ...
+            ctx.beginPath();
+            ctx.linewidth = "20";
+            ctx.strokeStyle = "blue";
+            ctx.rect(this.x, this.y, this.width, this.heigth);
+            ctx.stroke();
+        }
+    }
+
+    isColliding(movableObject) {
+        // PRÜFEN, ob ein bewegliches Objekt mit dem Charakter kollidiert ...
+        return this.x + this.width - this.offset.right > movableObject.x + movableObject.offset.left &&
+            this.y + this.heigth - this.offset.buttom > movableObject.y + movableObject.offset.top &&
+            this.x + this.offset.left < movableObject.x - movableObject.offset.right &&
+            this.y + this.offset.top < movableObject.y + movableObject.heigth - movableObject.offset.buttom;
     }
 
     playAnimation(images) {

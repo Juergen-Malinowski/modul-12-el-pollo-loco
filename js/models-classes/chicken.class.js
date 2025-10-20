@@ -5,6 +5,13 @@ class Chicken extends MovableObject {
     y = 380;       // Startposition der Hühner auf der Y-Achse
     speed = 0.3;   // Geschwindigkeit der Hüher Bewegung nach links
 
+    offset = {     // Korrektur der Kollision auf den tatsächlichen Körper !
+        top: 5,
+        buttom: 5,
+        left: 5,
+        right: 5,
+    }
+
     imagesWalking = [
         '../assets/img/3_feinde_huehner/chicken_normal/1_walk/1_w.png',
         '../assets/img/3_feinde_huehner/chicken_normal/1_walk/2_w.png',

@@ -5,6 +5,13 @@ class Endboss extends MovableObject {
     width = 300;    // Breite Endboss
     y = 180;        // Startposition Endboss auf der Y-Achse
 
+    offset = {      // Korrektur der Kollision auf den tatsächlichen Körper !
+        top: 50,
+        buttom: 10,
+        left: 20,
+        right: 20,
+    }
+
     imagesWalking = [
         '../assets/img/4_feinde_boss_huhn/2_alert/G5.png',
         '../assets/img/4_feinde_boss_huhn/2_alert/G6.png',

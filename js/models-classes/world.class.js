@@ -6,19 +6,32 @@ class World {
     ctx;             // Context-Element anlegen (2D/3D)
     keyboard;        // Variable keyboard anlegen (Bewegungen Charakter)
     cameraX = 0;     // Variable zur Modifikation der X-Achse für den gezeigten Hintergrundausschnitt
-
+    
     constructor(canvas, keyboard) {
         this.ctx = canvas.getContext("2d");    // im 2D-Format
         this.canvas = canvas;                  // Canvas-Parameter wird der Variable "canvas" (this.canvas) zugewiesen
         this.keyboard = keyboard;              // Parameter "keyboard" in Variable "this.keyboard" übernehmen
         this.setWorld();                       // weist dem Character.world die aktuell angelegte Welt mit "this" zu
         this.draw();                           // Welt zeichnen
+        this.checkCollisions();                // PRÜFUNG, ob eine Kollision (Charakter zu Feinden) erfolgt
     }
 
     setWorld() {
         this.character.world = this;           // "this" ist die aktuell angelegte Welt
     }
 
+    checkCollisions() {
+        // COLLISION zwischen Charakter und Feinden prüfen ...
+        setInterval(() => {
+            // PRÜFE JEDEN Gegener aus Level 1 ...
+            this.level.enemies.forEach( (enemy)=> {
+                if (this.character.isColliding(enemy)) {
+                    this.character.energie -= 5;   // ENERGIE abziehen pro Zeiteinheit ms
+                    console.log("ENERGIEABZUG Berührung .... REST-Energie", this.character.energie);
+                };
+            });
+        }, 500);
+    }
 
     // die Welt (World) wird gezeichnet ...
     draw() {
