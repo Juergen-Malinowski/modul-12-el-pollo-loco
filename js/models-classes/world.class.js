@@ -66,17 +66,25 @@ class World {
     addToMap(movableObject) {
         if (movableObject.otherDirection) {
             // WENN "otherDirection" = TRUE ... dann OBJECT spiegeln ...
-            this.ctx.save();             // aktuelle EINSTELLUNGEN des Kontextes speichern
-            // durch Spiegeln verändert sich die X-Position, weshalb X um die Breite des
-            // Bildes korrigiert werden muss vor der Spiegelung ...
-            this.ctx.translate(movableObject.x + movableObject.width, movableObject.y);
-            this.ctx.scale(-1, 1);       // spiegelt das Object
-            this.ctx.drawImage(movableObject.img, 0, 0, movableObject.width, movableObject.heigth);
-            this.ctx.restore();
+            this.flipImage(movableObject);        // RICHTUNG wird auf RECHTS umgestellt für Charakter
+            movableObject.drawFrame(this.ctx);    // Collisions-Rahmen zeichnen
         } else {
-            this.ctx.drawImage(movableObject.img, movableObject.x, movableObject.y,
-                movableObject.width, movableObject.heigth);
+            // WENN "otherDirection" = FALSE ... dann OBJECT NICHT spiegeln ...
+            movableObject.draw(this.ctx);
+            movableObject.drawFrame(this.ctx);    // Collisions-Rahmen zeichnen
         }
+        // Quadrat um Objekte ziehen ...
+
+    }
+
+    flipImage(movableObject) {
+        this.ctx.save();             // aktuelle EINSTELLUNGEN des Kontextes speichern
+        // durch Spiegeln verändert sich die X-Position, weshalb X um die Breite des
+        // Bildes korrigiert werden muss vor der Spiegelung ...
+        this.ctx.translate(movableObject.x + movableObject.width, movableObject.y);
+        this.ctx.scale(-1, 1);       // spiegelt das Object
+        this.ctx.drawImage(movableObject.img, 0, 0, movableObject.width, movableObject.heigth);
+        this.ctx.restore();          // gespeicherte EINSTELLUNGEN des Kontextes wieder laden
     }
 }
 

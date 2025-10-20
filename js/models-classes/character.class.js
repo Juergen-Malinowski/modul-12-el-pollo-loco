@@ -6,9 +6,9 @@ class Character extends MovableObject {
 
     heigth = 330;   // Höhe des Charakters
     width = 150;    // Breite des Charakters
-    y = 0;        // Startposition des Charakters auf der Y-Achse (Höhenposition) = 130
+    y = 0;          // Startposition des Charakters auf der Y-Achse (Höhenposition) = 130
     x = 200;        // Startposition des Charakters auf der X-Achse (links/rechts)
-    speed = 100;     // Bewegungsweite 20px pro Zeitinvervall des Charakters
+    speed = 100;    // Bewegungsweite 20px pro Zeitinvervall des Charakters
     world;          // Übergabe der Bewegungsparameter aus der "world.class.js", welche sie von "game.js" erhalten hat
 
     imagesWalking = [
