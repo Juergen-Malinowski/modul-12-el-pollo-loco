@@ -21,8 +21,8 @@ class Character extends MovableObject {
     ];
 
     imagesJumping = [
-        '../assets/img/2_charakter_pepe/3_jump/J-31.png',
-        '../assets/img/2_charakter_pepe/3_jump/J-32.png',
+        // '../assets/img/2_charakter_pepe/3_jump/J-31.png',
+        // '../assets/img/2_charakter_pepe/3_jump/J-32.png',
         '../assets/img/2_charakter_pepe/3_jump/J-33.png',
         '../assets/img/2_charakter_pepe/3_jump/J-34.png',
         '../assets/img/2_charakter_pepe/3_jump/J-35.png',
@@ -30,7 +30,7 @@ class Character extends MovableObject {
         '../assets/img/2_charakter_pepe/3_jump/J-37.png',
         '../assets/img/2_charakter_pepe/3_jump/J-38.png',
         '../assets/img/2_charakter_pepe/3_jump/J-39.png',
-        '../assets/img/2_charakter_pepe/3_jump/J-31.png',  
+        '../assets/img/2_charakter_pepe/3_jump/J-31.png',
     ];
 
 
@@ -52,18 +52,20 @@ class Character extends MovableObject {
                 //2000 = die letzte Startposition für Hintergrund (1440px) 
                 // + Breite Bild (720px) - Breite Charakter-Bild (150px) 
                 // - 410px (Damit am ENDE ein voller Background noch zu sehen ist !!!)
-                this.x += this.speed;
+                this.moveRight();
                 this.otherDirection = false;
             }
 
             if (this.world.keyboard.LEFT && this.x > 0) {
+                //Bewegung nach LINKS des Charakters ...
                 //this.x > 0 verhindert, dass Charakter links aus dem Bild läuft
-                this.x -= this.speed;
+                this.moveLeft();
                 this.otherDirection = true;
             }
 
-            if (this.world.keyboard.SPACE) {
-                this.speedY = 20;
+            if (this.world.keyboard.SPACE && !this.isAboveGround()) {
+                // SPRUNG Charakter nach oben
+                this.speedY = 45;
             }
 
             // Hintergrund-Verschiebung (Variable "cameraX") auf Bewegung des Charakters anpassen !

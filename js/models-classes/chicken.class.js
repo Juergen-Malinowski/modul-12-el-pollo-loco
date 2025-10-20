@@ -22,9 +22,13 @@ class Chicken extends MovableObject {
     }
 
     animate() {
-        this.moveLeft();                         // Hühner nach links bewegen / "speed" steuert Geschwindigkeit
+        setInterval(() => {
+            this.moveLeft();                         // Hühner nach links bewegen / "speed" steuert Geschwindigkeit
+            // this.otherDirection = false;
+            // (17ms = 0,017s bzw. 60 Frames pro Sek. bzw. 1000/60 = 17 ms / 60 Frames pro Sek. ist so das Maximum in Spielen)
+        }, 1000 / 60);
         setInterval(() => {                      // Intervall-Funktion, die die Animation steuert ...
-        this.playAnimation(this.imagesWalking);  // Funktion generiert nun die Bilder
+            this.playAnimation(this.imagesWalking);  // Funktion generiert nun die Bilder
         }, 120);                                 // Intervall in ms (120 ms hier), in der die Animation neu gezeichnet wird
     };
 

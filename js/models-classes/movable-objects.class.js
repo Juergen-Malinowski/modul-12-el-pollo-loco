@@ -17,8 +17,8 @@ class MovableObject {
     }
 
     applyGravity() {
-        setInterval(() => { 
-            if (this.isAboveGround() || this.speedY > 0 ) {
+        setInterval(() => {
+            if (this.isAboveGround() || this.speedY > 0) {
                 // nur solange der Charakter noch nicht den BODEN erreicht hat ...
                 this.y -= this.speedY;              // Fallgeschwindigkeit übergeben
                 this.speedY -= this.acceleration;   // Erhöhung Fallgeschwindigkeit
@@ -52,17 +52,19 @@ class MovableObject {
     }
 
     moveLeft() {
-        setInterval(() => {
-            this.x -= this.speed;  // Modifikation der x-Position (Wolke bewegt sich nach links)
-            // (17ms = 0,017s bzw. 60 Frames pro Sek. bzw. 1000/60 = 17 ms / 60 Frames pro Sek. ist so das Maximum in Spielen)
-        }, 1000 / 60);                 // Intervall in ms (17 ms hier), in der die Wolke neu gezeichnet wird 
+        // Bewegung nach LINKS ...
+        this.x -= this.speed;      // Modifikation der x-Position (Wolke bewegt sich nach links)
     }
 
     moveRight() {
-        console.log("Moving right");
-
+        // Bewegung nach RECHTS ...
+        this.x += this.speed;
     }
 
+    jump() {
+        // Sprung nach oben ...
+        this.speedY = 45;
+    }
 
 
 }
