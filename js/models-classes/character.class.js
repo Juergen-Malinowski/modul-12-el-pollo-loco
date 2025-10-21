@@ -13,10 +13,10 @@ class Character extends MovableObject {
     energie = 300;  // Lebens-ENERGIE (Gesundheit, Trefferpunkte)
 
     offset = {      // Korrektur der Kollision auf den tatsächlichen Körper !
-        top : 130,
-        buttom : 10,
-        left : 40,
-        right : 40,
+        top: 130,
+        buttom: 10,
+        left: 40,
+        right: 40,
     }
 
     imagesWalking = [
@@ -41,11 +41,22 @@ class Character extends MovableObject {
         '../assets/img/2_charakter_pepe/3_jump/J-31.png',
     ];
 
+    imagesDead = [
+        // '../assets/img/2_charakter_pepe/4_hurt/H-41.png',
+        // '../assets/img/2_charakter_pepe/4_hurt/H-42.png',
+        // '../assets/img/2_charakter_pepe/4_hurt/H-43.png',
+        '../assets/img/2_charakter_pepe/5_dead/D-51.png',
+        '../assets/img/2_charakter_pepe/5_dead/D-53.png',
+        '../assets/img/2_charakter_pepe/5_dead/D-54.png',
+        '../assets/img/2_charakter_pepe/5_dead/D-55.png',
+        '../assets/img/2_charakter_pepe/5_dead/D-56.png',
+    ];
 
     constructor() {
         super().loadImage('../assets/img/2_charakter_pepe/2_walk/W-21.png');
         this.loadImages(this.imagesWalking);
         this.loadImages(this.imagesJumping);
+        this.loadImages(this.imagesDead);
         this.applyGravity();
         this.animate();
     }
@@ -82,15 +93,20 @@ class Character extends MovableObject {
 
         setInterval(() => {          // Intervall-Funktion, die die Animation steuert ...
 
-            if (this.isAboveGround()) {
-                // CHARAKTER fällt aus der Luft zu Boden ...
-                this.playAnimation(this.imagesJumping);    // Funktion generiert nun die Bilder                
+            if (this.isDead()) {
+                // Funktion "isDead" ist TRUE, wenn "this.energie == 0" ist, SONST FALSE ...
+                this.playAnimation(this.imagesDead);       // Funktion generiert nun die Bilder
             } else {
-                if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
-                    // CHARAKTER geht links / rechts ...
-                    this.playAnimation(this.imagesWalking);    // Funktion generiert nun die Bilder
-                }
-            };
+                if (this.isAboveGround()) {
+                    // CHARAKTER fällt aus der Luft zu Boden ...
+                    this.playAnimation(this.imagesJumping);    // Funktion generiert nun die Bilder                
+                } else {
+                    if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
+                        // CHARAKTER geht links / rechts ...
+                        this.playAnimation(this.imagesWalking);    // Funktion generiert nun die Bilder
+                    }
+                };
+            }
         }, 150);    // Intervall in ms (150 ms hier), in der die Animation neu gezeichnet wird
 
     };

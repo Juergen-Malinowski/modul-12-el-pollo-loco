@@ -68,18 +68,30 @@ class MovableObject {
     }
 
     wasHit() {
-        this.energie -= 5;   // ENERGIE abziehen pro Zeiteinheit ms
+        // Schadenverarbeitung ...
+        this.energie -= 10;       // ENERGIE abziehen pro Zeiteinheit ms
+        if (this.energie < 0) {
+            this.energie = 0;    // Minimum ist 0 Energie
+        }
+    }
+
+    isDead() {
+        return this.energie == 0;
     }
 
     playAnimation(images) {
         // WALK-ANIMATION ...
         // %-Zeichen ist der "Modulo"-Operator (Restwert einer Division) ...
         // correntImage beginnt bei 0 und imageWalking.length ist 6 (Anzahl der Bilder der Animation)
-        // i wird dann 0,1,2,3,4,5 und beginnt dann wieder bei 0,1,2,3,4,5 usw.
-        let i = this.correntImage % this.imagesWalking.length;
-        let path = images[i];  // Pfad des aktuellen Bildes der Animation
-        this.img = this.imageCache[path];  // Pfad des Bildes der Animation laden
-        this.correntImage++;               // Nr. des aktuellen Bildes der Animation erhöhen
+        // i wird dann 0,1,2,3,4,5 und beginnt dann wieder bei 0,1,2,3,4,5 usw.        
+        if (!images || images.length === 0) return;  // Sicherheitscheck
+        let i = this.correntImage % images.length;  
+        let path = images[i];
+        let img = this.imageCache[path];
+        if (img) {
+            this.img = img;                          // nur gültige Bilder übernehmen
+        }
+        this.correntImage++;
     }
 
     moveLeft() {
