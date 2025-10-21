@@ -26,6 +26,16 @@ class DrawableObjects {
         ctx.drawImage(this.img, this.x, this.y,
             this.width, this.heigth);
     }    
-    
+
+    drawFrame(ctx) {
+        if (this instanceof Character || this instanceof Chicken || this instanceof Endboss) {
+            // Collisions-RAHMEN nur um Charakter, Chicken und Endboss ...
+            ctx.beginPath();
+            ctx.linewidth = "20";
+            ctx.strokeStyle = "blue";
+            ctx.rect(this.x, this.y, this.width, this.heigth);
+            ctx.stroke();
+        }
+    }
     
 }

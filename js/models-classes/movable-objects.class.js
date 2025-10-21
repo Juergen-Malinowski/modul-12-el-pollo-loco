@@ -9,6 +9,8 @@ class MovableObject extends DrawableObjects {
     energie = 100;           // Lebens-ENERGIE (Gesundheit, Trefferpunkte)
     lastHit = 0;             // speichert, dass ein Treffer erfolgte (für spätere Animation Verletzung)
 
+    // chickenCry = new Audio('assets/sound/chicken-1.mp3');   // aufgeregtes Huhn
+
 
 
     isAboveGround() {
@@ -24,17 +26,6 @@ class MovableObject extends DrawableObjects {
                 this.speedY -= this.acceleration;   // Erhöhung Fallgeschwindigkeit
             }
         }, 30);
-    }
-
-    drawFrame(ctx) {
-        if (this instanceof Character || this instanceof Chicken || this instanceof Endboss) {
-            // Collisions-RAHMEN nur um Charakter, Chicken und Endboss ...
-            ctx.beginPath();
-            ctx.linewidth = "20";
-            ctx.strokeStyle = "blue";
-            ctx.rect(this.x, this.y, this.width, this.heigth);
-            ctx.stroke();
-        }
     }
 
     isColliding(movableObject) {

@@ -6,7 +6,8 @@ class World {
     ctx;             // Context-Element anlegen (2D/3D)
     keyboard;        // Variable keyboard anlegen (Bewegungen Charakter)
     cameraX = 0;     // Variable zur Modifikation der X-Achse für den gezeigten Hintergrundausschnitt
-    
+    statusBar = new StatusBar();   // Statusbar anlegen
+
     constructor(canvas, keyboard) {
         this.ctx = canvas.getContext("2d");    // im 2D-Format
         this.canvas = canvas;                  // Canvas-Parameter wird der Variable "canvas" (this.canvas) zugewiesen
@@ -24,7 +25,7 @@ class World {
         // COLLISION zwischen Charakter und Feinden prüfen ...
         setInterval(() => {
             // PRÜFE JEDEN Gegener aus Level 1 ...
-            this.level.enemies.forEach( (enemy)=> {
+            this.level.enemies.forEach((enemy) => {
                 if (this.character.isColliding(enemy)) {
                     this.character.wasHit();       // ENERGIE abziehen pro Zeiteinheit ms und Schaden verarbeiten
                     console.log("ENERGIEABZUG Berührung .... REST-Energie", this.character.energie);
@@ -38,11 +39,17 @@ class World {
         // Canvas löschen vor dem Neuzeichnen ...
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-        // Charakter-Spiegelung ?
+        // Bildausschnitt verschieben ... PLUS
         this.ctx.translate(this.cameraX, 0);
 
         // mit der Schleife alle Hintergrundobjekte (backgroundObjects) durchlaufen und zeichnen ...
         this.addObjectsToMap(this.level.backgroundObjects);
+
+
+        // Statusbar zeichnen ...
+        this.ctx.translate(-this.cameraX, 0);   // Bildausschnitt zurücksetzen
+        this.addToMap(this.statusBar);          // Statusbar an FIXEN-Punkt im canvas zeichnen
+        this.ctx.translate(this.cameraX, 0);    // Bildausschnitt wieder anpassen
 
         // mit der Schleife alle Wolken (clouds) durchlaufen und zeichnen ...
         this.addObjectsToMap(this.level.clouds);
@@ -54,7 +61,7 @@ class World {
         // enemy = einzelner Feind (Chicken) bzw. Datensatzelement in enemies-Array
         this.addObjectsToMap(this.level.enemies);
 
-        // Charakter-RÜCK-Spiegelung ?
+        // Bildausschnitt verschieben ... MINUS
         this.ctx.translate(-this.cameraX, 0);
 
         // Variable "self" anlegen, die auf die Welt (World) zeigt, 
