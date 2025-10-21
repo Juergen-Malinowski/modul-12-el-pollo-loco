@@ -1,15 +1,11 @@
 class MovableObject extends DrawableObjects {
-    x = 50;
-    y = 300;
-    img;
-    heigth = 150;
-    width = 100;
-    imageCache = {};         // speichert die Pfade zu den Bilddateien
+
+
     speed = 0.1;             // Modify-Faktor für Wolkenbewegung
     otherDirection = false;  // in welche Richtigung bewegt sich das Objekt ... FALSE = nach rechts
     speedY = 0;              // Start Fallgeschwindigkeit
     acceleration = 4;        // Beschleunigung im Fall
-    correntImage = 0;        // Nr. aktuelles Bildes der Animation   
+
     energie = 100;           // Lebens-ENERGIE (Gesundheit, Trefferpunkte)
     lastHit = 0;             // speichert, dass ein Treffer erfolgte (für spätere Animation Verletzung)
 
@@ -28,25 +24,6 @@ class MovableObject extends DrawableObjects {
                 this.speedY -= this.acceleration;   // Erhöhung Fallgeschwindigkeit
             }
         }, 30);
-    }
-
-    loadImage(path) {
-        this.img = new Image();  // Image-Objekt anlegen
-        this.img.src = path;     // Pfad zuweisen
-    }
-
-    // Pfad zu den Bildern der Objekte zuweisen ...
-    loadImages(arr) {
-        arr.forEach((path) => {
-            let img = new Image();          // Image-Objekt anlegen
-            img.src = path;                 // Pfad zuweisen
-            this.imageCache[path] = img;    // Bild dem imageCache-Array hinzufügen  
-        });
-    }
-
-    draw(ctx) {
-        ctx.drawImage(this.img, this.x, this.y,
-            this.width, this.heigth);
     }
 
     drawFrame(ctx) {
