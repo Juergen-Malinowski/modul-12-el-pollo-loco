@@ -14,8 +14,12 @@ class MovableObject extends DrawableObjects {
 
 
     isAboveGround() {
+        // WENN ein "ThrowableObjects", DANN sofort RETURN ... 
+        if (this instanceof ThrowableObjects) {
+            return true;  // ABBRUCH der Funktion !
+        } else {
         // GIBT den Punkt zurück, an dem das Objekt den Boden berührt und Fall abgeschlossen ist
-        return this.y < 130;
+        return this.y < 130;}
     }
 
     applyGravity() {
@@ -62,7 +66,7 @@ class MovableObject extends DrawableObjects {
         // correntImage beginnt bei 0 und imageWalking.length ist 6 (Anzahl der Bilder der Animation)
         // i wird dann 0,1,2,3,4,5 und beginnt dann wieder bei 0,1,2,3,4,5 usw.        
         if (!images || images.length === 0) return;  // Sicherheitscheck
-        let i = this.correntImage % images.length;  
+        let i = this.correntImage % images.length;
         let path = images[i];
         let img = this.imageCache[path];
         if (img) {

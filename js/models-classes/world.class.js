@@ -8,6 +8,7 @@ class World {
     cameraX = 0;     // Variable zur Modifikation der X-Achse für den gezeigten Hintergrundausschnitt
     statusBar = new StatusBar();   // Statusbar anlegen
     percentage = 100;              // zu Beginn 100 % Leben ... Hier wird der REST-%-Satz der Lebensenergie abgelegt
+    throwableObjects = [];   // Array für Salsa-Flaschen
 
     constructor(canvas, keyboard) {
         this.ctx = canvas.getContext("2d");    // im 2D-Format
@@ -15,16 +16,24 @@ class World {
         this.keyboard = keyboard;              // Parameter "keyboard" in Variable "this.keyboard" übernehmen
         this.setWorld();                       // weist dem Character.world die aktuell angelegte Welt mit "this" zu
         this.draw();                           // Welt zeichnen
-        this.checkCollisions();                // PRÜFUNG, ob eine Kollision (Charakter zu Feinden) erfolgt
+        this.run();                            // PRÜFUNG, ob eine Kollision (Charakter zu Feinden) erfolgt
     }
 
     setWorld() {
         this.character.world = this;           // "this" ist die aktuell angelegte Welt
     }
 
-    checkCollisions() {
-        // COLLISION zwischen Charakter und Feinden prüfen ...
+
+    run() {
+        // In der World global laufender Zeitintervall ...
         setInterval(() => {
+            this.checkCollisions();
+            this.checkThrowObjects();
+        }, 500);
+    }
+
+    checkCollisions() {
+            // COLLISION zwischen Charakter und Feinden prüfen ...
             // PRÜFE JEDEN Gegener aus Level 1 ...
             this.level.enemies.forEach((enemy) => {
                 if (this.character.isColliding(enemy)) {
@@ -38,8 +47,16 @@ class World {
                     console.log("ENERGIEABZUG Berührung .... REST-Energie", this.character.energie);
                 };
             });
-        }, 500);
     }
+
+    checkThrowObjects() {
+        if (this.keyboard.SHIFT) {
+            // NEUE SALSA-Flasche an der Position des Charakters erstellen ...   
+            let bottle = new ThrowableObjects(this.character.x, this.character.y + 190);
+            this.throwableObjects.push(bottle);
+        }
+    }
+
 
     // die Welt (World) wird gezeichnet ...
     draw() {
@@ -67,6 +84,9 @@ class World {
         // mit der Schleife alle Feinde (enemies) durchlaufen und zeichnen ...
         // enemy = einzelner Feind (Chicken) bzw. Datensatzelement in enemies-Array
         this.addObjectsToMap(this.level.enemies);
+
+        // Salsa-Flaschen zeichnen ...
+        this.addObjectsToMap(this.throwableObjects);
 
         // Bildausschnitt verschieben ... MINUS
         this.ctx.translate(-this.cameraX, 0);
