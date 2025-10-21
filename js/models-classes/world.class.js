@@ -7,6 +7,7 @@ class World {
     keyboard;        // Variable keyboard anlegen (Bewegungen Charakter)
     cameraX = 0;     // Variable zur Modifikation der X-Achse für den gezeigten Hintergrundausschnitt
     statusBar = new StatusBar();   // Statusbar anlegen
+    percentage = 100;              // zu Beginn 100 % Leben ... Hier wird der REST-%-Satz der Lebensenergie abgelegt
 
     constructor(canvas, keyboard) {
         this.ctx = canvas.getContext("2d");    // im 2D-Format
@@ -28,6 +29,12 @@ class World {
             this.level.enemies.forEach((enemy) => {
                 if (this.character.isColliding(enemy)) {
                     this.character.wasHit();       // ENERGIE abziehen pro Zeiteinheit ms und Schaden verarbeiten
+
+                    // "percentage" liegt immer zwischen 0 und 100, da Statusbar "getImageIndex()" die Bilder
+                    // mit einem Wert zwischen 0 und 100 zuordnet ...
+                    this.percentage = this.character.energie / this.character.holeEnergie * 100;  
+
+                    this.statusBar.setPercentage(this.percentage);
                     console.log("ENERGIEABZUG Berührung .... REST-Energie", this.character.energie);
                 };
             });
@@ -46,7 +53,7 @@ class World {
         this.addObjectsToMap(this.level.backgroundObjects);
 
 
-        // Statusbar zeichnen ...
+        // Statusbar zeichnen ... bzw. HIER am Bildschirm fixierte Objekte zeichnen !!!
         this.ctx.translate(-this.cameraX, 0);   // Bildausschnitt zurücksetzen
         this.addToMap(this.statusBar);          // Statusbar an FIXEN-Punkt im canvas zeichnen
         this.ctx.translate(this.cameraX, 0);    // Bildausschnitt wieder anpassen
