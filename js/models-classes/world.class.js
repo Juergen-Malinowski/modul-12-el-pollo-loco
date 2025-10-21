@@ -26,7 +26,7 @@ class World {
             // PRÜFE JEDEN Gegener aus Level 1 ...
             this.level.enemies.forEach( (enemy)=> {
                 if (this.character.isColliding(enemy)) {
-                    this.character.energie -= 5;   // ENERGIE abziehen pro Zeiteinheit ms
+                    this.character.wasHit();       // ENERGIE abziehen pro Zeiteinheit ms und Schaden verarbeiten
                     console.log("ENERGIEABZUG Berührung .... REST-Energie", this.character.energie);
                 };
             });

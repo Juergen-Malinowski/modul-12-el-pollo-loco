@@ -11,7 +11,7 @@ class MovableObject {
     acceleration = 4;        // Beschleunigung im Fall
     correntImage = 0;        // Nr. aktuelles Bildes der Animation   
     energie = 100;           // Lebens-ENERGIE (Gesundheit, Trefferpunkte)
-    
+
 
 
     isAboveGround() {
@@ -65,6 +65,10 @@ class MovableObject {
             this.y + this.heigth - this.offset.buttom > movableObject.y + movableObject.offset.top &&
             this.x + this.offset.left < movableObject.x - movableObject.offset.right &&
             this.y + this.offset.top < movableObject.y + movableObject.heigth - movableObject.offset.buttom;
+    }
+
+    wasHit() {
+        this.energie -= 5;   // ENERGIE abziehen pro Zeiteinheit ms
     }
 
     playAnimation(images) {
