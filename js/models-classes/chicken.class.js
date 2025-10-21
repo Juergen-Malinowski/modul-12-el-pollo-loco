@@ -22,7 +22,7 @@ class Chicken extends MovableObject {
 
     constructor() {
         super().loadImage('../assets/img/3_feinde_huehner/chicken_normal/1_walk/1_w.png');
-        this.x = 350 + Math.random() * 200;       // Startposition des Huhns auf der X-Achse
+        this.x = 350 + Math.random() * 1500;       // Startposition des Huhns auf der X-Achse
         this.speed = 0.2 + Math.random() * 0.3;   // Jedes Huhn bekommt eine individuelle Geschwindigkeit
         this.loadImages(this.imagesWalking);      // Bewegungsbild laden   
         this.animate();                          // Huhn bewegen

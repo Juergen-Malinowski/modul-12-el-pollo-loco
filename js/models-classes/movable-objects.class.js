@@ -11,6 +11,7 @@ class MovableObject {
     acceleration = 4;        // Beschleunigung im Fall
     correntImage = 0;        // Nr. aktuelles Bildes der Animation   
     energie = 100;           // Lebens-ENERGIE (Gesundheit, Trefferpunkte)
+    lastHit = 0;             // speichert, dass ein Treffer erfolgte (für spätere Animation Verletzung)
 
 
 
@@ -72,7 +73,15 @@ class MovableObject {
         this.energie -= 10;       // ENERGIE abziehen pro Zeiteinheit ms
         if (this.energie < 0) {
             this.energie = 0;    // Minimum ist 0 Energie
+        } else {
+            this.lastHit = new Date().getTime();  // "Date()" und "getTime()" halten Zeitpunkt Treffer fest ... speichert in "lastHit"
         }
+    }
+
+    isHurt() {
+        let passedTime = new Date().getTime() - this.lastHit;    // Differenz im ms zwischen letzten Treffer und aktueller Zeit
+        passedTime = passedTime / 1000;                          // aus ms (Milli-Sekunden) werden Sekunden
+        return passedTime < 1;                                   // wird TRUE, wenn seit letzten Treffer weniger als 3 Sek. vergangen, sonst FALSE
     }
 
     isDead() {
