@@ -21,7 +21,9 @@ canvas {
     font-style: normal;
 }
 
-body, canvas, h1 {
+body,
+canvas,
+h1 {
     font-family: 'Zabars', Arial, Helvetica, sans-serif;
 }
 
@@ -37,11 +39,17 @@ h1 {
 
 /* SMARTPHONE resposive */
 @media only screen and (max-width: 720px) {
-    canvas {width: 100%;}
+    canvas {
+        width: 100%;
+    }
+
+    h1 {
+        display: none;
+    }
 }
 
 @media only screen and (max-height: 480px) {
-    canvas {height: 100vh;}
+    canvas {
+        height: 100vh;
+    }
 }
-
-
