@@ -16,6 +16,14 @@ function initLevel() {
             new Endboss(),
         ],
         [
+            new ThrowableObjects(),
+            new ThrowableObjects(),
+            new ThrowableObjects(),
+            new ThrowableObjects(),
+            new ThrowableObjects(),
+            new ThrowableObjects(),
+        ],
+        [
             new Cloud(),
         ],
         [

@@ -18,8 +18,9 @@ class MovableObject extends DrawableObjects {
         if (this instanceof ThrowableObjects) {
             return true;  // ABBRUCH der Funktion !
         } else {
-        // GIBT den Punkt zurück, an dem das Objekt den Boden berührt und Fall abgeschlossen ist
-        return this.y < 130;}
+            // GIBT den Punkt zurück, an dem das Objekt den Boden berührt und Fall abgeschlossen ist
+            return this.y < 130;
+        }
     }
 
     applyGravity() {
@@ -77,12 +78,12 @@ class MovableObject extends DrawableObjects {
 
     moveLeft() {
         // Bewegung nach LINKS ...
-        this.x -= this.speed;      // Modifikation der x-Position (Wolke bewegt sich nach links)
+        this.x -= this.speed;      // Modifikation der x-Position 
     }
 
     moveRight() {
         // Bewegung nach RECHTS ...
-        this.x += this.speed;
+        this.x += this.speed;      // Modifikation der x-Position 
     }
 
     jump() {

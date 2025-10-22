@@ -8,7 +8,8 @@ class World {
     cameraX = 0;     // Variable zur Modifikation der X-Achse für den gezeigten Hintergrundausschnitt
     statusBar = new StatusBar();   // Statusbar anlegen
     percentage = 100;              // zu Beginn 100 % Leben ... Hier wird der REST-%-Satz der Lebensenergie abgelegt
-    throwableObjects = [];   // Array für Salsa-Flaschen
+    throwableObjects = [];         // Array für Salsa-Flaschen
+  
 
     constructor(canvas, keyboard) {
         this.ctx = canvas.getContext("2d");    // im 2D-Format
@@ -77,6 +78,9 @@ class World {
 
         // mit der Schleife alle Wolken (clouds) durchlaufen und zeichnen ...
         this.addObjectsToMap(this.level.clouds);
+
+        // mit der Schleife alle Flaschen (bottles) zeichnen ...
+        this.addObjectsToMap(this.level.bottles);
 
         // Charakter NEU zeichnen ...
         this.addToMap(this.character);
