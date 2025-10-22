@@ -21,12 +21,14 @@ canvas {
 }
 
 body, canvas, h1 {
-    font-family: 'Zabars', sans-serif;
+    font-family: 'Zabars', Arial, Helvetica, sans-serif;
 }
 
 h1 {
     font-size: 6em;
     margin: 0;
     font-style: italic;
+    letter-spacing: 5px;
+    text-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
 }
 
