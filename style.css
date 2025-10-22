@@ -11,6 +11,7 @@ body {
 
 canvas {
     background-color: black;
+    display: block;
 }
 
 @font-face {
@@ -31,4 +32,16 @@ h1 {
     letter-spacing: 5px;
     text-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
 }
+
+
+
+/* SMARTPHONE resposive */
+@media only screen and (max-width: 720px) {
+    canvas {width: 100%;}
+}
+
+@media only screen and (max-height: 480px) {
+    canvas {height: 100vh;}
+}
+
 
