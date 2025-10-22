@@ -8,6 +8,7 @@ let keyboard = new Keyboard();  // Variablen für Rückmeldung des "keydown" in 
 function init() {
     //grundsätzliche Einbindung für canvas und Darstellungsart (2D/3D) ...
     canvas = document.getElementById("canvas");
+    initLevel();        // jetzt wird Welt erschaffen
     world = new World(canvas, keyboard);              // Welt anlegen und Canvas (id canvas) und gedrückte Taste übergeben
     // Charakter-Bild laden ... dauert etwas, weshalb "ctx.drawImage" in eine TIMEOUT-Funktion gepackt wird ...
     // character.src = "../assets/img/2_charakter_pepe/2_walk/W-21.png";
@@ -22,28 +23,20 @@ window.addEventListener("keydown", (e) => {
     switch (e.key) {
         // EVENT "keydown" auslesen und in einer der Variablen "keyboard" speichern (TRUE)
         case 'ArrowLeft':        // KEY = linker Pfeil / KEYCODE = 37
-            keyboard.LEFT = true;
-            break;
+            keyboard.LEFT = true; break;
         case 'ArrowRight':       // KEY = rechter Pfeil / KEYCODE = 39
-            keyboard.RIGHT = true;
-            break;
+            keyboard.RIGHT = true; break;
         case 'ArrowUp':          // KEY = linker Pfeil / KEYCODE = 38
-            keyboard.UP = true;
-            break;
+            keyboard.UP = true; break;
         case 'ArrowDown':        // KEY = linker Pfeil / KEYCODE = 40
-            keyboard.DOWN = true;
-            break;
+            keyboard.DOWN = true; break;
         case ' ':            // KEY = linker Pfeil / KEYCODE = 32
-            keyboard.SPACE = true;
-            break;
+            keyboard.SPACE = true; break;
         case 'Shift':            // KEY = linker Pfeil / KEYCODE = 16
-            keyboard.SHIFT = true;
-            break;
+            keyboard.SHIFT = true; break;
         case 'Enter':            // KEY = linker Pfeil / KEYCODE = 13
-            keyboard.ENTER = true;
-            break;
-        default:
-            break;
+            keyboard.ENTER = true; break;
+        default: break;
     }
 });
 
@@ -51,27 +44,20 @@ window.addEventListener("keyup", (e) => {
     // SOBALD eine Taste wieder losgelassen wird, wird die entsprechende Variable von "keyboard" wieder auf FALSE gesetzt !!!
     switch (e.code) {
         case 'ArrowLeft':
-            keyboard.LEFT = false;
-            break;
+            keyboard.LEFT = false; break;
         case 'ArrowRight':
-            keyboard.RIGHT = false;
-            break;
+            keyboard.RIGHT = false; break;
         case 'ArrowUp':
-            keyboard.UP = false;
-            break;
+            keyboard.UP = false; break;
         case 'ArrowDown':
-            keyboard.DOWN = false;
-            break;
+            keyboard.DOWN = false; break;
         case 'Space':
-            keyboard.SPACE = false;
-            break;
+            keyboard.SPACE = false; break;
         case 'ShiftLeft':
         case 'ShiftRight':
-            keyboard.SHIFT = false;
-            break;
+            keyboard.SHIFT = false; break;
         case 'Enter':
-            keyboard.ENTER = false;
-            break;
+            keyboard.ENTER = false; break;
     }
 });
 
