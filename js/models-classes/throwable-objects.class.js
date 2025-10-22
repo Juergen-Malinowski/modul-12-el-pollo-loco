@@ -2,7 +2,7 @@ class ThrowableObjects extends MovableObject {
 
     width = 60;       // Breite der Flaschen
     heigth = 80;      // Höhe der Flaschen
-    y = 360;          // Y-Position der Flaschen
+    y = 380;          // Y-Position der Flaschen
     gameStart = true;              // Wurde Spiel gerade gestartet ?
 
     constructor(x, y) {

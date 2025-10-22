@@ -9,7 +9,9 @@ class World {
     statusBar = new StatusBar();   // Statusbar anlegen
     percentage = 100;              // zu Beginn 100 % Leben ... Hier wird der REST-%-Satz der Lebensenergie abgelegt
     throwableObjects = [];         // Array für Salsa-Flaschen
-  
+    collectedBottles = 3;          // Zähler für eingesammelte Flaschen
+
+
 
     constructor(canvas, keyboard) {
         this.ctx = canvas.getContext("2d");    // im 2D-Format
@@ -34,21 +36,69 @@ class World {
     }
 
     checkCollisions() {
-            // COLLISION zwischen Charakter und Feinden prüfen ...
-            // PRÜFE JEDEN Gegener aus Level 1 ...
-            this.level.enemies.forEach((enemy) => {
-                if (this.character.isColliding(enemy)) {
-                    this.character.wasHit();       // ENERGIE abziehen pro Zeiteinheit ms und Schaden verarbeiten
+        // COLLISION zwischen Charakter und Feinden prüfen ...
+        // PRÜFE JEDEN Gegener aus Level 1 ...
+        this.level.enemies.forEach((enemy) => {
+            if (this.character.isColliding(enemy)) {
+                this.character.wasHit();       // ENERGIE abziehen pro Zeiteinheit ms und Schaden verarbeiten
+                // "percentage" liegt immer zwischen 0 und 100, da Statusbar "getImageIndex()" die Bilder
+                // mit einem Wert zwischen 0 und 100 zuordnet ...
+                this.percentage = this.character.energie / this.character.holeEnergie * 100;
+                this.statusBar.setPercentage(this.percentage);
+                // console.log("ENERGIEABZUG Berührung .... REST-Energie", this.character.energie);
+            };
+        });
 
-                    // "percentage" liegt immer zwischen 0 und 100, da Statusbar "getImageIndex()" die Bilder
-                    // mit einem Wert zwischen 0 und 100 zuordnet ...
-                    this.percentage = this.character.energie / this.character.holeEnergie * 100;  
-
-                    this.statusBar.setPercentage(this.percentage);
-                    console.log("ENERGIEABZUG Berührung .... REST-Energie", this.character.energie);
-                };
-            });
+        // COLLISION zwischen Charakter und BODEN-FLASCHEN prüfen ...
+        this.level.bottles.forEach((bottle, index) => {
+            if (this.character.isColliding(bottle)) {
+                console.log("Flasche eingesammelt bei Position X:", bottle.x);
+                this.collectBottle(index);
+            }
+        });
     }
+
+    collectBottle(index) {
+        // Entfernt die eingesammelte Flasche aus dem Array "bottles"
+        this.level.bottles.splice(index, 1);
+        console.log("Nach dem Entfernen:", this.level.bottles.length);
+
+
+        // +1 zum Zähler der gesammelten Flaschen
+        this.collectedBottles++;
+
+        // Optional: kurze optische Rückmeldung
+        this.showBottlePickupEffect();
+
+        // Optional: Sound oder Animation für das Einsammeln
+        // let bottlePickupSound = new Audio('assets/sound/bottle-pickup.mp3');
+        // bottlePickupSound.play();
+
+        console.log("Flaschen gesammelt:", this.collectedBottles);
+    }
+
+    showBottlePickupEffect() {
+        // Effekt für das Einsammeln von Flaschen anzeigen ...
+        // Position des Effekts über dem Charakter
+        const x = this.character.x + this.character.width / 2;
+        const y = this.character.y - 50;
+        // Temporäres Canvas-Text-Overlay
+        const ctx = this.ctx;
+        const effectDuration = 500; // ms
+        let opacity = 1;
+        const step = 50; // ms
+        const interval = setInterval(() => {
+            ctx.save();
+            ctx.font = "bold 30px Zabars";
+            ctx.fillStyle = `rgba(255,255,0,${opacity})`;
+            ctx.fillText("+1", x - this.cameraX, y);
+            ctx.restore();
+            opacity -= 0.2;
+            if (opacity <= 0) clearInterval(interval);
+        }, step);
+    }
+
+
 
     checkThrowObjects() {
         if (this.keyboard.SHIFT) {

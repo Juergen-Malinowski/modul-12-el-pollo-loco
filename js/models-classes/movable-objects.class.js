@@ -34,11 +34,30 @@ class MovableObject extends DrawableObjects {
     }
 
     isColliding(movableObject) {
-        // PRÜFEN, ob ein bewegliches Objekt mit dem Charakter kollidiert ...
-        return this.x + this.width - this.offset.right > movableObject.x + movableObject.offset.left &&
-            this.y + this.heigth - this.offset.buttom > movableObject.y + movableObject.offset.top &&
-            this.x + this.offset.left < movableObject.x - movableObject.offset.right &&
-            this.y + this.offset.top < movableObject.y + movableObject.heigth - movableObject.offset.buttom;
+        // Wenn das übergebene Objekt keine "offset"-Eigenschaft besitzt, Standardwerte anlegen
+        if (!movableObject.offset) {
+            movableObject.offset = { top: 0, bottom: 0, left: 30, right: 0 };
+        }
+
+        // Fall 1: Wenn das Objekt eine Flasche (ThrowableObjects) ist ...
+        if (movableObject instanceof ThrowableObjects) {
+            // Bei Flaschen (ThrowableObjects) ist die Y-Position meist tiefer als beim Charakter.
+            // Deshalb eigene Rechteck-basierte Kollision (analog zu den beweglichen Objekten).
+
+            return (
+                this.x + this.width > movableObject.x + movableObject.offset.left &&     // rechter Rand des Charakters erreicht linke Seite der Flasche
+                this.y + this.heigth >= movableObject.y
+            );
+        }
+
+
+        // Fall 2: Standardkollision für bewegliche Objekte (Character, Chicken, Endboss, etc.)
+        return (
+            this.x + this.width - this.offset.right > movableObject.x + movableObject.offset.left &&
+            this.x + this.offset.left < movableObject.x + movableObject.width - movableObject.offset.right &&
+            this.y + this.height - this.offset.bottom > movableObject.y + movableObject.offset.top &&
+            this.y + this.offset.top < movableObject.y + movableObject.height - movableObject.offset.bottom
+        );
     }
 
     wasHit() {

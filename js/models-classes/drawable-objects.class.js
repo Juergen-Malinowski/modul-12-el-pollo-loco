@@ -28,7 +28,7 @@ class DrawableObjects {
     }    
 
     drawFrame(ctx) {
-        if (this instanceof Character || this instanceof Chicken || this instanceof Endboss) {
+        if (this instanceof Character || this instanceof Chicken || this instanceof Endboss || this instanceof ThrowableObjects) {
             // Collisions-RAHMEN nur um Charakter, Chicken und Endboss ...
             ctx.beginPath();
             ctx.linewidth = "20";
