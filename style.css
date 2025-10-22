@@ -12,3 +12,21 @@ body {
 canvas {
     background-color: black;
 }
+
+@font-face {
+    font-family: 'Zabars';
+    src: url('./assets/fonts/zabars.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body, canvas, h1 {
+    font-family: 'Zabars', sans-serif;
+}
+
+h1 {
+    font-size: 6em;
+    margin: 0;
+    font-style: italic;
+}
+
