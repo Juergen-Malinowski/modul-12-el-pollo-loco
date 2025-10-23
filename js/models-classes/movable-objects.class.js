@@ -36,7 +36,7 @@ class MovableObject extends DrawableObjects {
     isColliding(movableObject) {
         // Wenn das übergebene Objekt keine "offset"-Eigenschaft besitzt, Standardwerte anlegen
         if (!movableObject.offset) {
-            movableObject.offset = { top: 0, bottom: 0, left: 30, right: 0 };
+            movableObject.offset = { top: 0, buttom: 0, left: 30, right: 0 };
         }
 
         // Fall 1: Wenn das Objekt eine Flasche (ThrowableObjects) ist ...
@@ -55,8 +55,8 @@ class MovableObject extends DrawableObjects {
         return (
             this.x + this.width - this.offset.right > movableObject.x + movableObject.offset.left &&
             this.x + this.offset.left < movableObject.x + movableObject.width - movableObject.offset.right &&
-            this.y + this.height - this.offset.bottom > movableObject.y + movableObject.offset.top &&
-            this.y + this.offset.top < movableObject.y + movableObject.height - movableObject.offset.bottom
+            this.y + this.heigth - this.offset.buttom > movableObject.y + movableObject.offset.top &&
+            this.y + this.offset.top < movableObject.y + movableObject.heigth - movableObject.offset.buttom
         );
     }
 
