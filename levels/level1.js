@@ -16,12 +16,12 @@ function initLevel() {
             new Endboss(),
         ],
         [
-            new ThrowableObjects(),
-            new ThrowableObjects(),
-            new ThrowableObjects(),
-            new ThrowableObjects(),
-            new ThrowableObjects(),
-            new ThrowableObjects(),
+            new ThrowableObjects(0, 0, true),
+            new ThrowableObjects(0, 0, true),
+            new ThrowableObjects(0, 0, true),
+            new ThrowableObjects(0, 0, true),
+            new ThrowableObjects(0, 0, true),
+            new ThrowableObjects(0, 0, true),
         ],
         [
             new Cloud(),
