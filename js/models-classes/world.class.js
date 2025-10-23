@@ -35,42 +35,48 @@ class World {
         }, 50);
     }
 
-
     checkCollisions() {
-        // COLLISION zwischen Charakter und Feinden prüfen ...
-        // PRÜFE JEDEN Gegener aus Level 1 ...
-        this.level.enemies.forEach((enemy, index) => {
-            if (!this.character.isColliding(enemy)){
-                console.log('KEINE Kollision ... ABBRAUCH checkCollisions');
-                
-                return;
-            };
-            console.log('KEINE ABBRAUCH, da KOLLISION erfolgte ...###################');
-            
-            // Prüfen, ob der Charakter von OBEN auf das Huhn springt
-            const faelltNachUnten = this.character.speedY < 0; // positiv = hoch, negativ = fallend
-            const charBottom = this.character.y + this.character.heigth - (this.character.offset ? this.character.offset.buttom : 0);
-            const enemyTop = enemy.y + (enemy.offset ? enemy.offset.top : 0);
-            const oberhalb = charBottom <= (enemy.y + enemy.heigth * 0.5); // großzügig: obere Hälfte
+    // COLLISION zwischen Charakter und Feinden prüfen ...
+    // PRÜFE JEDEN Gegener aus Level 1 ...
+    for (let i = this.level.enemies.length - 1; i >= 0; i--) {
+        const enemy = this.level.enemies[i];
 
-            if (faelltNachUnten && oberhalb) {
-                // Huhn bekommt Schaden / stirbt
-                if (typeof enemy.wasHit === 'function') enemy.wasHit();
-                console.log("Huhn wurde von oben getroffen an Position X:", enemy.x);
+        // Keine Kollision = keine weitere Prüfung ...
+        if (!this.character.isColliding(enemy)) {
+            continue;
+        }
 
-                // Optional: Sofort entfernen, wenn tot
-                if (typeof enemy.isDead === 'function' && enemy.isDead()) {
-                    console.log("Huhn besiegt an Position X:", enemy.x);
+        // Prüfen, ob der Charakter von OBEN auf das Huhn springt ...
+        const faelltNachUnten = this.character.speedY < 0; // positiv = hoch, negativ = fallend
+        const charBottom = this.character.y + this.character.heigth - (this.character.offset ? this.character.offset.buttom : 0);
+        const enemyTop = enemy.y + (enemy.offset ? enemy.offset.top : 0);
+        const oberhalb = charBottom <= (enemy.y + enemy.heigth * 0.5); // großzügig: obere Hälfte
+
+        if (faelltNachUnten && oberhalb && !enemy.isDeadChicken) {
+            // Huhn bekommt Schaden / stirbt
+            console.log("Huhn wurde von oben getroffen an Position X:", enemy.x);
+
+            // „Abprallen“ nach oben + Aufsetz-Korrektur, damit keine Folgekollision entsteht
+            this.character.speedY = 25;
+            this.character.y = enemyTop - this.character.heigth;
+
+            // Huhn stirbt ... Bild wechseln auf totes Huhn ...
+            enemy.die();
+
+            // ENTFERNT totes HUHN nach 5 Sekunden aus der Welt entfernen ...
+            setTimeout(() => {
+                const index = this.level.enemies.indexOf(enemy);
+                if (index > -1) {
                     this.level.enemies.splice(index, 1);
                 }
+            }, 5000);
 
-                // „Abprallen“ nach oben + Aufsetz-Korrektur, damit keine Folgekollision entsteht
-                this.character.speedY = 25;
-                this.character.y = enemyTop - this.character.heigth;
-                return; // Wichtig: KEIN Schaden am Charakter in diesem Tick
-            }
+            continue; // Wichtig: KEIN Schaden am Charakter in diesem Tick
+        }
 
-            // normale Kollision (seitlich / von vorn) → Charakter nimmt Schaden
+        // Normale Kollision (seitlich / von vorn) → Charakter nimmt Schaden
+        // Nur, wenn das Huhn lebt (nicht tot)
+        if (!enemy.isDeadChicken) {
             this.character.wasHit();       // ENERGIE abziehen pro Zeiteinheit ms und Schaden verarbeiten
 
             // "percentage" liegt immer zwischen 0 und 100, da Statusbar "getImageIndex()" die Bilder
@@ -79,16 +85,73 @@ class World {
 
             this.statusBar.setPercentage(this.percentage);
             // console.log("ENERGIEABZUG Berührung .... REST-Energie", this.character.energie);
-        });
-
-        // COLLISION zwischen Charakter und BODEN-FLASCHEN prüfen ...
-        this.level.bottles.forEach((bottle, index) => {
-            if (this.character.isColliding(bottle)) {
-                console.log("Flasche eingesammelt bei Position X:", bottle.x);
-                this.collectBottle(index);
-            }
-        });
+        }
     }
+
+    // COLLISION zwischen Charakter und BODEN-FLASCHEN prüfen ...
+    for (let i = this.level.bottles.length - 1; i >= 0; i--) {
+        const bottle = this.level.bottles[i];
+        if (this.character.isColliding(bottle)) {
+            console.log("Flasche eingesammelt bei Position X:", bottle.x);
+            this.collectBottle(i);
+        }
+    }
+}
+
+
+    // checkCollisions() {
+    //     // COLLISION zwischen Charakter und Feinden prüfen ...
+    //     // PRÜFE JEDEN Gegener aus Level 1 ...
+    //     this.level.enemies.forEach((enemy, index) => {
+    //         if (!this.character.isColliding(enemy)){
+    //             console.log('KEINE Kollision ... ABBRAUCH checkCollisions');
+                
+    //             return;
+    //         };
+    //         console.log('KEINE ABBRAUCH, da KOLLISION erfolgte ...###################');
+            
+    //         // Prüfen, ob der Charakter von OBEN auf das Huhn springt
+    //         const faelltNachUnten = this.character.speedY < 0; // positiv = hoch, negativ = fallend
+    //         const charBottom = this.character.y + this.character.heigth - (this.character.offset ? this.character.offset.buttom : 0);
+    //         const enemyTop = enemy.y + (enemy.offset ? enemy.offset.top : 0);
+    //         const oberhalb = charBottom <= (enemy.y + enemy.heigth * 0.5); // großzügig: obere Hälfte
+
+    //         if (faelltNachUnten && oberhalb) {
+    //             // Huhn bekommt Schaden / stirbt
+    //             if (typeof enemy.wasHit === 'function') enemy.wasHit();
+    //             console.log("Huhn wurde von oben getroffen an Position X:", enemy.x);
+
+    //             // Optional: Sofort entfernen, wenn tot
+    //             if (typeof enemy.isDead === 'function' && enemy.isDead()) {
+    //                 console.log("Huhn besiegt an Position X:", enemy.x);
+    //                 this.level.enemies.splice(index, 1);
+    //             }
+
+    //             // „Abprallen“ nach oben + Aufsetz-Korrektur, damit keine Folgekollision entsteht
+    //             this.character.speedY = 25;
+    //             this.character.y = enemyTop - this.character.heigth;
+    //             return; // Wichtig: KEIN Schaden am Charakter in diesem Tick
+    //         }
+
+    //         // normale Kollision (seitlich / von vorn) → Charakter nimmt Schaden
+    //         this.character.wasHit();       // ENERGIE abziehen pro Zeiteinheit ms und Schaden verarbeiten
+
+    //         // "percentage" liegt immer zwischen 0 und 100, da Statusbar "getImageIndex()" die Bilder
+    //         // mit einem Wert zwischen 0 und 100 zuordnet ...
+    //         this.percentage = this.character.energie / this.character.holeEnergie * 100;
+
+    //         this.statusBar.setPercentage(this.percentage);
+    //         // console.log("ENERGIEABZUG Berührung .... REST-Energie", this.character.energie);
+    //     });
+
+    //     // COLLISION zwischen Charakter und BODEN-FLASCHEN prüfen ...
+    //     this.level.bottles.forEach((bottle, index) => {
+    //         if (this.character.isColliding(bottle)) {
+    //             console.log("Flasche eingesammelt bei Position X:", bottle.x);
+    //             this.collectBottle(index);
+    //         }
+    //     });
+    // }
 
 
 

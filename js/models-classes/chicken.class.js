@@ -18,6 +18,9 @@ class Chicken extends MovableObject {
         '../assets/img/3_feinde_huehner/chicken_normal/1_walk/3_w.png',
     ];
 
+    imageDead = '../assets/img/3_feinde_huehner/chicken_normal/2_dead/dead.png'; // Bild für „totes Huhn“ (liegt am Boden)
+
+    isDeadChicken = false; // Status: lebt oder ist bereits tot
 
 
     constructor() {
@@ -30,12 +33,24 @@ class Chicken extends MovableObject {
 
     animate() {
         setInterval(() => {
-            this.moveLeft();                        // Hühner nach links bewegen / "speed" steuert Geschwindigkeit
+            // Hühner nach links bewegen / "speed" steuert Geschwindigkeit
             // (17ms = 0,017s bzw. 60 Frames pro Sek. bzw. 1000/60 = 17 ms / 60 Frames pro Sek. ist so das Maximum in Spielen)
+            if (!this.isDeadChicken) {              // Nur bewegen, wenn Huhn lebt
+                this.moveLeft();
+            }
         }, 1000 / 60);
+
         setInterval(() => {                          // Intervall-Funktion, die die Animation steuert ...
-            this.playAnimation(this.imagesWalking);  // Funktion generiert nun die Bilder
+            if (!this.isDeadChicken) {               // Nur animieren, wenn Huhn lebt
+                this.playAnimation(this.imagesWalking);  // Funktion generiert nun die Bilder
+            }
         }, 120);                                     // Intervall in ms (120 ms hier), in der die Animation neu gezeichnet wird
     };
 
+    die() {
+        // Setzt Huhn auf „tot“ und zeigt das tote Bild an, keine Bewegung mehr
+        this.isDeadChicken = true;       // Kennzeichen: Huhn lebt nicht mehr
+        this.loadImage(this.imageDead);  // Bild wechseln auf totes Huhn
+        this.speed = 0;                  // Bewegung sofort stoppen
+    }
 }
