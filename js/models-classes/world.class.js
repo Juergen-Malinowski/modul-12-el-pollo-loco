@@ -137,6 +137,9 @@ class World {
         // +1 zum Zähler der gesammelten Flaschen
         this.collectedBottles++;
 
+        // +2 Punkte zum SCORE für das Einsammeln einer Bodenflasche
+        this.addScore(2);
+
         // Optional: kurze optische Rückmeldung
         this.showBottlePickupEffect();
 
