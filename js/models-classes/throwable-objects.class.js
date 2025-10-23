@@ -4,6 +4,12 @@ class ThrowableObjects extends MovableObject {
     heigth = 80;      // Höhe der Flaschen
     y = 380;          // Y-Position der Flaschen
     static gameStart = true;   // Wurde Spiel gerade gestartet ?  (klassenweit)
+    offset = {     // Korrektur der Kollision auf den tatsächlichen Körper !
+        top: 0,
+        buttom: 0,
+        left: 30,
+        right: 0,
+    }
 
     constructor(x, y) {
         super();  // Super-Konstruktor genau EINMAL aufrufen

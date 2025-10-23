@@ -8,6 +8,12 @@ class MovableObject extends DrawableObjects {
 
     energie = 100;           // Lebens-ENERGIE (Gesundheit, Trefferpunkte)
     lastHit = 0;             // speichert, dass ein Treffer erfolgte (für spätere Animation Verletzung)
+    offset = {               // Korrektur der Kollision auf den tatsächlichen Körper !
+        top: 0,
+        buttom: 0,
+        left: 0,
+        right: 0,
+    }
 
     // chickenCry = new Audio('assets/sound/chicken-1.mp3');   // aufgeregtes Huhn
 
@@ -35,9 +41,9 @@ class MovableObject extends DrawableObjects {
 
     isColliding(movableObject) {
         // Wenn das übergebene Objekt keine "offset"-Eigenschaft besitzt, Standardwerte anlegen
-        if (!movableObject.offset) {
-            movableObject.offset = { top: 0, buttom: 0, left: 30, right: 0 };
-        }
+        // if (!movableObject.offset) {
+        //     movableObject.offset = { top: 0, buttom: 0, left: 30, right: 0 };
+        // }
 
         // Fall 1: Wenn das Objekt eine Flasche (ThrowableObjects) ist ...
         if (movableObject instanceof ThrowableObjects) {
