@@ -62,7 +62,7 @@ class MovableObject extends DrawableObjects {
 
     wasHit() {
         // Schadenverarbeitung ...
-        this.energie -= 10;       // ENERGIE abziehen pro Zeiteinheit ms
+        this.energie -= 1;       // ENERGIE abziehen pro Zeiteinheit ms
         if (this.energie < 0) {
             this.energie = 0;    // Minimum ist 0 Energie
         } else {
