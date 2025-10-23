@@ -3,23 +3,27 @@ class ThrowableObjects extends MovableObject {
     width = 60;       // Breite der Flaschen
     heigth = 80;      // Höhe der Flaschen
     y = 380;          // Y-Position der Flaschen
-    gameStart = true;              // Wurde Spiel gerade gestartet ?
+    static gameStart = true;   // Wurde Spiel gerade gestartet ?  (klassenweit)
 
     constructor(x, y) {
+        super();  // Super-Konstruktor genau EINMAL aufrufen
+
         // Übergabe-Parameter abhängig von Position des Charakters ...
-        super().loadImage('../assets/img/6_salsa_flasche/1_salsa_bottle_on_ground.png');
-        if (this.gameStart) {
-            this.x = 200 + Math.random() * 1200;       // Startposition des Huhns auf der X-Achse
-            this.gameStart = false;
+        if (ThrowableObjects.gameStart) {
+            // Boden-Flaschen beim Spielstart verteilen
+            this.loadImage('../assets/img/6_salsa_flasche/1_salsa_bottle_on_ground.png');
+            this.x = 200 + Math.random() * 1200;       // Startposition der Flasche auf der X-Achse
+            this.y = 380;
+            ThrowableObjects.gameStart = false;        // ab jetzt gilt: Spiel läuft
         } else {
-            super().loadImage('../assets/img/6_salsa_flasche/salsa_bottle.png');
+            // geworfene Flasche
+            this.loadImage('../assets/img/6_salsa_flasche/salsa_bottle.png');
             this.x = x;
             this.y = y;
             this.width = 60;
             this.heigth = 80;
             this.throwBottle();
         }
-
     }
 
     throwBottle() {
@@ -29,5 +33,4 @@ class ThrowableObjects extends MovableObject {
             this.x += 10;     // Wurfgeschwindigkeit
         }, 20);               // Bildwiederholung beeinflusst Flugbahn
     }
-
 }
