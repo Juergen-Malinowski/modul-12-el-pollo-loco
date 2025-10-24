@@ -1,4 +1,3 @@
-
 // mit "extends MovableObject" wird die Klasse "character" von der 
 // Klasse "MovableObject" abgeleitet ...
 
@@ -12,6 +11,9 @@ class Character extends MovableObject {
     world;                // Übergabe der Bewegungsparameter aus der "world.class.js", welche sie von "game.js" erhalten hat
     energie = 300;        // Lebens-ENERGIE (Gesundheit, Trefferpunkte)
     holeEnergie = 300;    // Volle Trefferpunkte
+    isDeadAnimationPlaying = false;  // steuert die Länge der Dead-Animation
+    isLyingDead = false;  // Steuert, ob Charakter im Todeszustand liegend dargestellt wird
+
 
     offset = {            // Korrektur der Kollision auf den tatsächlichen Körper !
         top: 130,
@@ -30,8 +32,6 @@ class Character extends MovableObject {
     ];
 
     imagesJumping = [
-        // '../assets/img/2_charakter_pepe/3_jump/J-31.png',
-        // '../assets/img/2_charakter_pepe/3_jump/J-32.png',
         '../assets/img/2_charakter_pepe/3_jump/J-33.png',
         '../assets/img/2_charakter_pepe/3_jump/J-34.png',
         '../assets/img/2_charakter_pepe/3_jump/J-35.png',
@@ -44,6 +44,7 @@ class Character extends MovableObject {
 
     imagesDead = [
         '../assets/img/2_charakter_pepe/5_dead/D-51.png',
+        '../assets/img/2_charakter_pepe/5_dead/D-52.png',
         '../assets/img/2_charakter_pepe/5_dead/D-53.png',
         '../assets/img/2_charakter_pepe/5_dead/D-54.png',
         '../assets/img/2_charakter_pepe/5_dead/D-55.png',
@@ -55,6 +56,7 @@ class Character extends MovableObject {
         '../assets/img/2_charakter_pepe/4_hurt/H-42.png',
         '../assets/img/2_charakter_pepe/4_hurt/H-43.png',
     ];
+
     imagesWating = [
         '../assets/img/2_charakter_pepe/1_idle/idle/I-1.png',
         '../assets/img/2_charakter_pepe/1_idle/idle/I-4.png',
@@ -75,7 +77,7 @@ class Character extends MovableObject {
         '../assets/img/2_charakter_pepe/1_idle/long_idle/I-18.png',
         '../assets/img/2_charakter_pepe/1_idle/long_idle/I-19.png',
         '../assets/img/2_charakter_pepe/1_idle/long_idle/I-20.png',
-     ];
+    ];
 
     lastActionTime = Date.now();  // Zeitstempel der letzten Spieleraktion
 
@@ -86,48 +88,67 @@ class Character extends MovableObject {
         this.loadImages(this.imagesDead);
         this.loadImages(this.imagesHurt);
         this.loadImages(this.imagesWating);        // NEU: Idle-Animation laden
-        this.loadImages(this.imagesLongWaiting);    // NEU: Long Idle-Animation laden
+        this.loadImages(this.imagesLongWaiting);   // NEU: Long Idle-Animation laden
         this.applyGravity();
         this.animate();
     }
 
     animate() {
 
-        setInterval(() => {        // Intervall-Funktion, die die Bewegung steuert ...
+        // === BEWEGUNGS-STEUERUNG ===
+        setInterval(() => {
+            // Wenn Sterbeanimation läuft → keine Bewegung mehr zulassen
+            if (this.isDeadAnimationPlaying) {
+                return;
+            }
+
             // WALKING-SPEED Charakter festlegen bzw. initialisieren ...
             if (this.world.keyboard.RIGHT && this.x < this.world.level.levelEndX) {
                 this.moveRight();
                 this.otherDirection = false;
-                this.lastActionTime = Date.now(); // NEU: Zeitstempel aktualisieren (Spieler aktiv)
+                this.lastActionTime = Date.now(); // Zeitstempel aktualisieren (Spieler aktiv)
             }
 
             if (this.world.keyboard.LEFT && this.x > 0) {
                 this.moveLeft();
                 this.otherDirection = true;
-                this.lastActionTime = Date.now(); // NEU: Zeitstempel aktualisieren (Spieler aktiv)
+                this.lastActionTime = Date.now(); // Zeitstempel aktualisieren (Spieler aktiv)
             }
 
             if (this.world.keyboard.SPACE && !this.isAboveGround()) {
                 this.speedY = 45;
-                this.lastActionTime = Date.now(); // NEU: Zeitstempel aktualisieren (Spieler aktiv)
+                this.lastActionTime = Date.now(); // Zeitstempel aktualisieren (Spieler aktiv)
             }
 
             // Hintergrund-Verschiebung (Variable "cameraX") auf Bewegung des Charakters anpassen !
             this.world.cameraX = -this.x + 200;
         }, 100);
 
-        setInterval(() => {        // Intervall-Funktion, die die Animationen steuert ...
 
-            if (this.isDead()) {
-                this.playAnimation(this.imagesDead);
-            } else if (this.isHurt()) {
+        // === ANIMATIONS-STEUERUNG ===
+        setInterval(() => {
+
+            // 1) Sterben erkannt, aber Animation noch nicht gestartet → starten und SOFORT abbrechen
+            if (this.isDead() && !this.isDeadAnimationPlaying) {
+                this.isDeadAnimationPlaying = true;   // KEIN wiederholtes Abspielen !!!
+                this.playDeadAnimation();
+                return; // keine andere Animation in diesem Tick mehr ausführen
+            }
+
+            // 2) Sterbeanimation läuft bereits → nichts anderes abspielen
+            if (this.isDeadAnimationPlaying) {
+                return;
+            }
+
+            // 3) Normales Animationsrouting (nur wenn NICHT tot)
+            if (this.isHurt()) {
                 this.playAnimation(this.imagesHurt);
             } else if (this.isAboveGround()) {
                 this.playAnimation(this.imagesJumping);
             } else if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
                 this.playAnimation(this.imagesWalking);
             } else {
-                // === NEU: IDLE-STEUERUNG ===
+                // === IDLE-STEUERUNG ===
                 let idleTime = (Date.now() - this.lastActionTime) / 1000;  // Sekunden seit letzter Aktion
 
                 if (idleTime < 3) {
@@ -135,10 +156,42 @@ class Character extends MovableObject {
                     this.playAnimation(this.imagesWating);
                 } else if (idleTime >= 4) {
                     // Spieler steht sehr lange still → Long Idle
-                    this.playAnimation(this.imagesLongWaiting );
+                    this.playAnimation(this.imagesLongWaiting);
                 }
             }
 
         }, 150);
     };
+
+    playDeadAnimation() {
+        // Animation für das Sterben des Charakters einmalig abspielen ...
+        this.speedY = 0;          // Bewegung nach oben/unten stoppen
+        this.acceleration = 0;    // Keine Gravitation mehr
+
+        let i = 0;  // Zähler für die Bilder der Sterbeanimation
+
+        const deathInterval = setInterval(() => {
+            // Prüfen, ob alle Bilder durchlaufen wurden ...
+            if (i < this.imagesDead.length) {
+                let path = this.imagesDead[i];             // Pfad zum aktuellen Bild der Sterbeanimation
+                this.img = this.imageCache[path];          // Bild aus Cache übernehmen
+                i++;
+            } else {
+                setTimeout(() => {
+                    clearInterval(deathInterval);  // Intervall stoppen, sobald letztes Bild erreicht
+                    this.img = this.imageCache[this.imagesDead[this.imagesDead.length - 1]];
+                    this.isLyingDead = true;       // Status auf "liegt tot" setzen
+                }, 200); // etwas weicheres Ende
+            }
+        }, 200); // 200 ms = Geschwindigkeit des Sterbens (kann angepasst werden)
+
+        setTimeout(() => {
+            console.log("GAME OVER ... Charakter ist tot.");
+
+            // ###############################################################
+            // "Hier" SPÄTER RESTART GAME den Button oder Ähnliches intergrieren
+            // ############################################################### 
+
+        }, 2000);
+    }
 }
