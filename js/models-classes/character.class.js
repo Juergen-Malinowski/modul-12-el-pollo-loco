@@ -55,7 +55,29 @@ class Character extends MovableObject {
         '../assets/img/2_charakter_pepe/4_hurt/H-42.png',
         '../assets/img/2_charakter_pepe/4_hurt/H-43.png',
     ];
+    imagesWating = [
+        '../assets/img/2_charakter_pepe/1_idle/idle/I-1.png',
+        '../assets/img/2_charakter_pepe/1_idle/idle/I-4.png',
+        '../assets/img/2_charakter_pepe/1_idle/idle/I-7.png',
+        '../assets/img/2_charakter_pepe/1_idle/idle/I-8.png',
+        '../assets/img/2_charakter_pepe/1_idle/idle/I-9.png',
+        '../assets/img/2_charakter_pepe/1_idle/idle/I-10.png',
+    ];
 
+    imagesLongWaiting = [
+        '../assets/img/2_charakter_pepe/1_idle/long_idle/I-11.png',
+        '../assets/img/2_charakter_pepe/1_idle/long_idle/I-12.png',
+        '../assets/img/2_charakter_pepe/1_idle/long_idle/I-13.png',
+        '../assets/img/2_charakter_pepe/1_idle/long_idle/I-14.png',
+        '../assets/img/2_charakter_pepe/1_idle/long_idle/I-15.png',
+        '../assets/img/2_charakter_pepe/1_idle/long_idle/I-16.png',
+        '../assets/img/2_charakter_pepe/1_idle/long_idle/I-17.png',
+        '../assets/img/2_charakter_pepe/1_idle/long_idle/I-18.png',
+        '../assets/img/2_charakter_pepe/1_idle/long_idle/I-19.png',
+        '../assets/img/2_charakter_pepe/1_idle/long_idle/I-20.png',
+     ];
+
+    lastActionTime = Date.now();  // Zeitstempel der letzten Spieleraktion
 
     constructor() {
         super().loadImage('../assets/img/2_charakter_pepe/2_walk/W-21.png');
@@ -63,62 +85,60 @@ class Character extends MovableObject {
         this.loadImages(this.imagesJumping);
         this.loadImages(this.imagesDead);
         this.loadImages(this.imagesHurt);
+        this.loadImages(this.imagesWating);        // NEU: Idle-Animation laden
+        this.loadImages(this.imagesLongWaiting);    // NEU: Long Idle-Animation laden
         this.applyGravity();
         this.animate();
     }
 
     animate() {
 
-        setInterval(() => {        // Intervall-Funktion, die die Animation steuert ...
+        setInterval(() => {        // Intervall-Funktion, die die Bewegung steuert ...
             // WALKING-SPEED Charakter festlegen bzw. initialisieren ...
             if (this.world.keyboard.RIGHT && this.x < this.world.level.levelEndX) {
-                //"this.x < this.world.level.levelEndX" (Wert=2000) verhindert, 
-                // dass Charakter rechts aus dem Bild läuft.
-                //2000 = die letzte Startposition für Hintergrund (1440px) 
-                // + Breite Bild (720px) - Breite Charakter-Bild (150px) 
-                // - 410px (Damit am ENDE ein voller Background noch zu sehen ist !!!)
                 this.moveRight();
                 this.otherDirection = false;
+                this.lastActionTime = Date.now(); // NEU: Zeitstempel aktualisieren (Spieler aktiv)
             }
 
             if (this.world.keyboard.LEFT && this.x > 0) {
-                //Bewegung nach LINKS des Charakters ...
-                //this.x > 0 verhindert, dass Charakter links aus dem Bild läuft
                 this.moveLeft();
                 this.otherDirection = true;
+                this.lastActionTime = Date.now(); // NEU: Zeitstempel aktualisieren (Spieler aktiv)
             }
 
             if (this.world.keyboard.SPACE && !this.isAboveGround()) {
-                // SPRUNG Charakter nach oben
                 this.speedY = 45;
+                this.lastActionTime = Date.now(); // NEU: Zeitstempel aktualisieren (Spieler aktiv)
             }
 
             // Hintergrund-Verschiebung (Variable "cameraX") auf Bewegung des Charakters anpassen !
-            this.world.cameraX = -this.x + 200;  // +200 für korrekte Position im Bildschirm gemäß STARTPOSITION oben !
+            this.world.cameraX = -this.x + 200;
         }, 100);
 
-        setInterval(() => {          // Intervall-Funktion, die die Animationen steuert ...
+        setInterval(() => {        // Intervall-Funktion, die die Animationen steuert ...
 
             if (this.isDead()) {
-                // Funktion "isDead" ist TRUE, wenn "this.energie == 0" ist, SONST FALSE ...
-                this.playAnimation(this.imagesDead);       // Funktion generiert nun die Bilder
+                this.playAnimation(this.imagesDead);
+            } else if (this.isHurt()) {
+                this.playAnimation(this.imagesHurt);
+            } else if (this.isAboveGround()) {
+                this.playAnimation(this.imagesJumping);
+            } else if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
+                this.playAnimation(this.imagesWalking);
             } else {
-                if (this.isHurt()) {
-                    this.playAnimation(this.imagesHurt);   // Funktion generiert nun die Bilder
-                }
-                else {
-                    if (this.isAboveGround()) {
-                        // CHARAKTER fällt aus der Luft zu Boden ...
-                        this.playAnimation(this.imagesJumping);    // Funktion generiert nun die Bilder                
-                    } else {
-                        if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
-                            // CHARAKTER geht links / rechts ...
-                            this.playAnimation(this.imagesWalking);    // Funktion generiert nun die Bilder
-                        }
-                    };
+                // === NEU: IDLE-STEUERUNG ===
+                let idleTime = (Date.now() - this.lastActionTime) / 1000;  // Sekunden seit letzter Aktion
+
+                if (idleTime < 3) {
+                    // Spieler steht erst kurz still → Idle
+                    this.playAnimation(this.imagesWating);
+                } else if (idleTime >= 4) {
+                    // Spieler steht sehr lange still → Long Idle
+                    this.playAnimation(this.imagesLongWaiting );
                 }
             }
-        }, 150);    // Intervall in ms (150 ms hier), in der die Animation neu gezeichnet wird
 
+        }, 150);
     };
 }
