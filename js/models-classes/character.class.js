@@ -12,8 +12,7 @@ class Character extends MovableObject {
     energie = 300;        // Lebens-ENERGIE (Gesundheit, Trefferpunkte)
     holeEnergie = 300;    // Volle Trefferpunkte
     isDeadAnimationPlaying = false;  // steuert die Länge der Dead-Animation
-    isLyingDead = false;  // Steuert, ob Charakter im Todeszustand liegend dargestellt wird
-
+    
 
     offset = {            // Korrektur der Kollision auf den tatsächlichen Körper !
         top: 130,
@@ -180,7 +179,6 @@ class Character extends MovableObject {
                 setTimeout(() => {
                     clearInterval(deathInterval);  // Intervall stoppen, sobald letztes Bild erreicht
                     this.img = this.imageCache[this.imagesDead[this.imagesDead.length - 1]];
-                    this.isLyingDead = true;       // Status auf "liegt tot" setzen
                 }, 200); // etwas weicheres Ende
             }
         }, 200); // 200 ms = Geschwindigkeit des Sterbens (kann angepasst werden)
