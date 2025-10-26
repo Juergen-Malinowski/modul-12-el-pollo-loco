@@ -220,6 +220,6 @@ class Character extends MovableObject {
             } else {
                 clearInterval(throwInterval);
             }
-        }, 80);  // Geschwindigkeit der Wurfanimation (80 ms pro Frame)
+         }, 20 );  // Geschwindigkeit der Wurfanimation (80 ms pro Frame)
     }
 }
