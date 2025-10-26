@@ -13,7 +13,9 @@ class Cloud extends MovableObject {
 
     // Wolken bewegen sich langsam nach links (Parallax-Effekt)
     animate() {
-        this.moveLeft();
+        setInterval(() => {
+            this.moveLeft();
+        }, 100); // alle 50ms ein kleiner Schritt → ergibt ruhige Bewegung
     }
+
 }
- 
