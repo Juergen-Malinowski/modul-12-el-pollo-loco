@@ -79,13 +79,9 @@ class Character extends MovableObject {
     ];
 
     imagesThrowing = [
-        '../assets/img/2_charakter_pepe/2_walk/W-26.png',        
         '../assets/img/2_charakter_pepe/2_walk/W-24.png',
-        '../assets/img/2_charakter_pepe/2_walk/W-24.png',
+        '../assets/img/2_charakter_pepe/2_walk/W-25.png',
         '../assets/img/2_charakter_pepe/2_walk/W-26.png',
-        '../assets/img/2_charakter_pepe/2_walk/W-26.png',
-        '../assets/img/2_charakter_pepe/2_walk/W-21.png',
-        '../assets/img/2_charakter_pepe/2_walk/W-21.png',
 
     ];
 
@@ -93,17 +89,20 @@ class Character extends MovableObject {
 
     constructor() {
         super().loadImage('../assets/img/2_charakter_pepe/2_walk/W-21.png');
-        this.loadImages(this.imagesWalking);
-        this.loadImages(this.imagesJumping);
-        this.loadImages(this.imagesDead);
-        this.loadImages(this.imagesHurt);
-        this.loadImages(this.imagesWating);        // NEU: Idle-Animation laden
-        this.loadImages(this.imagesLongWaiting);   // NEU: Long Idle-Animation laden
+        this.loadImages(this.imagesWalking);       // Gehen-Animation laden
+        this.loadImages(this.imagesJumping);       // Springen-Animation laden
+        this.loadImages(this.imagesDead);          // Sterbe-Animation laden
+        this.loadImages(this.imagesHurt);          // Verletzungs-Animation laden
+        this.loadImages(this.imagesWating);        // Idle-Animation laden
+        this.loadImages(this.imagesLongWaiting);   // Long Idle-Animation laden
+        this.loadImages(this.imagesThrowing);      // Wurf-Animation laden
+
         this.applyGravity();
         this.animate();
     }
 
     animate() {
+        if (this.isThrowing) return;   // Keine Bewegung während Wurf-Animation !! (derzeit 0,4 Sek.)
 
         // === BEWEGUNGS-STEUERUNG ===
         setInterval(() => {
@@ -202,5 +201,25 @@ class Character extends MovableObject {
             // ############################################################### 
 
         }, 2000);
+    }
+
+    playThrowAnimation() {
+        // kurze Bewegungssperre während Wurf-Animation ...
+        this.isThrowing = true;
+        setTimeout(() => this.isThrowing = false, 400);  // nach 0.4 Sekunden wieder aktiv
+
+        // Verhindert, dass gleichzeitig andere Animationen laufen ...
+        if (this.isDeadAnimationPlaying) return;
+
+        let i = 0;
+        const throwInterval = setInterval(() => {
+            if (i < this.imagesThrowing.length) {
+                const path = this.imagesThrowing[i];
+                this.img = this.imageCache[path];
+                i++;
+            } else {
+                clearInterval(throwInterval);
+            }
+        }, 80);  // Geschwindigkeit der Wurfanimation (80 ms pro Frame)
     }
 }

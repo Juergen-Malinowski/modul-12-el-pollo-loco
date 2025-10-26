@@ -172,13 +172,14 @@ class World {
 
     checkThrowObjects() {
         if (this.keyboard.SHIFT && this.collectedBottles > 0) {
-            // Pepe darf nur werfen, wenn er Flaschen hat
+            // Charakter darf nur werfen, wenn er Flaschen hat
             this.collectedBottles--;
 
-            // Wurfposition an Peps Blickrichtung anpassen
+            // Wurfposition an Charakter-Blickrichtung anpassen
             const offsetX = this.character.otherDirection ? -30 : 100;
             const throwDirection = this.character.otherDirection ? -1 : 1;
 
+            // Flasche für den Wurf erstellen ...
             let bottle = new ThrowableObjects(
                 this.character.x + offsetX,
                 this.character.y + 190,
@@ -187,12 +188,38 @@ class World {
             );
 
             this.throwableObjects.push(bottle);
-            this.addScore(1);  // optional: +1 Punkt für Wurf
+            this.addScore(1);                       // SCORE +1 Punkt für Wurf
 
-            // Optional: Sound abspielen
-            // new Audio('assets/sound/throw.mp3').play();
+            // Charakter-Wurfanimation zeigen ...
+            this.character.playThrowAnimation();
         }
     }
+
+
+
+    // checkThrowObjects() {
+    //     if (this.keyboard.SHIFT && this.collectedBottles > 0) {
+    //         // Pepe darf nur werfen, wenn er Flaschen hat
+    //         this.collectedBottles--;
+
+    //         // Wurfposition an Peps Blickrichtung anpassen
+    //         const offsetX = this.character.otherDirection ? -30 : 100;
+    //         const throwDirection = this.character.otherDirection ? -1 : 1;
+
+    //         let bottle = new ThrowableObjects(
+    //             this.character.x + offsetX,
+    //             this.character.y + 190,
+    //             false,
+    //             throwDirection
+    //         );
+
+    //         this.throwableObjects.push(bottle);
+    //         this.addScore(1);  // optional: +1 Punkt für Wurf
+
+    //         // Optional: Sound abspielen
+    //         // new Audio('assets/sound/throw.mp3').play();
+    //     }
+    // }
 
 
     // die Welt (World) wird gezeichnet ...
