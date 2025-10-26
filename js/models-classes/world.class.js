@@ -199,33 +199,6 @@ class World {
         }
     }
 
-
-
-    // checkThrowObjects() {
-    //     if (this.keyboard.SHIFT && this.collectedBottles > 0) {
-    //         // Pepe darf nur werfen, wenn er Flaschen hat
-    //         this.collectedBottles--;
-
-    //         // Wurfposition an Peps Blickrichtung anpassen
-    //         const offsetX = this.character.otherDirection ? -30 : 100;
-    //         const throwDirection = this.character.otherDirection ? -1 : 1;
-
-    //         let bottle = new ThrowableObjects(
-    //             this.character.x + offsetX,
-    //             this.character.y + 190,
-    //             false,
-    //             throwDirection
-    //         );
-
-    //         this.throwableObjects.push(bottle);
-    //         this.addScore(1);  // optional: +1 Punkt für Wurf
-
-    //         // Optional: Sound abspielen
-    //         // new Audio('assets/sound/throw.mp3').play();
-    //     }
-    // }
-
-
     // die Welt (World) wird gezeichnet ...
     draw() {
         // Canvas löschen vor dem Neuzeichnen ...
@@ -248,9 +221,6 @@ class World {
         this.ctx.fillText(`Score: ${this.score}`, 550, 50);
 
         this.ctx.translate(this.cameraX, 0);    // Bildausschnitt wieder anpassen
-
-
-
 
         // mit der Schleife alle Wolken (clouds) durchlaufen und zeichnen ...
         this.addObjectsToMap(this.level.clouds);
@@ -280,7 +250,6 @@ class World {
             self.draw();
         });
     }
-
 
     // forEach-Schleife nur einmal für alle Array-Objekte nutzen ...
     addObjectsToMap(objects) {     // "objects" = Array-Name (z.B. enemies, clouds, backgroundObjects)

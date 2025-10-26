@@ -204,6 +204,9 @@ class Character extends MovableObject {
     }
 
     playThrowAnimation() {
+        // Falls gerade eine Idle-Animation aktiv ist → sofort beenden
+        this.lastActionTime = Date.now();   // Idle-Timer zurücksetzen
+        
         // kurze Bewegungssperre während Wurf-Animation ...
         this.isThrowing = true;
         setTimeout(() => this.isThrowing = false, 400);  // nach 0.4 Sekunden wieder aktiv
@@ -220,6 +223,6 @@ class Character extends MovableObject {
             } else {
                 clearInterval(throwInterval);
             }
-         }, 20 );  // Geschwindigkeit der Wurfanimation (80 ms pro Frame)
+        }, 20);  // Geschwindigkeit der Wurfanimation (80 ms pro Frame)
     }
 }
