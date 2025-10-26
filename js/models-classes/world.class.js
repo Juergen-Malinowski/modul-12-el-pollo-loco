@@ -264,7 +264,9 @@ class World {
 
         // mit der Schleife alle Hintergrundobjekte (backgroundObjects) durchlaufen und zeichnen ...
         this.addObjectsToMap(this.level.backgroundObjects);
-
+         
+        // mit der Schleife alle Wolken (clouds) durchlaufen und zeichnen ...
+        this.addObjectsToMap(this.level.clouds);
 
         // Statusbar zeichnen ... bzw. HIER am Bildschirm fixierte Objekte zeichnen !!!
         this.ctx.translate(-this.cameraX, 0);   // Bildausschnitt zurücksetzen
@@ -279,16 +281,12 @@ class World {
         let bottleTextY = this.bottleBar.y + 46;                          // Position Y-Achse (horizontal) festlegen
         this.ctx.fillText(`${this.collectedBottles}`, bottleTextX, bottleTextY);   // ZEICHNEN 
 
-
         // === SCORE-Text HUD (fixe Anzeige am oberen Rand) ===
         this.ctx.font = "bold 40px Zabars";
         this.ctx.fillStyle = "yellow";
         this.ctx.fillText(`Score: ${this.score}`, 550, 50);
 
         this.ctx.translate(this.cameraX, 0);    // Bildausschnitt wieder anpassen
-
-        // mit der Schleife alle Wolken (clouds) durchlaufen und zeichnen ...
-        this.addObjectsToMap(this.level.clouds);
 
         // mit der Schleife alle Flaschen (bottles) zeichnen ...
         this.addObjectsToMap(this.level.bottles);
