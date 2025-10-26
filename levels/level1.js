@@ -24,12 +24,14 @@ function initLevel() {
             new ThrowableObjects(0, 0, true),
         ],
         [
-                new Cloud(0, 60),
-                new Cloud(720, 50),
-                new Cloud(1440, 70),
-                // new Cloud(2160, 60),
-                // new Cloud(2880, 55),
-                // new Cloud(3600, 65),   
+            new Cloud(-200, 60),
+            new Cloud(450, 50),
+            new Cloud(900, 70),
+            new Cloud(1650, 55),
+            new Cloud(1440, 70),
+            new Cloud(120, 40),
+            new Cloud(1250, 20) ,
+            new Cloud(1950, 15),
 
         ],
         [
