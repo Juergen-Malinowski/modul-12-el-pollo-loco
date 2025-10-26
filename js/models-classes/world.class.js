@@ -101,8 +101,54 @@ class World {
                 this.collectBottle(i);
             }
         }
-    }
+        // === KOLLISION: FLASCHEN (ThrowableObjects) treffen Hühner ===
+        for (let i = this.throwableObjects.length - 1; i >= 0; i--) {
+            const bottle = this.throwableObjects[i];
 
+            // Flasche hat Boden erreicht → wird entfernt (kein "Unendlichrollen")
+            if (bottle.y > 380) {
+                this.throwableObjects.splice(i, 1);
+                continue;
+            }
+
+            // Prüfe auf Treffer mit jedem Huhn im Level ...
+            for (let j = this.level.enemies.length - 1; j >= 0; j--) {
+                const enemy = this.level.enemies[j];
+
+                // Wenn das Huhn schon tot ist, überspringen
+                if (enemy.isDeadChicken) continue;
+
+                // Einfache Trefferprüfung basierend auf Bounding-Box
+                const hit =
+                    bottle.x + bottle.width > enemy.x + enemy.offset.left &&
+                    bottle.x < enemy.x + enemy.width - enemy.offset.right &&
+                    bottle.y + bottle.heigth > enemy.y + enemy.offset.top &&
+                    bottle.y < enemy.y + enemy.heigth - enemy.offset.buttom;
+
+                if (hit) {
+                    console.log("Huhn von Flasche getroffen an Position X:", enemy.x);
+
+                    // Huhn stirbt ...
+                    enemy.die();
+
+                    // +20 Punkte für Treffer Huhn mit Flasche ...
+                    this.addScore(20);
+
+                    // Flasche entfernen ...
+                    this.throwableObjects.splice(i, 1);
+
+                    // Nach kurzer Zeit totes Huhn aus der Welt entfernen ...
+                    setTimeout(() => {
+                        const idx = this.level.enemies.indexOf(enemy);
+                        if (idx > -1) {
+                            this.level.enemies.splice(idx, 1);
+                        }
+                    }, 2000);
+                    break; // keine weiteren Hühner mit derselben Flasche prüfen
+                }
+            }
+        }
+    }
 
     collectBottle(index) {
         // Entfernt die eingesammelte Flasche aus dem Array "bottles"
