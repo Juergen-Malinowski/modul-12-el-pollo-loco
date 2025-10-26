@@ -1,45 +1,58 @@
 class StatusBar extends DrawableObjects {
 
-    healthPercentage = 100;    // volle Gesundheit 100 %
+    percentage = 100;    // generische Prozentanzeige
+    images = [];         // Bildliste (wird dynamisch befüllt)
 
-    // Statusbar Gesundheit Charakter ...
-    imagesHealth = [
-        'assets/img/7_statusbars/1_statusbar/2_statusbar_health/green/100.png',
-        'assets/img/7_statusbars/1_statusbar/2_statusbar_health/green/80.png',
-        'assets/img/7_statusbars/1_statusbar/2_statusbar_health/green/60.png',
-        'assets/img/7_statusbars/1_statusbar/2_statusbar_health/green/40.png',
-        'assets/img/7_statusbars/1_statusbar/2_statusbar_health/orange/20.png',
-        'assets/img/7_statusbars/1_statusbar/2_statusbar_health/orange/0.png',
-    ]
-
-    constructor() {
+    constructor(type = 'health') {
         super();
-        this.loadImages(this.imagesHealth);
-        this.x = 10;                          // Position X der Statusbar
-        this.y = 10;                          // Position Y der Statusbar
-        this.width = 150;                     // Breite Statusbar
-        this.heigth = 50;                     // Höhe Statusbar
-        this.setPercentage(100);              // setze zu Spielbeginn Wert auf 100 %
+
+        if (type === 'health') {
+            // === STATUSBAR GESUNDHEIT ===
+            this.images = [
+                'assets/img/7_statusbars/1_statusbar/2_statusbar_health/green/100.png',
+                'assets/img/7_statusbars/1_statusbar/2_statusbar_health/green/80.png',
+                'assets/img/7_statusbars/1_statusbar/2_statusbar_health/green/60.png',
+                'assets/img/7_statusbars/1_statusbar/2_statusbar_health/green/40.png',
+                'assets/img/7_statusbars/1_statusbar/2_statusbar_health/orange/20.png',
+                'assets/img/7_statusbars/1_statusbar/2_statusbar_health/orange/0.png',
+            ];
+            this.x = 10;
+            this.y = 10;
+        }
+
+        if (type === 'bottle') {
+            // === STATUSBAR FLASCHEN ===
+            this.images = [
+                'assets/img/7_statusbars/1_statusbar/3_statusbar_bottle/blue/100.png',
+                'assets/img/7_statusbars/1_statusbar/3_statusbar_bottle/blue/80.png',
+                'assets/img/7_statusbars/1_statusbar/3_statusbar_bottle/blue/60.png',
+                'assets/img/7_statusbars/1_statusbar/3_statusbar_bottle/blue/40.png',
+                'assets/img/7_statusbars/1_statusbar/3_statusbar_bottle/blue/20.png',
+                'assets/img/7_statusbars/1_statusbar/3_statusbar_bottle/blue/0.png',
+
+            ];
+            this.x = 10;
+            this.y = 70; // leicht unter der Lebensbar
+        }
+
+        this.width = 150;
+        this.heigth = 50;
+        this.loadImages(this.images);
+        this.setPercentage(100);
     }
 
-    // setPercentage(50)  =  Gesundheit wird auf 50 % gesetzt
-    setPercentage(healthPercentage) {
-        // AKTUELLE Lebenspunkte "healthPercentage" ziehen und Bild Statusbar zuordnen ...
-        this.healthPercentage = healthPercentage;
-        let path = this.imagesHealth[this.getImageIndex()];
+    setPercentage(percentage) {
+        this.percentage = percentage;
+        let path = this.images[this.getImageIndex()];
         this.img = this.imageCache[path];
     }
 
     getImageIndex() {
-        // WELCHE Statusbar "imagesHealth" gehört zu aktuellen Lebenspunkten "healthPercentage" ...
-        if (this.healthPercentage >= 100) return 0;
-        else if (this.healthPercentage >= 80) return 1;
-        else if (this.healthPercentage >= 60) return 2;
-        else if (this.healthPercentage >= 40) return 3;
-        else if (this.healthPercentage >= 20) return 4;
+        if (this.percentage >= 100) return 0;
+        else if (this.percentage >= 80) return 1;
+        else if (this.percentage >= 60) return 2;
+        else if (this.percentage >= 40) return 3;
+        else if (this.percentage >= 20) return 4;
         else return 5;
     }
-};
-
-
-
+}

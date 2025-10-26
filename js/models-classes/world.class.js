@@ -6,11 +6,13 @@ class World {
     ctx;             // Context-Element anlegen (2D/3D)
     keyboard;        // Variable keyboard anlegen (Bewegungen Charakter)
     cameraX = 0;     // Variable zur Modifikation der X-Achse für den gezeigten Hintergrundausschnitt
-    statusBar = new StatusBar();   // Statusbar anlegen
+    statusBar = new StatusBar('health');   // Status-Bar anlegen für Lebenspunkte Charakter
     percentage = 100;              // zu Beginn 100 % Leben ... Hier wird der REST-%-Satz der Lebensenergie abgelegt
     throwableObjects = [];         // Array für Salsa-Flaschen
     collectedBottles = 3;          // Zähler für eingesammelte Flaschen
-    score = 0;                    // SCORE-Anzeige für diese Welt
+    score = 0;                     // SCORE-Anzeige für diese Welt
+    bottleBar = new StatusBar('bottle');   // Status-Bar anlegen für Flaschen  
+
 
 
 
@@ -22,6 +24,7 @@ class World {
         this.draw();                           // Welt zeichnen
         this.run();                            // PRÜFUNG, ob eine Kollision (Charakter zu Feinden) erfolgt
         this.score = score;                    // übernehme globalen Score-Startwert in lokale Welt        
+        this.updateBottleBar();                // Anzeige Flaschen-Bar aktualisieren 
     }
 
     setWorld() {
@@ -159,6 +162,9 @@ class World {
         // +1 zum Zähler der gesammelten Flaschen
         this.collectedBottles++;
 
+        // Flaschen-Bar aktualisieren ...
+        this.updateBottleBar();
+
         // +2 Punkte zum SCORE für das Einsammeln einer Bodenflasche
         this.addScore(2);
 
@@ -221,6 +227,9 @@ class World {
             // Charakter darf nur werfen, wenn er Flaschen hat
             this.collectedBottles--;
 
+            // Anzeige Flaschen-Bar aktualisieren ...
+            this.updateBottleBar();
+
             // Wurfposition an Charakter-Blickrichtung anpassen
             const offsetX = this.character.otherDirection ? -30 : 100;
             const throwDirection = this.character.otherDirection ? -1 : 1;
@@ -259,7 +268,8 @@ class World {
 
         // Statusbar zeichnen ... bzw. HIER am Bildschirm fixierte Objekte zeichnen !!!
         this.ctx.translate(-this.cameraX, 0);   // Bildausschnitt zurücksetzen
-        this.addToMap(this.statusBar);          // Statusbar an FIXEN-Punkt im canvas zeichnen
+        this.addToMap(this.statusBar);          // Leben-BAR zeichnen
+        this.addToMap(this.bottleBar);          // Flaschen-Bar zeichnen
 
         // === SCORE-Text HUD (fixe Anzeige am oberen Rand) ===
         this.ctx.font = "bold 40px Zabars";
@@ -302,6 +312,14 @@ class World {
         objects.forEach(o => {
             this.addToMap(o);
         });
+    }
+
+    updateBottleBar() {
+        // Flaschenanzahl in Prozent umrechnen (maximal 5 Flaschen)
+        let percentage = (this.collectedBottles / 5) * 100;
+        if (percentage > 100) percentage = 100;
+        if (percentage < 0) percentage = 0;
+        this.bottleBar.setPercentage(percentage);
     }
 
     // bewegliche Objekte (movableObject) werden der Welt (World) hinzugefügt ( Aufruf durch draw() ) ...
