@@ -79,30 +79,6 @@ class World {
                 continue; // Wichtig: KEIN Schaden am Charakter in diesem Tick
             }
 
-            // if (faelltNachUnten && oberhalb && !enemy.isDeadChicken) {
-            //     // Huhn bekommt Schaden / stirbt
-            //     console.log("Huhn wurde von oben getroffen an Position X:", enemy.x);
-
-            //     // „Abprallen“ nach oben + Aufsetz-Korrektur, damit keine Folgekollision entsteht
-            //     this.character.speedY = 25;
-            //     this.character.y = enemyTop - this.character.heigth;
-
-            //     // Huhn stirbt ... Bild wechseln auf totes Huhn ...
-            //     enemy.die();
-
-            //     // ENTFERNT totes HUHN nach 5 Sekunden aus der Welt entfernen ...
-            //     setTimeout(() => {
-            //         const index = this.level.enemies.indexOf(enemy);
-            //         if (index > -1) {
-            //             this.level.enemies.splice(index, 1);
-            //         }
-            //     }, 5000);
-
-            //     continue; // Wichtig: KEIN Schaden am Charakter in diesem Tick
-            // }
-
-
-
             // Normale Kollision (seitlich / von vorn) → Charakter nimmt Schaden
             // Nur, wenn das Huhn lebt (nicht tot)
             if (!enemy.isDeadChicken) {
@@ -194,14 +170,27 @@ class World {
         }, step);
     }
 
-
-
-
     checkThrowObjects() {
-        if (this.keyboard.SHIFT) {
-            // NEUE SALSA-Flasche an der Position des Charakters erstellen ...   
-            let bottle = new ThrowableObjects(this.character.x, this.character.y + 190);
+        if (this.keyboard.SHIFT && this.collectedBottles > 0) {
+            // Pepe darf nur werfen, wenn er Flaschen hat
+            this.collectedBottles--;
+
+            // Wurfposition an Peps Blickrichtung anpassen
+            const offsetX = this.character.otherDirection ? -30 : 100;
+            const throwDirection = this.character.otherDirection ? -1 : 1;
+
+            let bottle = new ThrowableObjects(
+                this.character.x + offsetX,
+                this.character.y + 190,
+                false,
+                throwDirection
+            );
+
             this.throwableObjects.push(bottle);
+            this.addScore(1);  // optional: +1 Punkt für Wurf
+
+            // Optional: Sound abspielen
+            // new Audio('assets/sound/throw.mp3').play();
         }
     }
 

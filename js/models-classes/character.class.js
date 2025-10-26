@@ -12,7 +12,7 @@ class Character extends MovableObject {
     energie = 300;        // Lebens-ENERGIE (Gesundheit, Trefferpunkte)
     holeEnergie = 300;    // Volle Trefferpunkte
     isDeadAnimationPlaying = false;  // steuert die Länge der Dead-Animation
-    
+
 
     offset = {            // Korrektur der Kollision auf den tatsächlichen Körper !
         top: 130,
@@ -76,6 +76,17 @@ class Character extends MovableObject {
         '../assets/img/2_charakter_pepe/1_idle/long_idle/I-18.png',
         '../assets/img/2_charakter_pepe/1_idle/long_idle/I-19.png',
         '../assets/img/2_charakter_pepe/1_idle/long_idle/I-20.png',
+    ];
+
+    imagesThrowing = [
+        '../assets/img/2_charakter_pepe/2_walk/W-26.png',        
+        '../assets/img/2_charakter_pepe/2_walk/W-24.png',
+        '../assets/img/2_charakter_pepe/2_walk/W-24.png',
+        '../assets/img/2_charakter_pepe/2_walk/W-26.png',
+        '../assets/img/2_charakter_pepe/2_walk/W-26.png',
+        '../assets/img/2_charakter_pepe/2_walk/W-21.png',
+        '../assets/img/2_charakter_pepe/2_walk/W-21.png',
+
     ];
 
     lastActionTime = Date.now();  // Zeitstempel der letzten Spieleraktion

@@ -4,29 +4,28 @@ class ThrowableObjects extends MovableObject {
     heigth = 80;      // Höhe der Flaschen
     y = 380;          // Y-Position der Flaschen
 
-    constructor(x = 0, y = 0, isGroundBottle = false) {
-        super();  // Super-Konstruktor genau EINMAL aufrufen
+    constructor(x = 0, y = 0, isGroundBottle = false, direction = 1) {
+        super();
 
         if (isGroundBottle) {
-            // === Boden-Flasche beim Spielstart ===
             this.loadImage('../assets/img/6_salsa_flasche/1_salsa_bottle_on_ground.png');
-            this.x = 200 + Math.random() * 1200;   // zufällige Position am Boden
+            this.x = 200 + Math.random() * 1200;
             this.y = 380;
         } else {
-            // === geworfene Flasche ===
             this.loadImage('../assets/img/6_salsa_flasche/salsa_bottle.png');
             this.x = x;
             this.y = y;
+            this.direction = direction;     //  Richtung übernehmen für Wurf
             this.throwBottle();
         }
     }
 
     throwBottle() {
-        // Wurfbewegung in Parabelbahn erzeugen
-        this.speedY = 30;     // Wurfhöhe 
-        this.applyGravity();  // Wurfbogen generieren
+        this.speedY = 30;
+        this.applyGravity();
+
         setInterval(() => {
-            this.x += 10;     // Wurfgeschwindigkeit
-        }, 20);               // Bildwiederholung beeinflusst Flugbahn
+            this.x += 10 * this.direction; // nach links oder rechts werfen
+        }, 20);
     }
 }
