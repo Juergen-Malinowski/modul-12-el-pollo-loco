@@ -192,6 +192,10 @@ class World {
 
             // Charakter-Wurfanimation zeigen ...
             this.character.playThrowAnimation();
+
+            // Wurf ist ebenfalls eine aktive Spieleraktion → Idle-Zeit zurücksetzen
+            this.character.lastActionTime = Date.now();
+
         }
     }
 

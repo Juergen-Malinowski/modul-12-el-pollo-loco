@@ -85,21 +85,44 @@ class MovableObject extends DrawableObjects {
     isDead() {
         return this.energie == 0;
     }
-
+    
     playAnimation(images) {
-        // WALK-ANIMATION ...
-        // %-Zeichen ist der "Modulo"-Operator (Restwert einer Division) ...
-        // correntImage beginnt bei 0 und imageWalking.length ist 6 (Anzahl der Bilder der Animation)
-        // i wird dann 0,1,2,3,4,5 und beginnt dann wieder bei 0,1,2,3,4,5 usw.        
-        if (!images || images.length === 0) return;  // Sicherheitscheck
+        // Wenn der Charakter gerade wirft oder stirbt → KEINE anderen Animationen zeigen
+        if (this.isThrowing || this.isDeadAnimationPlaying) {
+            return; // stoppt Beinbewegung & Idle-Frames während des Wurfes / Todes
+        }
+
+        // Sicherheitsprüfung: nur arbeiten, wenn ein gültiges Array übergeben wurde
+        if (!images || images.length === 0) return;
+
+        // Nächsten Frame aus der Bildsequenz berechnen
         let i = this.correntImage % images.length;
         let path = images[i];
         let img = this.imageCache[path];
+
+        // Nur gültige Bilder übernehmen
         if (img) {
-            this.img = img;                          // nur gültige Bilder übernehmen
+            this.img = img;
         }
+
         this.correntImage++;
     }
+
+
+    // playAnimation(images) {
+    //     // WALK-ANIMATION ...
+    //     // %-Zeichen ist der "Modulo"-Operator (Restwert einer Division) ...
+    //     // correntImage beginnt bei 0 und imageWalking.length ist 6 (Anzahl der Bilder der Animation)
+    //     // i wird dann 0,1,2,3,4,5 und beginnt dann wieder bei 0,1,2,3,4,5 usw.        
+    //     if (!images || images.length === 0) return;  // Sicherheitscheck
+    //     let i = this.correntImage % images.length;
+    //     let path = images[i];
+    //     let img = this.imageCache[path];
+    //     if (img) {
+    //         this.img = img;                          // nur gültige Bilder übernehmen
+    //     }
+    //     this.correntImage++;
+    // }
 
     moveLeft() {
         // Bewegung nach LINKS ...
