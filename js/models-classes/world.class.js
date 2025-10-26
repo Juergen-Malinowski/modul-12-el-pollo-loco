@@ -271,9 +271,18 @@ class World {
         this.addToMap(this.statusBar);          // Leben-BAR zeichnen
         this.addToMap(this.bottleBar);          // Flaschen-Bar zeichnen
 
+        // ANZEIGE der FLASCHEN-Anzahl (rechts neben der Flaschen-Bar) ...
+        this.ctx.font = "bold 32px Zabars";
+        this.ctx.fillStyle = "yellow";
+        // Position: leicht rechts von der bottleBar (Bar ist 150px breit)
+        let bottleTextX = this.bottleBar.x + this.bottleBar.width + 15;   // Position X-Achse (rechts)
+        let bottleTextY = this.bottleBar.y + 46;                          // Position Y-Achse (horizontal) festlegen
+        this.ctx.fillText(`${this.collectedBottles}`, bottleTextX, bottleTextY);   // ZEICHNEN 
+
+
         // === SCORE-Text HUD (fixe Anzeige am oberen Rand) ===
         this.ctx.font = "bold 40px Zabars";
-        this.ctx.fillStyle = "white";
+        this.ctx.fillStyle = "yellow";
         this.ctx.fillText(`Score: ${this.score}`, 550, 50);
 
         this.ctx.translate(this.cameraX, 0);    // Bildausschnitt wieder anpassen
