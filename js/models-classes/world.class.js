@@ -9,9 +9,12 @@ class World {
     statusBar = new StatusBar('health');   // Status-Bar anlegen für Lebenspunkte Charakter
     percentage = 100;              // zu Beginn 100 % Leben ... Hier wird der REST-%-Satz der Lebensenergie abgelegt
     throwableObjects = [];         // Array für Salsa-Flaschen
-    collectedBottles = 3;          // Zähler für eingesammelte Flaschen
+    collectedBottles = 6;          // Zähler für eingesammelte Flaschen
     score = 0;                     // SCORE-Anzeige für diese Welt
-    bottleBar = new StatusBar('bottle');   // Status-Bar anlegen für Flaschen  
+    bottleBar = new StatusBar('bottle');   // Status-Bar anlegen für Flaschen 
+    lastThrowTime = 0;             // Zeitpunkt des letzten Flaschen-Wurfs
+    throwCooldown = 500;           // Zeit in ms zwischen zwei Würfen (0.5 Sekunden)
+
 
 
 
@@ -223,18 +226,24 @@ class World {
     }
 
     checkThrowObjects() {
-        if (this.keyboard.SHIFT && this.collectedBottles > 0) {
+        const now = Date.now();
+
+        // Prüfen: Taste gedrückt UND genug Zeit seit letztem Wurf vergangen
+        if (this.keyboard.SHIFT && this.collectedBottles > 0 && now - this.lastThrowTime > this.throwCooldown) {
+            // Zeitstempel des letzten Wurfs speichern
+            this.lastThrowTime = now;
+
             // Charakter darf nur werfen, wenn er Flaschen hat
             this.collectedBottles--;
 
-            // Anzeige Flaschen-Bar aktualisieren ...
+            // Anzeige Flaschen-Bar aktualisieren
             this.updateBottleBar();
 
             // Wurfposition an Charakter-Blickrichtung anpassen
             const offsetX = this.character.otherDirection ? -30 : 100;
             const throwDirection = this.character.otherDirection ? -1 : 1;
 
-            // Flasche für den Wurf erstellen ...
+            // Flasche für den Wurf erstellen
             let bottle = new ThrowableObjects(
                 this.character.x + offsetX,
                 this.character.y + 190,
@@ -243,16 +252,49 @@ class World {
             );
 
             this.throwableObjects.push(bottle);
-            this.addScore(1);                       // SCORE +1 Punkt für Wurf
+            this.addScore(1);  // SCORE +1 Punkt für Wurf
 
-            // Charakter-Wurfanimation zeigen ...
+            // Charakter-Wurfanimation zeigen
             this.character.playThrowAnimation();
 
             // Wurf ist ebenfalls eine aktive Spieleraktion → Idle-Zeit zurücksetzen
             this.character.lastActionTime = Date.now();
-
         }
     }
+
+
+
+    // checkThrowObjects() {
+    //     if (this.keyboard.SHIFT && this.collectedBottles > 0) {
+    //         // Charakter darf nur werfen, wenn er Flaschen hat
+    //         this.collectedBottles--;
+
+    //         // Anzeige Flaschen-Bar aktualisieren ...
+    //         this.updateBottleBar();
+
+    //         // Wurfposition an Charakter-Blickrichtung anpassen
+    //         const offsetX = this.character.otherDirection ? -30 : 100;
+    //         const throwDirection = this.character.otherDirection ? -1 : 1;
+
+    //         // Flasche für den Wurf erstellen ...
+    //         let bottle = new ThrowableObjects(
+    //             this.character.x + offsetX,
+    //             this.character.y + 190,
+    //             false,
+    //             throwDirection
+    //         );
+
+    //         this.throwableObjects.push(bottle);
+    //         this.addScore(1);                       // SCORE +1 Punkt für Wurf
+
+    //         // Charakter-Wurfanimation zeigen ...
+    //         this.character.playThrowAnimation();
+
+    //         // Wurf ist ebenfalls eine aktive Spieleraktion → Idle-Zeit zurücksetzen
+    //         this.character.lastActionTime = Date.now();
+
+    //     }
+    // }
 
     // die Welt (World) wird gezeichnet ...
     draw() {
@@ -264,7 +306,7 @@ class World {
 
         // mit der Schleife alle Hintergrundobjekte (backgroundObjects) durchlaufen und zeichnen ...
         this.addObjectsToMap(this.level.backgroundObjects);
-         
+
         // mit der Schleife alle Wolken (clouds) durchlaufen und zeichnen ...
         this.addObjectsToMap(this.level.clouds);
 

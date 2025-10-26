@@ -24,7 +24,13 @@ function initLevel() {
             new ThrowableObjects(0, 0, true),
         ],
         [
-            new Cloud(),
+                new Cloud(0, 60),
+                new Cloud(720, 50),
+                new Cloud(1440, 70),
+                // new Cloud(2160, 60),
+                // new Cloud(2880, 55),
+                // new Cloud(3600, 65),   
+
         ],
         [
             // Einfügen TEIL 2 (links) des START-Hintergrundes ... ACHTUNG, X-Startpunkt -720 (720px VOR Bild 1) ...        

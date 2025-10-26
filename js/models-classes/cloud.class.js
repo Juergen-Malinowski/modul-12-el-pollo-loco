@@ -2,20 +2,18 @@ class Cloud extends MovableObject {
 
     speed = 0.2;
 
-
-    constructor() {
+    constructor(x, y) {
         super().loadImage('../assets/img/5_hintergrund/layers/4_clouds/1.png');
-        // Startposition der Wolken in der linken, oberen Ecke festlegen ...
-        this.x = 50 + Math.random() * 150;
-        this.y = 0 + Math.random() * 50;
-        this.width = 400 + Math.random() * 100;
+        this.x = x;           // exakte horizontale Position
+        this.y = y;           // exakte vertikale Position
+        this.width = 400;     // feste Wolkengröße (kannst du bei Bedarf anpassen)
+        this.height = 250;
         this.animate();
     }
 
-    // Wolken bewegen ...
+    // Wolken bewegen sich langsam nach links (Parallax-Effekt)
     animate() {
         this.moveLeft();
-    };
-
+    }
 }
-
+ 
