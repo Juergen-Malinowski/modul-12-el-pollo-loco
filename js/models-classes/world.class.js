@@ -228,22 +228,21 @@ class World {
     checkThrowObjects() {
         const now = Date.now();
 
-        // Prüfen: Taste gedrückt UND genug Zeit seit letztem Wurf vergangen
-        if (this.keyboard.SHIFT && this.collectedBottles > 0 && now - this.lastThrowTime > this.throwCooldown) {
-            // Zeitstempel des letzten Wurfs speichern
-            this.lastThrowTime = now;
+        // Prüfen: SHIFT oder Pfeil-oben UND genügend Flaschen UND Cooldown abgelaufen
+        if ((this.keyboard.SHIFT || this.keyboard.UP) && this.collectedBottles > 0 && now - this.lastThrowTime > this.throwCooldown) {
+            this.lastThrowTime = now;   // Zeitstempel merken
 
-            // Charakter darf nur werfen, wenn er Flaschen hat
+            // Flasche abziehen
             this.collectedBottles--;
 
             // Anzeige Flaschen-Bar aktualisieren
             this.updateBottleBar();
 
-            // Wurfposition an Charakter-Blickrichtung anpassen
+            // Wurfposition und Richtung bestimmen
             const offsetX = this.character.otherDirection ? -30 : 100;
             const throwDirection = this.character.otherDirection ? -1 : 1;
 
-            // Flasche für den Wurf erstellen
+            // Neue Flasche erzeugen
             let bottle = new ThrowableObjects(
                 this.character.x + offsetX,
                 this.character.y + 190,
@@ -252,15 +251,51 @@ class World {
             );
 
             this.throwableObjects.push(bottle);
-            this.addScore(1);  // SCORE +1 Punkt für Wurf
+            this.addScore(1);
 
-            // Charakter-Wurfanimation zeigen
+            // Wurfanimation und Idle-Reset
             this.character.playThrowAnimation();
-
-            // Wurf ist ebenfalls eine aktive Spieleraktion → Idle-Zeit zurücksetzen
             this.character.lastActionTime = Date.now();
         }
     }
+
+
+    // checkThrowObjects() {
+    //     const now = Date.now();
+
+    //     // Prüfen: Taste gedrückt UND genug Zeit seit letztem Wurf vergangen
+    //     if (this.keyboard.SHIFT && this.collectedBottles > 0 && now - this.lastThrowTime > this.throwCooldown) {
+    //         // Zeitstempel des letzten Wurfs speichern
+    //         this.lastThrowTime = now;
+
+    //         // Charakter darf nur werfen, wenn er Flaschen hat
+    //         this.collectedBottles--;
+
+    //         // Anzeige Flaschen-Bar aktualisieren
+    //         this.updateBottleBar();
+
+    //         // Wurfposition an Charakter-Blickrichtung anpassen
+    //         const offsetX = this.character.otherDirection ? -30 : 100;
+    //         const throwDirection = this.character.otherDirection ? -1 : 1;
+
+    //         // Flasche für den Wurf erstellen
+    //         let bottle = new ThrowableObjects(
+    //             this.character.x + offsetX,
+    //             this.character.y + 190,
+    //             false,
+    //             throwDirection
+    //         );
+
+    //         this.throwableObjects.push(bottle);
+    //         this.addScore(1);  // SCORE +1 Punkt für Wurf
+
+    //         // Charakter-Wurfanimation zeigen
+    //         this.character.playThrowAnimation();
+
+    //         // Wurf ist ebenfalls eine aktive Spieleraktion → Idle-Zeit zurücksetzen
+    //         this.character.lastActionTime = Date.now();
+    //     }
+    // }
 
 
 
