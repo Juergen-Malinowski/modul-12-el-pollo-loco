@@ -251,6 +251,7 @@ class World {
             const coffinWidth = 250;
             const coffinHeight = 150;
 
+            // --- Sarg rotierend zeichnen ---
             ctx.save();
             ctx.translate(centerX, centerY);
             ctx.rotate(this.coffinRotation * Math.PI / 180);
@@ -261,6 +262,14 @@ class World {
                 coffinWidth,
                 coffinHeight
             );
+            ctx.restore();
+
+            // --- Schriftzug "Rest in Peace" ---
+            ctx.save();
+            ctx.font = "bold 70px Zabars";     // große, fette Schrift
+            ctx.fillStyle = "yellow";          // gelbe Farbe
+            ctx.textAlign = "center";          // horizontal zentrieren
+            ctx.fillText("Rest in Peace", centerX, centerY - coffinHeight +70); // etwas über dem Sarg
             ctx.restore();
         }
 
