@@ -201,12 +201,20 @@ class Character extends MovableObject {
             // ############################################################### 
 
         }, 2000);
+
+        // Zeige Sarg-Animation bei Tod des Charakters ...
+        if (this.world) {
+            setTimeout(() => {
+                this.world.startCoffinAnimation();
+            }, 1000); // 1 Sekunde nach dem Tod erscheinen
+        }
+
     }
 
     playThrowAnimation() {
         // Falls gerade eine Idle-Animation aktiv ist → sofort beenden
         this.lastActionTime = Date.now();   // Idle-Timer zurücksetzen
-        
+
         // kurze Bewegungssperre während Wurf-Animation ...
         this.isThrowing = true;
         setTimeout(() => this.isThrowing = false, 400);  // nach 0.4 Sekunden wieder aktiv
