@@ -15,12 +15,12 @@ class World {
     youWinImg = new Image();               // Bildobjekt für "You Win"
     showYouWin = false;                    // Steuerung, ob das Bild angezeigt wird
 
-
-    // === NEU: Variablen für Sarg-Animation ===
+    // Variablen für Sarg-Animation ...
     coffinRotation = 0;
     showCoffin = false;
     coffinImg = new Image();
     coffinSpin = null;
+
 
     constructor(canvas, keyboard) {
         this.ctx = canvas.getContext("2d");
@@ -37,7 +37,7 @@ class World {
 
     setWorld() {
         this.character.world = this;  // Charakter kennt die Welt
-        // Jeder Gegner im Level bekommt die Referenz auf die Welt
+        // Jeder Gegner im Level bekommt die Referenz auf die Welt ...
         this.level.enemies.forEach(enemy => {
             enemy.world = this;
         });
@@ -145,6 +145,7 @@ class World {
     }
 
     collectBottle(index) {
+        // FLASCHEN aufsammeln ...
         this.level.bottles.splice(index, 1);
         this.collectedBottles++;
         this.updateBottleBar();
@@ -153,6 +154,7 @@ class World {
     }
 
     showBottlePickupEffect() {
+        // Zeige Flaschen-Aufheben-Effekt ...
         const x = this.character.x + this.character.width / 2;
         const y = this.character.y - 50;
         const ctx = this.ctx;
@@ -170,6 +172,7 @@ class World {
     }
 
     addScore(points) {
+        // SCORE-Points geben ...
         this.score += points;
         score = this.score;
         const ctx = this.ctx;
@@ -240,14 +243,14 @@ class World {
     }
 
 
-    // === Beendet das Spiel nach Tod des CHARAKTERS ===
+    // BEENDET das Spiel nach Tod des CHARAKTERS ,,,
     endGame() {
         this.gameOver = true;
 
-        // Steuerung deaktivieren
+        // Steuerung deaktivieren ...
         this.keyboard = new Keyboard();   // Alle Tasten-Flags auf FALSE zurücksetzen
 
-        // Nur beim Tod des CHARAKTERS: Sarg-Animation und "Rest in Peace" anzeigen
+        // Nur beim Tod des CHARAKTERS: Sarg-Animation und "Rest in Peace" anzeigen ...
         setTimeout(() => {
             this.startCoffinAnimation();
         }, 1500);
@@ -262,7 +265,7 @@ class World {
         this.bottleBar.setPercentage(percentage);
     }
 
-    // === ZEICHNUNG DER SPIELWELT ===
+    // ZEICHNUNG der SPIELWELT ...
     draw() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
@@ -292,7 +295,7 @@ class World {
         // Kamera wieder zurück
         this.ctx.translate(-this.cameraX, 0);
 
-        // === GAME OVER: SARG ZEICHNEN ===
+        // GAME OVER: SARG ZEICHNEN ...
         if (this.showCoffin) {
             const ctx = this.ctx;
             const centerX = this.canvas.width / 2;
@@ -300,7 +303,7 @@ class World {
             const coffinWidth = 250;
             const coffinHeight = 150;
 
-            // --- Sarg rotierend zeichnen ---
+            // Sarg rotierend zeichnen ...
             ctx.save();
             ctx.translate(centerX, centerY);
             ctx.rotate(this.coffinRotation * Math.PI / 180);
@@ -322,7 +325,7 @@ class World {
             ctx.restore();
         }
 
-        // === GEWINN-BILD ANZEIGEN ===
+        // GEWINN-BILD ANZEIGEN ...
         if (this.showYouWin) {
             const ctx = this.ctx;
             ctx.save();
@@ -331,7 +334,7 @@ class World {
             ctx.restore();
         }
  
-        // Wiederholtes Neuzeichnen
+        // Wiederholtes Neuzeichnen ...
         const self = this;
         requestAnimationFrame(() => self.draw());
     }
