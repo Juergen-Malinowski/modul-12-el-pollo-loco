@@ -5,6 +5,10 @@ class Endboss extends MovableObject {
     y = 180;            // Startposition Endboss auf der Y-Achse
     x = 1750;           // Startposition Endboss auf der X-Achse
     energieBoss = 300;  // Lebens-ENERGIE Endboss
+    // kurzer Hit-Cooldown, damit Endboss pro Flasche nur einmal Schaden erhält ...
+    lastHitTime = 0;          // Zeitstempel des letzten gültigen Treffers
+    hitCooldownMs = 400;      // Dauer der Kurz-Unverwundbarkeit in Millisekunden
+
 
     offset = { top: 50, buttom: 10, left: 20, right: 20 };
 
@@ -122,24 +126,42 @@ class Endboss extends MovableObject {
         }, 200);
     }
 
-    // === NEU: Wird aufgerufen, wenn der Endboss getroffen wird ===
+    //Wird aufgerufen, wenn der Endboss getroffen wird ...
     wasHit() {
-        if (this.isDeadBoss) return; // keine weiteren Treffer nach Tod
+        if (this.isDeadBoss) {
+            return;     // keine weiteren Treffer nach Tod
+        }
 
-        this.energieBoss -= 50; // Schaden pro Treffer
+        //kurzer Hit-Cooldown: Mehrfachauslösung innerhalb weniger Millisekunden verhindern ...
+        let now = Date.now();
+        if (now - this.lastHitTime < this.hitCooldownMs) {
+            // innerhalb des Cooldowns → Treffer ignorieren
+            return;
+        }
+        this.lastHitTime = now;
+
+        // Schaden pro Treffer
+        console.log("Endboss HP vor Treffer:", this.energieBoss);
+
+        this.energieBoss -= 50;
+        console.log("Endboss HP NACH Treffer:", this.energieBoss);
+
         this.isHurtBoss = true;
 
-        console.log("Endboss getroffen! Restenergie:", this.energieBoss);
+        console.log("Endboss getroffen! Restenergie nach Abzug:", this.energieBoss);
 
         // kurze Hurt-Animation
         this.playAnimation(this.imagesHurt);
-        setTimeout(() => this.isHurtBoss = false, 400);
+        setTimeout(() => {
+            this.isHurtBoss = false;
+        }, 400);
 
         // Wenn Energie leer → sterben
         if (this.energieBoss <= 0) {
             this.die();
         }
     }
+
 
     die() {
         if (this.isDeadBoss) return;
