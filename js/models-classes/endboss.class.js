@@ -82,13 +82,12 @@ class Endboss extends MovableObject {
             // Wenn tot → keine weiteren Aktionen ...
             if (this.isDeadBoss) return;
             if (this.world && this.world.character) {
-                // Abstand zwischen Charakter und Endboss ...
-                let distance = this.x - this.world.character.x;
-                // Wenn der Spieler in Reichweite kommt (z. B. unter 1850 px) ...
-                if (distance < 1850 && !this.isAlerted) {
+                // Wenn Charakter Positon X=1500 erreicht, dann startet Endboss ...
+                if (!this.isAlerted && this.world.character.x >= 1500) {
                     this.triggerAlert();
                 }
             }
+
 
             // Bewegungslogik Endboss ...
             if (this.isWalking && this.world && this.world.character) {
@@ -189,7 +188,7 @@ class Endboss extends MovableObject {
         this.playAnimation(this.imagesHurt);
         setTimeout(() => {
             this.isHurtBoss = false;
-          }, 400);
+        }, 400);
 
 
         // Wenn Energie leer → sterben ...
