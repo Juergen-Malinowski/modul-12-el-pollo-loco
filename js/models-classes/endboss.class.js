@@ -147,9 +147,19 @@ class Endboss extends MovableObject {
         // Schaden pro Treffer 
         console.log("Endboss HP vor Treffer:", this.energieBoss);
 
-        this.energieBoss -= 50;
+        this.energieBoss -= 60 ;    // Abzug Trefferpunkte für Wurftreffer beim Endboss 
 
         console.log("Endboss HP NACH Treffer:", this.energieBoss);
+
+        // Endboss-Statusbar aktualisieren ...
+        if (this.world && this.world.bossBar) {
+            let bossHealthPercentage = (this.energieBoss / 300) * 100;
+            if (bossHealthPercentage < 0) {
+                bossHealthPercentage = 0;
+            }
+            this.world.bossBar.setPercentage(bossHealthPercentage);
+        }
+
 
         this.isHurtBoss = true;
 
