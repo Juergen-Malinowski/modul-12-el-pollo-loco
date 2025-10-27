@@ -7,11 +7,13 @@ class World {
     keyboard;                              // Steuerung
     cameraX = 0;                           // Kamera-Verschiebung
     statusBar = new StatusBar('health');   // Lebensanzeige
+    bottleBar = new StatusBar('bottle');   // Flaschenanzeige
+    coinBar = new StatusBar('coins');      // Münz-Anzeige
+    bossBar = new StatusBar('endboss');    // Lebensanzeige Endboss
     percentage = 100;                      // Lebens-Energie in %
     throwableObjects = [];                 // geworfene Flaschen
     collectedBottles = 3;                  // gesammelte Flaschen
     score = 0;                             // Punkte
-    bottleBar = new StatusBar('bottle');   // Flaschenanzeige
     youWinImg = new Image();               // Bildobjekt für "You Win"
     showYouWin = false;                    // Steuerung, ob das Bild angezeigt wird
 
@@ -295,6 +297,8 @@ class World {
         this.ctx.translate(-this.cameraX, 0);
         this.addToMap(this.statusBar);
         this.addToMap(this.bottleBar);
+        this.addToMap(this.coinBar);
+        this.addToMap(this.bossBar);
 
         // Punkteanzeige
         this.ctx.font = "bold 40px Zabars";

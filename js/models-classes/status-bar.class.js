@@ -7,7 +7,7 @@ class StatusBar extends DrawableObjects {
         super();
 
         if (type === 'health') {
-            // === STATUSBAR GESUNDHEIT ===
+            // === STATUSBAR LEBENSENERGIE ===
             this.images = [
                 'assets/img/7_statusbars/1_statusbar/2_statusbar_health/green/100.png',
                 'assets/img/7_statusbars/1_statusbar/2_statusbar_health/green/80.png',
@@ -29,16 +29,13 @@ class StatusBar extends DrawableObjects {
                 'assets/img/7_statusbars/1_statusbar/3_statusbar_bottle/blue/40.png',
                 'assets/img/7_statusbars/1_statusbar/3_statusbar_bottle/blue/20.png',
                 'assets/img/7_statusbars/1_statusbar/3_statusbar_bottle/blue/0.png',
-
             ];
             this.x = 10;
-            this.y = 70; // leicht unter der Lebensbar
+            this.y = 70;
         }
 
-
-
         if (type === 'coins') {
-            // === STATUSBAR FLASCHEN ===
+            // === STATUSBAR MÜNZEN ===
             this.images = [
                 'assets/img/7_statusbars/1_statusbar/1_statusbar_coin/orange/0.png',
                 'assets/img/7_statusbars/1_statusbar/1_statusbar_coin/orange/20.png',
@@ -48,11 +45,11 @@ class StatusBar extends DrawableObjects {
                 'assets/img/7_statusbars/1_statusbar/1_statusbar_coin/orange/100.png',
             ];
             this.x = 10;
-            this.y = 70; // leicht unter der Lebensbar
+            this.y = 130;  // unter der Flaschen-Bar
         }
 
         if (type === 'endboss') {
-            // === STATUSBAR FLASCHEN ===
+            // === STATUSBAR ENDBOSS-LEBEN ===
             this.images = [
                 'assets/img/7_statusbars/2_statusbar_endboss/green/green100.png',
                 'assets/img/7_statusbars/2_statusbar_endboss/green/green80.png',
@@ -60,19 +57,17 @@ class StatusBar extends DrawableObjects {
                 'assets/img/7_statusbars/2_statusbar_endboss/green/green40.png',
                 'assets/img/7_statusbars/2_statusbar_endboss/green/green20.png',
                 'assets/img/7_statusbars/2_statusbar_endboss/green/green0.png',
-
-
             ];
             this.x = 10;
-            this.y = 70; // leicht unter der Lebensbar
+            this.y = 190;  // unter der Münz-Bar
         }
+
+        // Standardgrößen und Initialisierung ...
         this.width = 150;
         this.heigth = 50;
         this.loadImages(this.images);
         this.setPercentage(100);
     }
-
-
 
 
     setPercentage(percentage) {
