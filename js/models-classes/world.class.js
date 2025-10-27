@@ -71,16 +71,62 @@ class World {
             const oberhalb = charBottom <= (enemy.y + enemy.heigth * 0.5);
 
             if (faelltNachUnten && oberhalb && !enemy.isDeadChicken) {
-                this.character.speedY = 25;
-                this.character.y = enemyTop - this.character.heigth;
-                enemy.die();
-                this.addScore(10);
-                setTimeout(() => {
-                    const index = this.level.enemies.indexOf(enemy);
-                    if (index > -1) this.level.enemies.splice(index, 1);
-                }, 2000);
-                continue;
+
+                // === Wenn es ein normales Huhn ist ===
+                if (!(enemy instanceof Endboss)) {
+                    this.character.speedY = 25;  // normaler Abprall
+                    this.character.y = enemyTop - this.character.heigth;
+                    enemy.die();
+                    this.addScore(10);
+                    setTimeout(() => {
+                        const index = this.level.enemies.indexOf(enemy);
+                        if (index > -1) this.level.enemies.splice(index, 1);
+                    }, 2000);
+                    continue;
+                }
+
+                // === Wenn es der Endboss ist ===
+                if (enemy instanceof Endboss && !enemy.isDeadBoss) {
+
+                    // Treffer auslösen (Endboss verliert Energie)
+                    enemy.wasHit();
+
+                    // Pepe soll zur Seite weggeschleudert werden
+                    const bounceDistance = 300;    // seitliche Entfernung nach Abprall
+                    const bounceForceY = 50;       // vertikale Sprungkraft
+                    let bounceDirection;           // Richtung des Abpralls (links oder rechts)
+
+                    // Wenn Pepe links vom Boss war, dann fliegt er nach links — sonst nach rechts
+                    if (this.character.x < enemy.x) {
+                        bounceDirection = -1; // nach links wegfliegen
+                    } else {
+                        bounceDirection = 1;  // nach rechts wegfliegen
+                    }
+
+                    // Grenzen prüfen – wenn zu nah am Rand, dann Richtung umkehren
+                    const minX = 0;
+                    const maxX = this.level.levelEndX - this.character.width;
+                    const predictedX = this.character.x + bounceDistance * bounceDirection;
+
+                    if (predictedX < minX + 200 || predictedX > maxX - 200) {
+                        bounceDirection *= -1;  // Umdrehen der Richtung
+                    }
+
+                    // Pepe nach oben und zur Seite katapultieren
+                    this.character.speedY = bounceForceY;
+                    this.character.x += bounceDistance * bounceDirection;
+                    this.character.y = enemyTop - this.character.heigth - 20;
+
+                    // kurze Bewegungssperre, damit der Spieler die Richtung nicht sofort umkehren kann
+                    this.character.isBouncingOffBoss = true;
+                    setTimeout(() => {
+                        this.character.isBouncingOffBoss = false;
+                    }, 500);
+
+                    continue;
+                }
             }
+ 
 
             if (!enemy.isDeadChicken) {
                 this.character.wasHit();
