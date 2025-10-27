@@ -81,11 +81,9 @@ class Endboss extends MovableObject {
         setInterval(() => {
             // Wenn tot → keine weiteren Aktionen ...
             if (this.isDeadBoss) return;
-
             if (this.world && this.world.character) {
                 // Abstand zwischen Charakter und Endboss ...
                 let distance = this.x - this.world.character.x;
-
                 // Wenn der Spieler in Reichweite kommt (z. B. unter 1850 px) ...
                 if (distance < 1850 && !this.isAlerted) {
                     this.triggerAlert();
@@ -96,8 +94,7 @@ class Endboss extends MovableObject {
             if (this.isWalking && this.world && this.world.character) {
                 const pepe = this.world.character;
 
-                // === NEU: sichere Levelgrenzen bestimmen ===
-                // Falls Level bekannt: maxX nicht größer als Levelende - Bossbreite
+                // sichere Levelgrenzen bestimmen ...
                 const levelRight = (this.world.level && typeof this.world.level.levelEndX === "number")
                     ? (this.world.level.levelEndX - this.width)
                     : this.maxX;
@@ -124,10 +121,8 @@ class Endboss extends MovableObject {
                     this.otherDirection = false;   // umdrehen nach links
                 }
             }
-
         }, 100);
     }
-
 
     triggerAlert() {
         // Endboss wurde alamiert und greift nun Charakter aktiv an ...
@@ -178,11 +173,7 @@ class Endboss extends MovableObject {
         this.lastHitTime = now;
 
         // Schaden pro Treffer 
-        console.log("Endboss HP vor Treffer:", this.energieBoss);
-
         this.energieBoss -= 60;    // Abzug Trefferpunkte für Wurftreffer beim Endboss 
-
-        console.log("Endboss HP NACH Treffer:", this.energieBoss);
 
         // Endboss-Statusbar aktualisieren ...
         if (this.world && this.world.bossBar) {
@@ -192,11 +183,7 @@ class Endboss extends MovableObject {
             }
             this.world.bossBar.setPercentage(bossHealthPercentage);
         }
-
-
         this.isHurtBoss = true;
-
-        console.log("Endboss getroffen! Restenergie nach Abzug:", this.energieBoss);
 
         // kurze Hurt-Animation ...
         this.playAnimation(this.imagesHurt);
