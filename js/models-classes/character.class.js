@@ -1,5 +1,3 @@
-// mit "extends MovableObject" wird die Klasse "character" von der 
-// Klasse "MovableObject" abgeleitet ...
 
 class Character extends MovableObject {
 
@@ -104,9 +102,9 @@ class Character extends MovableObject {
     animate() {
         if (this.isThrowing) return;   // Keine Bewegung während Wurf-Animation !! (derzeit 0,4 Sek.)
 
-        // === BEWEGUNGS-STEUERUNG ===
+        // BEWEGUNGS-STEUERUNG ...
         setInterval(() => {
-            // Wenn Sterbeanimation läuft → keine Bewegung mehr zulassen
+            // Wenn Sterbeanimation läuft → keine Bewegung mehr zulassen ...
             if (this.isDeadAnimationPlaying) {
                 return;
             }
@@ -134,22 +132,22 @@ class Character extends MovableObject {
         }, 100);
 
 
-        // === ANIMATIONS-STEUERUNG ===
+        // ANIMATIONS-STEUERUNG ...
         setInterval(() => {
 
-            // 1) Sterben erkannt, aber Animation noch nicht gestartet → starten und SOFORT abbrechen
+            // 1) Sterben erkannt, aber Animation noch nicht gestartet → starten und SOFORT abbrechen ...
             if (this.isDead() && !this.isDeadAnimationPlaying) {
                 this.isDeadAnimationPlaying = true;   // KEIN wiederholtes Abspielen !!!
                 this.playDeadAnimation();
-                return; // keine andere Animation in diesem Tick mehr ausführen
+                return;                               // keine andere Animation in diesem Tick mehr ausführen
             }
 
-            // 2) Sterbeanimation läuft bereits → nichts anderes abspielen
+            // 2) Sterbeanimation läuft bereits → nichts anderes abspielen ...
             if (this.isDeadAnimationPlaying) {
                 return;
             }
 
-            // 3) Normales Animationsrouting (nur wenn NICHT tot)
+            // 3) Normales Animationsrouting (nur wenn NICHT tot) ...
             if (this.isHurt()) {
                 this.playAnimation(this.imagesHurt);
             } else if (this.isAboveGround()) {
@@ -157,7 +155,7 @@ class Character extends MovableObject {
             } else if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
                 this.playAnimation(this.imagesWalking);
             } else {
-                // === IDLE-STEUERUNG ===
+                // IDLE-STEUERUNG ...
                 let idleTime = (Date.now() - this.lastActionTime) / 1000;  // Sekunden seit letzter Aktion
 
                 if (idleTime < 3) {
@@ -177,7 +175,7 @@ class Character extends MovableObject {
         this.speedY = 0;          // Bewegung nach oben/unten stoppen
         this.acceleration = 0;    // Keine Gravitation mehr
 
-        let i = 0;  // Zähler für die Bilder der Sterbeanimation
+        let i = 0;                // Zähler für die Bilder der Sterbeanimation
 
         const deathInterval = setInterval(() => {
             // Prüfen, ob alle Bilder durchlaufen wurden ...
@@ -187,14 +185,13 @@ class Character extends MovableObject {
                 i++;
             } else {
                 setTimeout(() => {
-                    clearInterval(deathInterval);  // Intervall stoppen, sobald letztes Bild erreicht
+                    clearInterval(deathInterval);          // Intervall stoppen, sobald letztes Bild erreicht
                     this.img = this.imageCache[this.imagesDead[this.imagesDead.length - 1]];
-                }, 200); // etwas weicheres Ende
+                }, 200);                                   // etwas weicheres Ende
             }
-        }, 200); // 200 ms = Geschwindigkeit des Sterbens (kann angepasst werden)
+        }, 200);                                           // 200 ms = Geschwindigkeit des Sterbens (kann angepasst werden)
 
         setTimeout(() => {
-            console.log("GAME OVER ... Charakter ist tot.");
 
             // ###############################################################
             // "Hier" SPÄTER RESTART GAME den Button oder Ähnliches intergrieren
@@ -212,8 +209,8 @@ class Character extends MovableObject {
     }
 
     playThrowAnimation() {
-        // Falls gerade eine Idle-Animation aktiv ist → sofort beenden
-        this.lastActionTime = Date.now();   // Idle-Timer zurücksetzen
+        // Falls gerade eine Idle-Animation aktiv ist → sofort beenden ...
+        this.lastActionTime = Date.now();                // Idle-Timer zurücksetzen
 
         // kurze Bewegungssperre während Wurf-Animation ...
         this.isThrowing = true;

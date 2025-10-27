@@ -1,10 +1,11 @@
 class Endboss extends MovableObject {
 
-    heigth = 300;       // Höhe Endboss
-    width = 300;        // Breite Endboss
-    y = 180;            // Startposition Endboss auf der Y-Achse
-    x = 1750;           // Startposition Endboss auf der X-Achse
-    energieBoss = 300;  // Lebens-ENERGIE Endboss
+    heigth = 300;             // Höhe Endboss
+    width = 300;              // Breite Endboss
+    y = 180;                  // Startposition Endboss auf der Y-Achse
+    x = 1750;                 // Startposition Endboss auf der X-Achse
+    energieBoss = 300;        // Lebens-ENERGIE Endboss
+
     // kurzer Hit-Cooldown, damit Endboss pro Flasche nur einmal Schaden erhält ...
     lastHitTime = 0;          // Zeitstempel des letzten gültigen Treffers
     hitCooldownMs = 400;      // Dauer der Kurz-Unverwundbarkeit in Millisekunden
@@ -12,7 +13,7 @@ class Endboss extends MovableObject {
 
     offset = { top: 50, buttom: 10, left: 20, right: 20 };
 
-    // === Bild-Arrays ===
+    // Bild-Arrays ...
     imagesWalking = [
         '../assets/img/4_feinde_boss_huhn/1_walk/G1.png',
         '../assets/img/4_feinde_boss_huhn/1_walk/G2.png',
@@ -54,7 +55,7 @@ class Endboss extends MovableObject {
         '../assets/img/4_feinde_boss_huhn/5_dead/G26.png',
     ];
 
-    // === Zustands-Flags ===
+    // Zustands-Flags bei Spielstart ...
     isAlerted = false;
     isWalking = false;
     isDeadBoss = false;      // Endboss tot?
@@ -72,39 +73,41 @@ class Endboss extends MovableObject {
     }
 
     animate() {
-        // === Haupt-Intervall zur Statusprüfung ===
+        // Haupt-Intervall zur Statusprüfung ...
         setInterval(() => {
-            // Wenn tot → keine weiteren Aktionen
+            // Wenn tot → keine weiteren Aktionen ...
             if (this.isDeadBoss) return;
 
             if (this.world && this.world.character) {
-                // Abstand zwischen Charakter und Endboss
+                // Abstand zwischen Charakter und Endboss ...
                 let distance = this.x - this.world.character.x;
 
-                // Wenn der Spieler in Reichweite kommt (z. B. unter 1850 px)
+                // Wenn der Spieler in Reichweite kommt (z. B. unter 1850 px) ...
                 if (distance < 1850 && !this.isAlerted) {
                     this.triggerAlert();
                 }
             }
 
-            // Wenn Endboss aktiv läuft → Bewegung nach links
+            // Wenn Endboss aktiv läuft → Bewegung nach links ...
             if (this.isWalking) {
-                this.x -= 1.2; // Gehgeschwindigkeit
+                this.x -= 4.0;      // Gehgeschwindigkeit Endboss !
             }
 
         }, 100);
     }
 
     triggerAlert() {
+        // Endboss wurde alamiert und greift nun Charakter aktiv an ...
         this.isAlerted = true;
         this.playAlertAnimation(() => {
-            // Nach Abschluss → in den Walk-Modus wechseln
+            // Nach Abschluss → in den Walk-Modus wechseln ...
             this.isWalking = true;
             this.startWalkingAnimation();
         });
     }
 
     playAlertAnimation(onComplete) {
+        // ALARM animieren ...
         let i = 0;
         const interval = setInterval(() => {
             if (i < this.imagesAlert.length) {
@@ -119,6 +122,7 @@ class Endboss extends MovableObject {
     }
 
     startWalkingAnimation() {
+        // Endboss geht zeichnen ...
         setInterval(() => {
             if (this.isWalking && !this.isDeadBoss) {
                 this.playAnimation(this.imagesWalking);
@@ -126,13 +130,13 @@ class Endboss extends MovableObject {
         }, 200);
     }
 
-    //Wird aufgerufen, wenn der Endboss getroffen wird ...
+    // Wird aufgerufen, wenn der Endboss getroffen wird ...
     wasHit() {
         if (this.isDeadBoss) {
             return;     // keine weiteren Treffer nach Tod
         }
 
-        //kurzer Hit-Cooldown: Mehrfachauslösung innerhalb weniger Millisekunden verhindern ...
+        // kurzer Hit-Cooldown: Mehrfachauslösung innerhalb weniger Millisekunden verhindern ...
         let now = Date.now();
         if (now - this.lastHitTime < this.hitCooldownMs) {
             // innerhalb des Cooldowns → Treffer ignorieren
@@ -140,23 +144,24 @@ class Endboss extends MovableObject {
         }
         this.lastHitTime = now;
 
-        // Schaden pro Treffer
+        // Schaden pro Treffer 
         console.log("Endboss HP vor Treffer:", this.energieBoss);
 
         this.energieBoss -= 50;
+
         console.log("Endboss HP NACH Treffer:", this.energieBoss);
 
         this.isHurtBoss = true;
 
         console.log("Endboss getroffen! Restenergie nach Abzug:", this.energieBoss);
 
-        // kurze Hurt-Animation
+        // kurze Hurt-Animation ...
         this.playAnimation(this.imagesHurt);
         setTimeout(() => {
             this.isHurtBoss = false;
         }, 400);
 
-        // Wenn Energie leer → sterben
+        // Wenn Energie leer → sterben ...
         if (this.energieBoss <= 0) {
             this.die();
         }
@@ -201,7 +206,7 @@ class Endboss extends MovableObject {
 
 
 
-                //SPIELSTOPP nach Tod des Endbosses ...
+                // SPIELSTOPP nach Tod des Endbosses ...
                 if (this.world) {
                     setTimeout(() => {
 

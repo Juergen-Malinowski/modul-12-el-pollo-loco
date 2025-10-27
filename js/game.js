@@ -7,7 +7,7 @@ let score = 0;                  // Globale SCORE-Zählvariable für Spielpunkte
 
 
 function init() {
-    //grundsätzliche Einbindung für canvas und Darstellungsart (2D/3D) ...
+    // grundsätzliche Einbindung für canvas und Darstellungsart (2D/3D) ...
     canvas = document.getElementById("canvas");
     initLevel();        // jetzt wird Welt erschaffen
     world = new World(canvas, keyboard);              // Welt anlegen und Canvas (id canvas) und gedrückte Taste übergeben
@@ -21,7 +21,7 @@ function init() {
 window.addEventListener("keydown", (e) => {
     // ACHTUNG:  "keypress" ist veraltet und wird nicht zu 100 % unterstützt (und analysiert nicht alle Tasten !). Deshalb "keydown" !!!
     switch (e.key) {
-        // EVENT "keydown" auslesen und in einer der Variablen "keyboard" speichern (TRUE)
+        // EVENT "keydown" auslesen und in einer der Variablen "keyboard" speichern (TRUE) ...
         case 'ArrowLeft':        // KEY = linker Pfeil / KEYCODE = 37
             keyboard.LEFT = true; break;
         case 'ArrowRight':       // KEY = rechter Pfeil / KEYCODE = 39
@@ -41,7 +41,7 @@ window.addEventListener("keydown", (e) => {
 });
 
 window.addEventListener("keyup", (e) => {
-    // SOBALD eine Taste wieder losgelassen wird, wird die entsprechende Variable von "keyboard" wieder auf FALSE gesetzt !!!
+    // SOBALD eine Taste wieder losgelassen wird, wird die entsprechende Variable von "keyboard" wieder auf FALSE gesetzt ...
     switch (e.code) {
         case 'ArrowLeft':
             keyboard.LEFT = false; break;

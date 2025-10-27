@@ -4,8 +4,8 @@ class DrawableObjects {
     heigth = 150;
     width = 100;
     img;
-    imageCache = {};         // speichert die Pfade zu den Bilddateien
-    correntImage = 0;        // Nr. aktuelles Bildes der Animation      
+    imageCache = {};             // speichert die Pfade zu den Bilddateien
+    correntImage = 0;            // Nr. aktuelles Bildes der Animation      
 
 
     loadImage(path) {
@@ -15,12 +15,10 @@ class DrawableObjects {
 
     // Pfad zu den Bildern der Objekte zuweisen ...
     loadImages(arr) {
-        // Sicherheitsprüfung: nur arbeiten, wenn ein echtes Array übergeben wurde
+        // Sicherheitsprüfung: nur arbeiten, wenn ein echtes Array übergeben wurde ...
         if (!Array.isArray(arr)) {
-            console.warn('loadImages: Erwartet wurde ein Array, erhalten:', arr);
             return; // sauber abbrechen, kein Fehler
         }
-
         arr.forEach(function (path) {
             let img = new Image();          // Image-Objekt anlegen
             img.src = path;                 // Pfad zuweisen
@@ -31,23 +29,23 @@ class DrawableObjects {
 
     draw(ctx) {
         if (this.isLyingDead) {
-            // === ZEICHNUNG DES TOTEN CHARAKTERS (90° GEDREHT) ===
-            ctx.save();  // aktuellen Zustand sichern
+            // ZEICHNUNG DES TOTEN CHARAKTERS (90° GEDREHT) ...
+            ctx.save();                            // aktuellen Zustand sichern
 
-            // Mittelpunkt für Drehung bestimmen
+            // Mittelpunkt für Drehung bestimmen ...
             let centerX = this.x + this.width / 2;
             let centerY = this.y + this.heigth / 2;
 
-            // Canvas um Mittelpunkt des Charakters verschieben und drehen
+            // Canvas um Mittelpunkt des Charakters verschieben und drehen ...
             ctx.translate(centerX, centerY);
-            ctx.rotate(90 * Math.PI / 180); // 90° Drehung im Uhrzeigersinn
+            ctx.rotate(90 * Math.PI / 180);        // 90° Drehung im Uhrzeigersinn
 
-            // Bild leicht anpassen: da durch Rotation width/height getauscht werden
+            // Bild leicht anpassen: da durch Rotation width/height getauscht werden ...
             ctx.drawImage(this.img, -this.heigth / 2, -this.width / 2, this.heigth, this.width);
 
-            ctx.restore();  // ursprünglichen Canvas-Zustand wiederherstellen
+            ctx.restore();                         // ursprünglichen Canvas-Zustand wiederherstellen
         } else {
-            // Standardzeichnung wie bisher
+            // Standardzeichnung wie bisher ...
             ctx.drawImage(this.img, this.x, this.y, this.width, this.heigth);
         }
     }

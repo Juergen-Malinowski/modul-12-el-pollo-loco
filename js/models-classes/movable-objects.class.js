@@ -22,9 +22,9 @@ class MovableObject extends DrawableObjects {
     isAboveGround() {
         // WENN ein "ThrowableObjects", DANN sofort RETURN ... 
         if (this instanceof ThrowableObjects) {
-            return true;  // ABBRUCH der Funktion !
+            return true;                            // ABBRUCH der Funktion !
         } else {
-            // GIBT den Punkt zurück, an dem das Objekt den Boden berührt und Fall abgeschlossen ist
+            // GIBT den Punkt zurück, an dem das Objekt den Boden berührt und Fall abgeschlossen ist ...
             return this.y < 130;
         }
     }
@@ -40,16 +40,10 @@ class MovableObject extends DrawableObjects {
     }
 
     isColliding(movableObject) {
-        // Wenn das übergebene Objekt keine "offset"-Eigenschaft besitzt, Standardwerte anlegen
-        // if (!movableObject.offset) {
-        //     movableObject.offset = { top: 0, buttom: 0, left: 30, right: 0 };
-        // }
-
         // Fall 1: Wenn das Objekt eine Flasche (ThrowableObjects) ist ...
         if (movableObject instanceof ThrowableObjects) {
             // Bei Flaschen (ThrowableObjects) ist die Y-Position meist tiefer als beim Charakter.
-            // Deshalb eigene Rechteck-basierte Kollision (analog zu den beweglichen Objekten).
-
+            // Deshalb eigene Rechteck-basierte Kollision (analog zu den beweglichen Objekten)...
             return (
                 this.x + this.width > movableObject.x + movableObject.offset.left &&     // rechter Rand des Charakters erreicht linke Seite der Flasche
                 this.y + this.heigth >= movableObject.y
@@ -57,7 +51,7 @@ class MovableObject extends DrawableObjects {
         }
 
 
-        // Fall 2: Standardkollision für bewegliche Objekte (Character, Chicken, Endboss, etc.)
+        // Fall 2: Standardkollision für bewegliche Objekte (Character, Chicken, Endboss, etc.) ...
         return (
             this.x + this.width - this.offset.right > movableObject.x + movableObject.offset.left &&
             this.x + this.offset.left < movableObject.x + movableObject.width - movableObject.offset.right &&
@@ -77,6 +71,7 @@ class MovableObject extends DrawableObjects {
     }
 
     isHurt() {
+        // Zeitverzögerung nach Verletzung ...
         let passedTime = new Date().getTime() - this.lastHit;    // Differenz im ms zwischen letzten Treffer und aktueller Zeit
         passedTime = passedTime / 1000;                          // aus ms (Milli-Sekunden) werden Sekunden
         return passedTime < 1;                                   // wird TRUE, wenn seit letzten Treffer weniger als 3 Sek. vergangen, sonst FALSE
@@ -87,24 +82,20 @@ class MovableObject extends DrawableObjects {
     }
 
     playAnimation(images) {
-        // Wenn der Charakter gerade wirft oder stirbt → KEINE anderen Animationen zeigen
+        // Wenn der Charakter gerade wirft oder stirbt → KEINE anderen Animationen zeigen ...
         if (this.isThrowing || this.isDeadAnimationPlaying) {
             return; // stoppt Beinbewegung & Idle-Frames während des Wurfes / Todes
         }
-
-        // Sicherheitsprüfung: nur arbeiten, wenn ein gültiges Array übergeben wurde
+        // Sicherheitsprüfung: nur arbeiten, wenn ein gültiges Array übergeben wurde ...
         if (!images || images.length === 0) return;
-
-        // Nächsten Frame aus der Bildsequenz berechnen
+        // Nächsten Frame aus der Bildsequenz berechnen ...
         let i = this.correntImage % images.length;
         let path = images[i];
         let img = this.imageCache[path];
-
-        // Nur gültige Bilder übernehmen
+        // Nur gültige Bilder übernehmen ...
         if (img) {
             this.img = img;
         }
-
         this.correntImage++;
     }
 

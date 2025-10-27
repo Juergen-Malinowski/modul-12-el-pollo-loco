@@ -107,7 +107,7 @@ class World {
             for (let j = this.level.enemies.length - 1; j >= 0; j--) {
                 const enemy = this.level.enemies[j];
 
-                // === NEU: Endboss in dieser Schleife NICHT behandeln ===
+                // Endboss in dieser Schleife NICHT behandeln ...
                 if (enemy instanceof Endboss) {
                     continue;
                 }
@@ -136,7 +136,7 @@ class World {
         }
 
 
-        // === KOLLISION geworfene FLASCHEN mit ENDBOSS ===
+        //KOLLISION geworfene FLASCHEN mit ENDBOSS ...
         for (let i = this.throwableObjects.length - 1; i >= 0; i--) {
             const bottle = this.throwableObjects[i];
             const boss = this.level.enemies.find(function (e) { return e instanceof Endboss; });
@@ -159,100 +159,6 @@ class World {
             }
         }
     }
-
-
-    // checkCollisions() {
-    //     // CHARAKTER KOLLISION mit FEINDEN ...
-    //     for (let i = this.level.enemies.length - 1; i >= 0; i--) {
-    //         const enemy = this.level.enemies[i];
-
-    //         if (!this.character.isColliding(enemy)) continue;
-
-    //         const faelltNachUnten = this.character.speedY < 0;
-    //         const charBottom = this.character.y + this.character.heigth - (this.character.offset ? this.character.offset.buttom : 0);
-    //         const enemyTop = enemy.y + (enemy.offset ? enemy.offset.top : 0);
-    //         const oberhalb = charBottom <= (enemy.y + enemy.heigth * 0.5);
-
-    //         if (faelltNachUnten && oberhalb && !enemy.isDeadChicken) {
-    //             this.character.speedY = 25;
-    //             this.character.y = enemyTop - this.character.heigth;
-    //             enemy.die();
-    //             this.addScore(10);
-    //             setTimeout(() => {
-    //                 const index = this.level.enemies.indexOf(enemy);
-    //                 if (index > -1) this.level.enemies.splice(index, 1);
-    //             }, 2000);
-    //             continue;
-    //         }
-
-    //         if (!enemy.isDeadChicken) {
-    //             this.character.wasHit();
-    //             this.percentage = this.character.energie / this.character.holeEnergie * 100;
-    //             this.statusBar.setPercentage(this.percentage);
-    //         }
-    //     }
-
-    //     // KOLLISION CHARAKTER mit BODEN-FLASCHEN ...
-    //     for (let i = this.level.bottles.length - 1; i >= 0; i--) {
-    //         const bottle = this.level.bottles[i];
-    //         if (this.character.isColliding(bottle)) {
-    //             this.collectBottle(i);
-    //         }
-    //     }
-
-    //     // KOLLISION geworfene FLASCHEN mit normalen HÜHNERN ...
-    //     for (let i = this.throwableObjects.length - 1; i >= 0; i--) {
-    //         const bottle = this.throwableObjects[i];
-
-    //         if (bottle.y > 380) {
-    //             this.throwableObjects.splice(i, 1);
-    //             continue;
-    //         }
-
-    //         for (let j = this.level.enemies.length - 1; j >= 0; j--) {
-    //             const enemy = this.level.enemies[j];
-    //             if (enemy.isDeadChicken) continue;
-
-    //             const hit =
-    //                 bottle.x + bottle.width > enemy.x + enemy.offset.left &&
-    //                 bottle.x < enemy.x + enemy.width - enemy.offset.right &&
-    //                 bottle.y + bottle.heigth > enemy.y + enemy.offset.top &&
-    //                 bottle.y < enemy.y + enemy.heigth - enemy.offset.buttom;
-
-    //             if (hit) {
-    //                 enemy.die();
-    //                 this.addScore(20);
-    //                 this.throwableObjects.splice(i, 1);
-    //                 setTimeout(() => {
-    //                     const idx = this.level.enemies.indexOf(enemy);
-    //                     if (idx > -1) this.level.enemies.splice(idx, 1);
-    //                 }, 2000);
-    //                 break;
-    //             }
-    //         }
-    //     }
-
-    //     // KOLLISION geworfene FLASCHEN mit ENDBOSS ...
-    //     for (let i = this.throwableObjects.length - 1; i >= 0; i--) {
-    //         const bottle = this.throwableObjects[i];
-    //         const boss = this.level.enemies.find(e => e instanceof Endboss);
-    //         if (!boss || boss.isDeadBoss) continue;
-
-    //         const hit =
-    //             bottle.x + bottle.width > boss.x + boss.offset.left &&
-    //             bottle.x < boss.x + boss.width - boss.offset.right &&
-    //             bottle.y + bottle.heigth > boss.y + boss.offset.top &&
-    //             bottle.y < boss.y + boss.heigth - boss.offset.buttom;
-
-    //         if (hit) {
-    //             console.log("Endboss wurde von Flasche getroffen!");
-    //             boss.wasHit();
-    //             this.throwableObjects.splice(i, 1);
-    //             break;
-    //         }
-    //     }
-
-    // }
 
     collectBottle(index) {
         // FLASCHEN aufsammeln ...
@@ -301,6 +207,7 @@ class World {
         }, step);
     }
 
+    // Flaschen werfen ...
     checkThrowObjects() {
         const now = Date.now();
         if ((this.keyboard.SHIFT || this.keyboard.UP) && this.collectedBottles > 0 && (!this.lastThrowTime || now - this.lastThrowTime > 800)) {
@@ -353,12 +260,12 @@ class World {
     }
 
 
-    // BEENDET das Spiel nach Tod des CHARAKTERS ,,,
+    // BEENDET das Spiel nach Tod des CHARAKTERS ...
     endGame() {
         this.gameOver = true;
 
         // Steuerung deaktivieren ...
-        this.keyboard = new Keyboard();   // Alle Tasten-Flags auf FALSE zurücksetzen
+        this.keyboard = new Keyboard();   // Alle Tasten auf FALSE zurücksetzen
 
         // Nur beim Tod des CHARAKTERS: Sarg-Animation und "Rest in Peace" anzeigen ...
         setTimeout(() => {
@@ -426,12 +333,12 @@ class World {
             );
             ctx.restore();
 
-            // --- Schriftzug "Rest in Peace" ---
+            // Schriftzug "Rest in Peace" zeichnen ...
             ctx.save();
-            ctx.font = "bold 70px Zabars";     // große, fette Schrift
+            ctx.font = "bold 90px Zabars";     // große, fette Schrift
             ctx.fillStyle = "yellow";          // gelbe Farbe
             ctx.textAlign = "center";          // horizontal zentrieren
-            ctx.fillText("Rest in Peace", centerX, centerY - coffinHeight + 70); // etwas über dem Sarg
+            ctx.fillText("R . i . P.", centerX, centerY - coffinHeight + 65); // etwas über dem Sarg
             ctx.restore();
         }
 
@@ -439,7 +346,7 @@ class World {
         if (this.showYouWin) {
             const ctx = this.ctx;
             ctx.save();
-            ctx.globalAlpha = 1.0; // volle Deckkraft
+            ctx.globalAlpha = 1.0;     // volle Deckkraft
             ctx.drawImage(this.youWinImg, 0, 0, this.canvas.width, this.canvas.height);
             ctx.restore();
         }
