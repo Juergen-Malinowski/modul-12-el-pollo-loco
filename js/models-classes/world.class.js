@@ -1,17 +1,20 @@
 class World {
 
-    character = new Character();        // Charakter anlegen
-    level = level1;                     // Level-Objekt laden
-    canvas;                             // Canvas-Element
-    ctx;                                // Canvas-Kontext
-    keyboard;                           // Steuerung
-    cameraX = 0;                        // Kamera-Verschiebung
-    statusBar = new StatusBar('health'); // Lebensanzeige
-    percentage = 100;                   // Lebens-Energie in %
-    throwableObjects = [];              // geworfene Flaschen
-    collectedBottles = 3;               // gesammelte Flaschen
-    score = 0;                          // Punkte
-    bottleBar = new StatusBar('bottle'); // Flaschenanzeige
+    character = new Character();           // Charakter anlegen
+    level = level1;                        // Level-Objekt laden
+    canvas;                                // Canvas-Element
+    ctx;                                   // Canvas-Kontext
+    keyboard;                              // Steuerung
+    cameraX = 0;                           // Kamera-Verschiebung
+    statusBar = new StatusBar('health');   // Lebensanzeige
+    percentage = 100;                      // Lebens-Energie in %
+    throwableObjects = [];                 // geworfene Flaschen
+    collectedBottles = 3;                  // gesammelte Flaschen
+    score = 0;                             // Punkte
+    bottleBar = new StatusBar('bottle');   // Flaschenanzeige
+    youWinImg = new Image();               // Bildobjekt für "You Win"
+    showYouWin = false;                    // Steuerung, ob das Bild angezeigt wird
+
 
     // === NEU: Variablen für Sarg-Animation ===
     coffinRotation = 0;
@@ -24,6 +27,7 @@ class World {
         this.canvas = canvas;
         this.keyboard = keyboard;
         this.coffinImg.src = 'assets/img/2_charakter_pepe/5_dead/coffin.png'; // Sarg-Bild laden
+        this.youWinImg.src = 'assets/img/0_you_won_you_lost/You Win A.png';   // You-Win-Bild laden
         this.setWorld();
         this.draw();
         this.run();
@@ -210,9 +214,6 @@ class World {
 
     // Startet die Sarg-Animation nach dem Tod ...
     startCoffinAnimation() {
-
-
-
         this.showCoffin = true;
         this.coffinRotation = 0;
 
@@ -230,6 +231,14 @@ class World {
             }
         }, 30);
     }
+
+    // Zeigt das "You Win"-Endbild ...
+    showVictoryScreen() {
+        this.showYouWin = true;           // Flag aktivieren
+        this.gameOver = true;             // Spielstatus auf beendet setzen
+        this.keyboard = new Keyboard();   // Steuerung deaktivieren
+    }
+
 
     // === Beendet das Spiel nach Tod des CHARAKTERS ===
     endGame() {
@@ -313,6 +322,15 @@ class World {
             ctx.restore();
         }
 
+        // === GEWINN-BILD ANZEIGEN ===
+        if (this.showYouWin) {
+            const ctx = this.ctx;
+            ctx.save();
+            ctx.globalAlpha = 1.0; // volle Deckkraft
+            ctx.drawImage(this.youWinImg, 0, 0, this.canvas.width, this.canvas.height);
+            ctx.restore();
+        }
+ 
         // Wiederholtes Neuzeichnen
         const self = this;
         requestAnimationFrame(() => self.draw());

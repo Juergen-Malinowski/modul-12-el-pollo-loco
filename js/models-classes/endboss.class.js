@@ -165,16 +165,26 @@ class Endboss extends MovableObject {
                 // Keine weitere Bewegung oder Animation
                 this.stopAllAnimations();
 
-                console.log("Endboss ist besiegt und bleibt liegen!");
-
-                //SPIELSTOPP nach Tod des Endbosses ...
+                // SPIELENDE nach Tod des Endbosses ...
                 if (this.world) {
                     setTimeout(() => {
 
                         // #########################################################
                         // HIER später SIEGES-Animation oder ähnliches einfügen !!!!
                         // #########################################################
-                        
+
+                        this.world.showVictoryScreen();  // Gewinnbild anzeigen
+                    }, 1000);                            // kleine Verzögerung für Wirkung
+                }
+
+
+
+                //SPIELSTOPP nach Tod des Endbosses ...
+                if (this.world) {
+                    setTimeout(() => {
+
+
+
                         this.world.gameOver = true;   // nur Spiellogik beenden, keine Sarganzeige
                     }, 1000);
                 }
@@ -193,26 +203,4 @@ class Endboss extends MovableObject {
         this.speed = 0;
         this.acceleration = 0;
     }
-
-
-    // // === NEU: Todes-Sequenz ===
-    // die() {
-    //     if (this.isDeadBoss) return;
-
-    //     this.isDeadBoss = true;
-    //     this.isWalking = false;
-    //     this.isAlerted = false;
-
-    //     let i = 0;
-    //     const deathInterval = setInterval(() => {
-    //         if (i < this.imagesDead.length) {
-    //             this.img = this.imageCache[this.imagesDead[i]];
-    //             i++;
-    //         } else {
-    //             clearInterval(deathInterval);
-    //             this.img = this.imageCache[this.imagesDead[this.imagesDead.length - 1]];
-    //             console.log("Endboss ist besiegt!");
-    //         }
-    //     }, 250);
-    // }
 }
