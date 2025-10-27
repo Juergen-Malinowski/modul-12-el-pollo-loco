@@ -167,47 +167,23 @@ class Endboss extends MovableObject {
 
                 console.log("Endboss ist besiegt und bleibt liegen!");
 
-                // === NEU: SPIELSTOPP nach Tod des Endbosses ===
+                //SPIELSTOPP nach Tod des Endbosses ...
                 if (this.world) {
                     setTimeout(() => {
-                        this.world.endGame();    // gesamte Spielwelt anhalten
-                    }, 1000);                    // kurze Verzögerung für Wirkung
+
+                        // #########################################################
+                        // HIER später SIEGES-Animation oder ähnliches einfügen !!!!
+                        // #########################################################
+                        
+                        this.world.gameOver = true;   // nur Spiellogik beenden, keine Sarganzeige
+                    }, 1000);
                 }
+
             }
         }, 250);
     }
 
 
-    // die() {
-    //     if (this.isDeadBoss) return;
-
-    //     this.isDeadBoss = true;
-    //     this.isWalking = false;
-    //     this.isAlerted = false;
-
-    //     let i = 0;
-    //     const deathInterval = setInterval(() => {
-    //         if (i < this.imagesDead.length) {
-    //             this.img = this.imageCache[this.imagesDead[i]];
-    //             i++;
-    //         } else {
-    //             clearInterval(deathInterval);
-
-    //             // Letztes Frame (G26) dauerhaft anzeigen
-    //             const lastFrame = this.imageCache[this.imagesDead[this.imagesDead.length - 1]];
-    //             if (lastFrame) {
-    //                 this.img = lastFrame;
-    //             }
-
-    //             // Keine weitere Bewegung oder Animation
-    //             this.stopAllAnimations();
-
-    //             console.log("Endboss ist besiegt und bleibt liegen!");
-    //         }
-    //     }, 250);
-    // }
-
-    
     // Stoppt alle Bewegungs- oder Animations-Intervalle des Endboss.
     // (Verhindert, dass z. B. die Geh-Animation das Bild überschreibt)
     stopAllAnimations() {

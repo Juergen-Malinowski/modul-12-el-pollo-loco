@@ -49,7 +49,7 @@ class World {
 
     checkCollisions() {
         // CHARAKTER KOLLISION mit FEINDEN ...
-         for (let i = this.level.enemies.length - 1; i >= 0; i--) {
+        for (let i = this.level.enemies.length - 1; i >= 0; i--) {
             const enemy = this.level.enemies[i];
 
             if (!this.character.isColliding(enemy)) continue;
@@ -60,7 +60,6 @@ class World {
             const oberhalb = charBottom <= (enemy.y + enemy.heigth * 0.5);
 
             if (faelltNachUnten && oberhalb && !enemy.isDeadChicken) {
-                console.log("Huhn wurde von oben getroffen an Position X:", enemy.x);
                 this.character.speedY = 25;
                 this.character.y = enemyTop - this.character.heigth;
                 enemy.die();
@@ -83,7 +82,6 @@ class World {
         for (let i = this.level.bottles.length - 1; i >= 0; i--) {
             const bottle = this.level.bottles[i];
             if (this.character.isColliding(bottle)) {
-                console.log("Flasche eingesammelt bei Position X:", bottle.x);
                 this.collectBottle(i);
             }
         }
@@ -108,7 +106,6 @@ class World {
                     bottle.y < enemy.y + enemy.heigth - enemy.offset.buttom;
 
                 if (hit) {
-                    console.log("Huhn von Flasche getroffen an Position X:", enemy.x);
                     enemy.die();
                     this.addScore(20);
                     this.throwableObjects.splice(i, 1);
@@ -149,7 +146,6 @@ class World {
         this.updateBottleBar();
         this.addScore(2);
         this.showBottlePickupEffect();
-        console.log("Flaschen gesammelt:", this.collectedBottles);
     }
 
     showBottlePickupEffect() {
@@ -212,8 +208,11 @@ class World {
         }
     }
 
-    // === NEU: Startet die Sarg-Animation nach dem Tod ===
+    // Startet die Sarg-Animation nach dem Tod ...
     startCoffinAnimation() {
+
+
+
         this.showCoffin = true;
         this.coffinRotation = 0;
 
@@ -231,6 +230,21 @@ class World {
             }
         }, 30);
     }
+
+    // === Beendet das Spiel nach Tod des CHARAKTERS ===
+    endGame() {
+        this.gameOver = true;
+
+        // Steuerung deaktivieren
+        this.keyboard = new Keyboard();   // Alle Tasten-Flags auf FALSE zurücksetzen
+
+        // Nur beim Tod des CHARAKTERS: Sarg-Animation und "Rest in Peace" anzeigen
+        setTimeout(() => {
+            this.startCoffinAnimation();
+        }, 1500);
+    }
+
+
 
     updateBottleBar() {
         let percentage = (this.collectedBottles / 5) * 100;

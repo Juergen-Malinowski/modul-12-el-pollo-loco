@@ -20,7 +20,6 @@ function init() {
 
 window.addEventListener("keydown", (e) => {
     // ACHTUNG:  "keypress" ist veraltet und wird nicht zu 100 % unterstützt (und analysiert nicht alle Tasten !). Deshalb "keydown" !!!
-    console.log(e);
     switch (e.key) {
         // EVENT "keydown" auslesen und in einer der Variablen "keyboard" speichern (TRUE)
         case 'ArrowLeft':        // KEY = linker Pfeil / KEYCODE = 37
