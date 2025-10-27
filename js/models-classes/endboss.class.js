@@ -230,6 +230,7 @@ class Endboss extends MovableObject {
                         // HIER später SIEGES-Animation oder ähnliches einfügen !!!!
                         // #########################################################
 
+                        this.world.addScore(150);        // 150 Score-Punkte dafür
                         this.world.showVictoryScreen();  // Gewinnbild anzeigen
                     }, 1000);                            // kleine Verzögerung für Wirkung
                 }

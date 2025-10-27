@@ -90,6 +90,8 @@ class World {
 
                     // Treffer auslösen (Endboss verliert Energie)
                     enemy.wasHit();
+                    this.addScore(50);             // 50 Score-Punkte dafür
+
 
                     // Pepe soll zur Seite weggeschleudert werden
                     const bounceDistance = 300;    // seitliche Entfernung nach Abprall
@@ -126,7 +128,7 @@ class World {
                     continue;
                 }
             }
- 
+
 
             if (!enemy.isDeadChicken) {
                 this.character.wasHit();
@@ -203,7 +205,8 @@ class World {
                 this.throwableObjects.splice(i, 1);
                 // Treffer einmalig registrieren (Cooldown schützt zusätzlich) ...
                 boss.wasHit();
-                break; // Schleife abbrechen – nur ein Treffer pro Flasche zulassen
+                this.addScore(10);   // Score-Punkte dafür
+                break;               // Schleife abbrechen – nur ein Treffer pro Flasche zulassen
             }
         }
     }
@@ -302,6 +305,12 @@ class World {
 
     // Zeigt das "You Win"-Endbild ...
     showVictoryScreen() {
+        // SPIELENDE-BONUS-Score-Punkte-BERECHNUNG ...
+        let bonusFlaschen = this.collectedBottles * 3;                     // 3 Punkte pro unbenutzter Flasche
+        let bonusHealth = Math.max(0, Math.round(this.character.energie)); // verbleibende HP als Punkte
+        let totalBonus = bonusFlaschen + bonusHealth;
+        this.addScore(totalBonus);
+
         this.showYouWin = true;           // Flag aktivieren
         this.gameOver = true;             // Spielstatus auf beendet setzen
         this.keyboard = new Keyboard();   // Steuerung deaktivieren
