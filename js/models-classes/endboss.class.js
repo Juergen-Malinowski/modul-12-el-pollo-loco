@@ -5,6 +5,10 @@ class Endboss extends MovableObject {
     y = 180;                  // Startposition Endboss auf der Y-Achse
     x = 1750;                 // Startposition Endboss auf der X-Achse
     energieBoss = 300;        // Lebens-ENERGIE Endboss
+    moveSpeed = 3.0;          // Grundgeschwindigkeit Endboss
+    minX = 400;               // linke Grenze (innerhalb des Levels)
+    maxX = 2100;              // rechte Grenze (innerhalb des Levels)
+
 
     // kurzer Hit-Cooldown, damit Endboss pro Flasche nur einmal Schaden erhält ...
     lastHitTime = 0;          // Zeitstempel des letzten gültigen Treffers
@@ -88,13 +92,42 @@ class Endboss extends MovableObject {
                 }
             }
 
-            // Wenn Endboss aktiv läuft → Bewegung nach links ...
-            if (this.isWalking) {
-                this.x -= 4.0;      // Gehgeschwindigkeit Endboss !
+            // Bewegungslogik Endboss ...
+            if (this.isWalking && this.world && this.world.character) {
+                const pepe = this.world.character;
+
+                // === NEU: sichere Levelgrenzen bestimmen ===
+                // Falls Level bekannt: maxX nicht größer als Levelende - Bossbreite
+                const levelRight = (this.world.level && typeof this.world.level.levelEndX === "number")
+                    ? (this.world.level.levelEndX - this.width)
+                    : this.maxX;
+
+                // effektive Grenzen ermitteln
+                const leftBound = (typeof this.minX === "number") ? this.minX : 0;
+                const rightBound = Math.max(leftBound, Math.min(this.maxX, levelRight));
+
+                // Richtung bestimmen: steht Charakter links oder rechts vom Endboss?
+                if (pepe.x < this.x) {
+                    this.otherDirection = false;   // nach links schauen
+                    this.x -= this.moveSpeed;
+                } else {
+                    this.otherDirection = true;    // nach rechts schauen
+                    this.x += this.moveSpeed;
+                }
+
+                // --- Begrenzung links und rechts: Endboss darf nicht aus dem Bereich laufen ---
+                if (this.x < leftBound) {
+                    this.x = leftBound;
+                    this.otherDirection = true;    // umdrehen nach rechts
+                } else if (this.x > rightBound) {
+                    this.x = rightBound;
+                    this.otherDirection = false;   // umdrehen nach links
+                }
             }
 
         }, 100);
     }
+
 
     triggerAlert() {
         // Endboss wurde alamiert und greift nun Charakter aktiv an ...
@@ -147,7 +180,7 @@ class Endboss extends MovableObject {
         // Schaden pro Treffer 
         console.log("Endboss HP vor Treffer:", this.energieBoss);
 
-        this.energieBoss -= 60 ;    // Abzug Trefferpunkte für Wurftreffer beim Endboss 
+        this.energieBoss -= 60;    // Abzug Trefferpunkte für Wurftreffer beim Endboss 
 
         console.log("Endboss HP NACH Treffer:", this.energieBoss);
 
@@ -169,7 +202,8 @@ class Endboss extends MovableObject {
         this.playAnimation(this.imagesHurt);
         setTimeout(() => {
             this.isHurtBoss = false;
-        }, 400);
+          }, 400);
+
 
         // Wenn Energie leer → sterben ...
         if (this.energieBoss <= 0) {
