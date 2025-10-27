@@ -35,11 +35,45 @@ class StatusBar extends DrawableObjects {
             this.y = 70; // leicht unter der Lebensbar
         }
 
+
+
+        if (type === 'coins') {
+            // === STATUSBAR FLASCHEN ===
+            this.images = [
+                'assets/img/7_statusbars/1_statusbar/1_statusbar_coin/orange/0.png',
+                'assets/img/7_statusbars/1_statusbar/1_statusbar_coin/orange/20.png',
+                'assets/img/7_statusbars/1_statusbar/1_statusbar_coin/orange/40.png',
+                'assets/img/7_statusbars/1_statusbar/1_statusbar_coin/orange/60.png',
+                'assets/img/7_statusbars/1_statusbar/1_statusbar_coin/orange/80.png',
+                'assets/img/7_statusbars/1_statusbar/1_statusbar_coin/orange/100.png',
+            ];
+            this.x = 10;
+            this.y = 70; // leicht unter der Lebensbar
+        }
+
+        if (type === 'endboss') {
+            // === STATUSBAR FLASCHEN ===
+            this.images = [
+                'assets/img/7_statusbars/2_statusbar_endboss/green/green100.png',
+                'assets/img/7_statusbars/2_statusbar_endboss/green/green80.png',
+                'assets/img/7_statusbars/2_statusbar_endboss/green/green60.png',
+                'assets/img/7_statusbars/2_statusbar_endboss/green/green40.png',
+                'assets/img/7_statusbars/2_statusbar_endboss/green/green20.png',
+                'assets/img/7_statusbars/2_statusbar_endboss/green/green0.png',
+
+
+            ];
+            this.x = 10;
+            this.y = 70; // leicht unter der Lebensbar
+        }
         this.width = 150;
         this.heigth = 50;
         this.loadImages(this.images);
         this.setPercentage(100);
     }
+
+
+
 
     setPercentage(percentage) {
         this.percentage = percentage;
