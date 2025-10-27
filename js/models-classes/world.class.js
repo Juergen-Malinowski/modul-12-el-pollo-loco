@@ -16,6 +16,9 @@ class World {
     score = 0;                             // Punkte
     youWinImg = new Image();               // Bildobjekt für "You Win"
     showYouWin = false;                    // Steuerung, ob das Bild angezeigt wird
+    blinkActive = false;                   // steuert, ob die Score-Anzeige blinken soll
+    blinkVisible = true;                   // aktueller Sichtbarkeitszustand für Blinkeffekt
+
 
     // Variablen für Sarg-Animation ...
     coffinRotation = 0;
@@ -310,6 +313,8 @@ class World {
         let bonusHealth = Math.max(0, Math.round(this.character.energie)); // verbleibende HP als Punkte
         let totalBonus = bonusFlaschen + bonusHealth;
         this.addScore(totalBonus);
+        this.startScoreBlink();           // SCORE-BLINKEN starten
+
 
         this.showYouWin = true;           // Flag aktivieren
         this.gameOver = true;             // Spielstatus auf beendet setzen
@@ -356,9 +361,12 @@ class World {
         this.addToMap(this.bossBar);
 
         // Punkteanzeige
-        this.ctx.font = "bold 40px Zabars";
-        this.ctx.fillStyle = "#ffcc00";  // 🟡 Farbe der Score-Zahl geändert
-        this.ctx.fillText(`Score: ${this.score}`, 550, 50);
+        if (!this.blinkActive || (this.blinkActive && this.blinkVisible)) {
+            this.ctx.font = "bold 40px Zabars";
+            this.ctx.fillStyle = "#ffcc00";
+            this.ctx.fillText(`Score: ${this.score}`, 550, 50);
+        }
+
 
         this.ctx.translate(this.cameraX, 0);
 
@@ -435,5 +443,20 @@ class World {
         this.ctx.scale(-1, 1);
         this.ctx.drawImage(movableObject.img, 0, 0, movableObject.width, movableObject.heigth);
         this.ctx.restore();
+    }
+
+    startScoreBlink() {
+        this.blinkActive = true;
+        this.blinkVisible = true;
+        // Blinken alle 500 ms (2x pro Sekunde) ...
+        this.blinkInterval = setInterval(() => {
+            this.blinkVisible = !this.blinkVisible;
+            this.blinkColor = this.blinkVisible ? "#ffcc00" : "#ffffff"; 
+            // Wenn das Spiel irgendwann komplett neu gestartet wird, abbrechen ...
+            if (this.gameOver && !this.showYouWin) {
+                clearInterval(this.blinkInterval);
+                this.blinkActive = false;
+            }
+        }, 700);
     }
 }
