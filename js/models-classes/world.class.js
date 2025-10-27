@@ -48,8 +48,8 @@ class World {
     }
 
     checkCollisions() {
-        // === CHARAKTER KOLLISION MIT FEINDEN ===
-        for (let i = this.level.enemies.length - 1; i >= 0; i--) {
+        // CHARAKTER KOLLISION mit FEINDEN ...
+         for (let i = this.level.enemies.length - 1; i >= 0; i--) {
             const enemy = this.level.enemies[i];
 
             if (!this.character.isColliding(enemy)) continue;
@@ -79,7 +79,7 @@ class World {
             }
         }
 
-        // === KOLLISION CHARAKTER MIT BODEN-FLASCHEN ===
+        // KOLLISION CHARAKTER mit BODEN-FLASCHEN ...
         for (let i = this.level.bottles.length - 1; i >= 0; i--) {
             const bottle = this.level.bottles[i];
             if (this.character.isColliding(bottle)) {
@@ -88,7 +88,7 @@ class World {
             }
         }
 
-        // === KOLLISION GEWORFENE FLASCHEN MIT HÜHNERN ===
+        // KOLLISION geworfene FLASCHEN mit normalen HÜHNERN ...
         for (let i = this.throwableObjects.length - 1; i >= 0; i--) {
             const bottle = this.throwableObjects[i];
 
@@ -120,6 +120,27 @@ class World {
                 }
             }
         }
+
+        // KOLLISION geworfene FLASCHEN mit ENDBOSS ...
+        for (let i = this.throwableObjects.length - 1; i >= 0; i--) {
+            const bottle = this.throwableObjects[i];
+            const boss = this.level.enemies.find(e => e instanceof Endboss);
+            if (!boss || boss.isDeadBoss) continue;
+
+            const hit =
+                bottle.x + bottle.width > boss.x + boss.offset.left &&
+                bottle.x < boss.x + boss.width - boss.offset.right &&
+                bottle.y + bottle.heigth > boss.y + boss.offset.top &&
+                bottle.y < boss.y + boss.heigth - boss.offset.buttom;
+
+            if (hit) {
+                console.log("Endboss wurde von Flasche getroffen!");
+                boss.wasHit();
+                this.throwableObjects.splice(i, 1);
+                break;
+            }
+        }
+
     }
 
     collectBottle(index) {
