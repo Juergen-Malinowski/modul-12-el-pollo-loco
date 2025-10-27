@@ -32,8 +32,13 @@ class World {
     }
 
     setWorld() {
-        this.character.world = this;
+        this.character.world = this;  // Charakter kennt die Welt
+        // Jeder Gegner im Level bekommt die Referenz auf die Welt
+        this.level.enemies.forEach(enemy => {
+            enemy.world = this;
+        });
     }
+
 
     run() {
         setInterval(() => {
@@ -269,7 +274,7 @@ class World {
             ctx.font = "bold 70px Zabars";     // große, fette Schrift
             ctx.fillStyle = "yellow";          // gelbe Farbe
             ctx.textAlign = "center";          // horizontal zentrieren
-            ctx.fillText("Rest in Peace", centerX, centerY - coffinHeight +70); // etwas über dem Sarg
+            ctx.fillText("Rest in Peace", centerX, centerY - coffinHeight + 70); // etwas über dem Sarg
             ctx.restore();
         }
 
