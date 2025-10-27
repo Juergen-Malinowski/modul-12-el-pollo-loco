@@ -83,7 +83,7 @@ class Endboss extends MovableObject {
             if (this.isDeadBoss) return;
             if (this.world && this.world.character) {
                 // Wenn Charakter Positon X=1500 erreicht, dann startet Endboss ...
-                if (!this.isAlerted && this.world.character.x >= 1500) {
+                if (!this.isAlerted && this.world.character.x >= 1400 ) {
                     this.triggerAlert();
                 }
             }
