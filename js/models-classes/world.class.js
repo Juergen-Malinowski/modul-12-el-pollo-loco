@@ -148,6 +148,15 @@ class World {
             }
         }
 
+        // KOLLISION CHARAKTER mit MÜNZEN ...
+        for (let i = this.level.coins.length - 1; i >= 0; i--) {
+            const coin = this.level.coins[i];
+            if (this.character.isColliding(coin)) {
+                this.collectCoin(i);
+            }
+        }
+
+
         // KOLLISION geworfene FLASCHEN mit normalen HÜHNERN ...
         for (let i = this.throwableObjects.length - 1; i >= 0; i--) {
             const bottle = this.throwableObjects[i];
@@ -222,6 +231,13 @@ class World {
         this.addScore(2);
         this.showBottlePickupEffect();
     }
+
+    collectCoin(index) {
+        this.level.coins.splice(index, 1);   // Münze aus dem Level entfernenn
+        this.addScore(3);                    // Score-Punkte für Münze-Auflesen
+        this.level.coins.splice(index, 1);   // Münze entfernen
+    }
+
 
     showBottlePickupEffect() {
         // Zeige Flaschen-Aufheben-Effekt ...
@@ -452,7 +468,7 @@ class World {
         // Blinken alle 500 ms (2x pro Sekunde) ...
         this.blinkInterval = setInterval(() => {
             this.blinkVisible = !this.blinkVisible;
-            this.blinkColor = this.blinkVisible ? "#ffcc00" : "#ffffff"; 
+            this.blinkColor = this.blinkVisible ? "#ffcc00" : "#ffffff";
             // Wenn das Spiel irgendwann komplett neu gestartet wird, abbrechen ...
             if (this.gameOver && !this.showYouWin) {
                 clearInterval(this.blinkInterval);

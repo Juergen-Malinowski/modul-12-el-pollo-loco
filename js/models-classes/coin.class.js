@@ -37,7 +37,7 @@ class Coin extends MovableObject {
         this.centerX = this.x + this.width / 2;
         this.centerY = this.y + this.heigth / 2;
 
-        // optional: zufälliger Startwinkel, damit nicht alle gleich laufen
+        // optional: zufäll iger Startwinkel, damit nicht alle gleich laufen
         this.rotationAngle = Math.random() * Math.PI * 2;
 
         this.startSpin();
