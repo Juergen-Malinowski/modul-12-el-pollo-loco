@@ -39,6 +39,13 @@ class World {
         this.run();
         this.score = score;
         this.updateBottleBar();
+        // Klick ins Canvas startet das Spiel neu (nach Spielende) ...
+        this.canvas.addEventListener('mousedown', () => {
+            if (this.gameOver) {
+                location.reload();   // Seite neu laden → Spiel wird neu gestartet
+            }
+        });
+
     }
 
     setWorld() {
@@ -408,7 +415,7 @@ class World {
         this.ctx.fillStyle = "white";               // weiße Farbe
         this.ctx.textAlign = "left";                // linksbündig (passt zur Bar)
         this.ctx.fillText(`${this.collectedBottles}`, 175, 117); // Position leicht rechts von der Bottle-Bar
-        this.ctx.fillText(`${this.collectedCoins}`, 175 , 175);   // Position leicht rechts von der Coin-Bar
+        this.ctx.fillText(`${this.collectedCoins}`, 175, 175);   // Position leicht rechts von der Coin-Bar
         this.ctx.restore();
 
 
@@ -477,17 +484,17 @@ class World {
             if (highScores.length > 0) {
                 var ctx = this.ctx;
                 var x = this.canvas.width / 2;
-                var yStart = this.canvas.height / 2 - 120;
+                var yStart = this.canvas.height / 2 - 200; 
 
                 // HINTERGRUND-RECHTECK (weiß, leicht transparent) ...
                 var rectWidth = 500;
-                var rectHeight = 450;
+                var rectHeight = 700;    
                 ctx.save();
                 ctx.globalAlpha = 0.8;              // Transparenz (0.0 = durchsichtig, 1.0 = deckend)
                 ctx.fillStyle = "white";            // Hintergrundfarbe
                 ctx.fillRect(
                     x - rectWidth / 2,              // linksbündiger Startpunkt
-                    yStart - 60,                    // oberer Startpunkt
+                    yStart - 40,                    // oberer Startpunkt
                     rectWidth,                      // Breite
                     rectHeight                      // Höhe
                 );
@@ -512,8 +519,6 @@ class World {
                 ctx.restore();
             }
         }
-
-
 
         // Wiederholtes Neuzeichnen ...
         const self = this;
