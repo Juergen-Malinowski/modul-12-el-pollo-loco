@@ -402,6 +402,15 @@ class World {
         this.addToMap(this.bottleBar);
         this.addToMap(this.coinBar);
         this.addToMap(this.bossBar);
+        // ANZAHL DER FLASCHEN und MÜNZEN als Zahl hinter der Status-Bar ...
+        this.ctx.save();
+        this.ctx.font = "bold 36px Zabars";         // große, fette Schrift
+        this.ctx.fillStyle = "white";               // weiße Farbe
+        this.ctx.textAlign = "left";                // linksbündig (passt zur Bar)
+        this.ctx.fillText(`${this.collectedBottles}`, 175, 117); // Position leicht rechts von der Bottle-Bar
+        this.ctx.fillText(`${this.collectedCoins}`, 175 , 175);   // Position leicht rechts von der Coin-Bar
+        this.ctx.restore();
+
 
         // Punkteanzeige
         if (!this.blinkActive || (this.blinkActive && this.blinkVisible)) {
@@ -489,8 +498,8 @@ class World {
                 ctx.font = "bold 50px Zabars";
                 ctx.fillStyle = "gold";
                 ctx.textAlign = "center";
-                ctx.fillText("🏆  Highscore-Tabelle  🏆", x, yStart + 20); 
-                 ctx.font = "bold 28px Zabars";
+                ctx.fillText("🏆  Highscore-Tabelle  🏆", x, yStart + 20);
+                ctx.font = "bold 28px Zabars";
                 ctx.fillStyle = "black";
                 var y = yStart + 80;
                 for (var i = 0; i < highScores.length; i++) {
