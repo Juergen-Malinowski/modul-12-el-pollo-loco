@@ -468,15 +468,31 @@ class World {
             if (highScores.length > 0) {
                 var ctx = this.ctx;
                 var x = this.canvas.width / 2;
-                var yStart = this.canvas.height / 2 - 100;
+                var yStart = this.canvas.height / 2 - 120;
+
+                // HINTERGRUND-RECHTECK (weiß, leicht transparent) ...
+                var rectWidth = 500;
+                var rectHeight = 450;
+                ctx.save();
+                ctx.globalAlpha = 0.8;              // Transparenz (0.0 = durchsichtig, 1.0 = deckend)
+                ctx.fillStyle = "white";            // Hintergrundfarbe
+                ctx.fillRect(
+                    x - rectWidth / 2,              // linksbündiger Startpunkt
+                    yStart - 60,                    // oberer Startpunkt
+                    rectWidth,                      // Breite
+                    rectHeight                      // Höhe
+                );
+                ctx.restore();
+
+                // TEXTAUFBAU ...
                 ctx.save();
                 ctx.font = "bold 50px Zabars";
                 ctx.fillStyle = "gold";
                 ctx.textAlign = "center";
-                ctx.fillText("🏆  Highscore-Tabelle  🏆", x, yStart);
-                ctx.font = "bold 28px Zabars";
-                ctx.fillStyle = "black" ;
-                var y = yStart + 50;
+                ctx.fillText("🏆  Highscore-Tabelle  🏆", x, yStart + 20); 
+                 ctx.font = "bold 28px Zabars";
+                ctx.fillStyle = "black";
+                var y = yStart + 80;
                 for (var i = 0; i < highScores.length; i++) {
                     var entry = highScores[i];
                     var rank = (i + 1).toString().padStart(2, '0');
@@ -487,6 +503,7 @@ class World {
                 ctx.restore();
             }
         }
+
 
 
         // Wiederholtes Neuzeichnen ...
