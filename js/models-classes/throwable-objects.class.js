@@ -9,7 +9,7 @@ class ThrowableObjects extends MovableObject {
 
         if (isGroundBottle) {
             this.loadImage('../assets/img/6_salsa_flasche/1_salsa_bottle_on_ground.png');
-            this.x = 200 + Math.random() * 1200;
+            this.x = 200 + Math.random() * 1600;
             this.y = 380;
         } else {
             this.loadImage('../assets/img/6_salsa_flasche/salsa_bottle.png');

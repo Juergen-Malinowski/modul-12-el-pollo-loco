@@ -80,7 +80,7 @@ class World {
                     this.character.speedY = 25;  // normaler Abprall
                     this.character.y = enemyTop - this.character.heigth;
                     enemy.die();
-                    this.addScore(10);
+                    this.addScore(20);        // Score-Punkte für Springen auf Huhn
                     setTimeout(() => {
                         const index = this.level.enemies.indexOf(enemy);
                         if (index > -1) this.level.enemies.splice(index, 1);
@@ -177,7 +177,7 @@ class World {
 
                 if (hit) {
                     enemy.die();
-                    this.addScore(20);
+                    this.addScore(10);        // Score-Punkte für Flaschenwurf auf Huhn
                     this.throwableObjects.splice(i, 1);
                     setTimeout(() => {
                         const idx = this.level.enemies.indexOf(enemy);
@@ -372,6 +372,7 @@ class World {
 
         // Spielobjekte
         this.addObjectsToMap(this.level.bottles);
+        this.addObjectsToMap(this.level.coins);
         this.addToMap(this.character);
         this.addObjectsToMap(this.level.enemies);
         this.addObjectsToMap(this.throwableObjects);

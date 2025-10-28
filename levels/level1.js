@@ -9,10 +9,10 @@ function initLevel() {
             new Chicken(),
             new Chicken(),
             new Chicken(),
-            // new Chicken(),
-            // new Chicken(),
-            // new Chicken(),
-            // new Chicken(),
+            new Chicken(),
+            new Chicken(),
+            new Chicken(),
+            new Chicken(),
             new Endboss(),
         ],
         [
@@ -23,6 +23,19 @@ function initLevel() {
             new ThrowableObjects(0, 0, true),
             new ThrowableObjects(0, 0, true),
         ],
+
+        [
+            new Coin(),
+            new Coin(),
+            new Coin(),
+            new Coin(),
+            new Coin(),
+            new Coin(),
+            new Coin(),
+            new Coin(),
+        ],
+
+
         [
             new Cloud(-200, 60),
             new Cloud(450, 50),
