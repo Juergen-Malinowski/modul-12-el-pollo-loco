@@ -332,21 +332,25 @@ class World {
 
     // Zeigt das "You Win"-Endbild ...
     showVictoryScreen() {
-        // SPIELENDE-BONUS-Score-Punkte-BERECHNUNG ...
-        let bonusFlaschen = this.collectedBottles * 3;                     // 3 Punkte pro unbenutzter Flasche
-        let bonusHealth = Math.max(0, Math.round(this.character.energie)); // verbleibende HP als Punkte
-        let totalBonus = bonusFlaschen + bonusHealth;
+        // Score-Punkte pro unbenutzte Flasche ...
+        let bonusFlaschen = this.collectedBottles * 3;
+        // Score-Punkte  pro gesammelte Münze ...
+        let bonusCoins = this.collectedCoins * 15;
+        // Score-Punkte  basierend auf verbleibender Lebensenergie ...
+        let bonusHealth = Math.max(0, Math.round(this.character.energie));
+        // Gesamtbonus berechnen ...
+        let totalBonus = bonusFlaschen + bonusCoins + bonusHealth;
+        // Bonus-Score-Punkte dem Score hinzufügen ...
         this.addScore(totalBonus);
-        this.startScoreBlink();           // SCORE-BLINKEN starten
-
-
-        this.showYouWin = true;           // Flag aktivieren
-        this.gameOver = true;             // Spielstatus auf beendet setzen
-        this.keyboard = new Keyboard();   // Steuerung deaktivieren
+        // Punkteanzeige blinken lassen ...
+        this.startScoreBlink();
+        // Spielende-Flags ...
+        this.showYouWin = true;
+        this.gameOver = true;
+        this.keyboard = new Keyboard();     // Steuerung deaktivieren
     }
-
-
-    // BEENDET das Spiel nach Tod des CHARAKTERS ...
+ 
+      // BEENDET das Spiel nach Tod des CHARAKTERS ...
     endGame() {
         this.gameOver = true;
 
