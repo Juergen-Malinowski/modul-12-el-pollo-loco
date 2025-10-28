@@ -423,7 +423,7 @@ class World {
         if (!this.blinkActive || (this.blinkActive && this.blinkVisible)) {
             this.ctx.font = "bold 40px Zabars";
             this.ctx.fillStyle = "#ffcc00";
-            this.ctx.fillText(`Score: ${this.score}`, 550, 50);
+            this.ctx.fillText(`Score: ${this.score}`, 570, 50);
         }
 
 
@@ -484,11 +484,11 @@ class World {
             if (highScores.length > 0) {
                 var ctx = this.ctx;
                 var x = this.canvas.width / 2;
-                var yStart = this.canvas.height / 2 - 200; 
+                var yStart = this.canvas.height / 2 - 200;
 
                 // HINTERGRUND-RECHTECK (weiß, leicht transparent) ...
                 var rectWidth = 500;
-                var rectHeight = 700;    
+                var rectHeight = 700;
                 ctx.save();
                 ctx.globalAlpha = 0.8;              // Transparenz (0.0 = durchsichtig, 1.0 = deckend)
                 ctx.fillStyle = "white";            // Hintergrundfarbe
@@ -517,6 +517,14 @@ class World {
                     y += 35;
                 }
                 ctx.restore();
+                // Hinweistext am unteren Rand der Highscore-Tabelle ...
+                ctx.save();
+                ctx.font = "bold 34px Zabars";                  // gleiche Schriftart, etwas kleiner
+                ctx.fillStyle = "black";                        // schwarze Schriftfarbe
+                ctx.textAlign = "center";                       // zentriert
+                ctx.fillText("C l i c k  t o  c o n t i n u e", x, y);   // leicht unterhalb der letzten Zeile
+                ctx.restore();
+
             }
         }
 
