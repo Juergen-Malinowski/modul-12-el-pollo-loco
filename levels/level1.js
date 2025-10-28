@@ -33,6 +33,14 @@ function initLevel() {
             new Coin(),
             new Coin(),
             new Coin(),
+            new Coin(),
+            new Coin(),
+            new Coin(),
+            new Coin(),
+            new Coin(),
+            new Coin(),
+            new Coin(),
+            new Coin(),
         ],
 
 
@@ -43,7 +51,7 @@ function initLevel() {
             new Cloud(1650, 55),
             new Cloud(1440, 70),
             new Cloud(120, 40),
-            new Cloud(1250, 20) ,
+            new Cloud(1250, 20),
             new Cloud(1950, 15),
 
         ],
