@@ -342,15 +342,20 @@ class World {
         let totalBonus = bonusFlaschen + bonusCoins + bonusHealth;
         // Bonus-Score-Punkte dem Score hinzufügen ...
         this.addScore(totalBonus);
-        // Punkteanzeige blinken lassen ...
-        this.startScoreBlink();
         // Spielende-Flags ...
         this.showYouWin = true;
         this.gameOver = true;
-        this.keyboard = new Keyboard();     // Steuerung deaktivieren
+        this.keyboard = new Keyboard();
+        // Spielername abfragen + Tabelle speichern (mit kurzer Pause
+        // für WIN-Bild) ...
+        setTimeout(() => {
+            this.saveHighScoreEntry();   // Spielername + Tabelle anzeigen
+        }, 4000);                        // 4 Sekunde warten
+        // Punkteanzeige blinken lassen ...
+        this.startScoreBlink();
     }
- 
-      // BEENDET das Spiel nach Tod des CHARAKTERS ...
+
+    // BEENDET das Spiel nach Tod des CHARAKTERS ...
     endGame() {
         this.gameOver = true;
 
@@ -457,6 +462,33 @@ class World {
             ctx.restore();
         }
 
+        // HIGH-SCORE-TABELLE zeigen (bei Spielende) ...
+        if (this.gameOver && this.showYouWin) {
+            var highScores = this.displayHighScoreTable();
+            if (highScores.length > 0) {
+                var ctx = this.ctx;
+                var x = this.canvas.width / 2;
+                var yStart = this.canvas.height / 2 - 100;
+                ctx.save();
+                ctx.font = "bold 50px Zabars";
+                ctx.fillStyle = "gold";
+                ctx.textAlign = "center";
+                ctx.fillText("🏆  Highscore-Tabelle  🏆", x, yStart);
+                ctx.font = "bold 28px Zabars";
+                ctx.fillStyle = "black" ;
+                var y = yStart + 50;
+                for (var i = 0; i < highScores.length; i++) {
+                    var entry = highScores[i];
+                    var rank = (i + 1).toString().padStart(2, '0');
+                    var text = rank + ".  " + entry.name + " — " + entry.score + " Punkte";
+                    ctx.fillText(text, x, y);
+                    y += 35;
+                }
+                ctx.restore();
+            }
+        }
+
+
         // Wiederholtes Neuzeichnen ...
         const self = this;
         requestAnimationFrame(() => self.draw());
@@ -497,5 +529,45 @@ class World {
                 this.blinkActive = false;
             }
         }, 700);
+    }
+
+    // ===============================================
+    // HIGHSCORE-SYSTEM (TOP 10 MIT NAMEN)
+    // ===============================================
+
+    saveHighScoreEntry() {
+        // Spielername abfragen ...
+        var playerName = prompt("Bitte gib deinen Namen ein:", "Player");
+        if (!playerName) {
+            playerName = "Unbekannt";
+        }
+        // Highscore-Daten aus localStorage holen ...
+        var storedData = localStorage.getItem('highScoreTable');
+        var highScores = storedData ? JSON.parse(storedData) : [];
+        // Neuen Eintrag anlegen ...
+        var newEntry = {
+            name: playerName.trim(),
+            score: this.score,
+            date: new Date().toLocaleDateString('de-DE')
+        };
+        highScores.push(newEntry);                   // Neuen Eintrag hinzufügen ...  
+        highScores.sort(function (a, b) {
+            // Nach Score sortieren (absteigend) ...
+            return b.score - a.score;
+        });
+        if (highScores.length > 10) {
+            // Nur die besten 10 behalten ...
+            highScores = highScores.slice(0, 10);
+        }
+        localStorage.setItem('highScoreTable', JSON.stringify(highScores));     // Speichern im localStorage ...
+    }
+
+    displayHighScoreTable() {
+        // HIGH-SCORE-Daten speichern für spätere Ausgabe ...
+        var storedData = localStorage.getItem('highScoreTable');
+        if (!storedData) {
+            return [];
+        }
+        return JSON.parse(storedData);
     }
 }
