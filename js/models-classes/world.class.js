@@ -13,6 +13,7 @@ class World {
     percentage = 100;                      // Lebens-Energie in %
     throwableObjects = [];                 // geworfene Flaschen
     collectedBottles = 3;                  // gesammelte Flaschen
+    collectedCoins = 0;                    // gesammelte Münzen
     score = 0;                             // Punkte
     youWinImg = new Image();               // Bildobjekt für "You Win"
     showYouWin = false;                    // Steuerung, ob das Bild angezeigt wird
@@ -156,6 +157,13 @@ class World {
             }
         }
 
+        // KOLLISION CHARAKTER mit MÜNZEN ...
+        for (let i = this.level.coins.length - 1; i >= 0; i--) {
+            const coin = this.level.coins[i];
+            if (this.character.isColliding(coin)) {
+                this.collectCoin(i);
+            }
+        }
 
         // KOLLISION geworfene FLASCHEN mit normalen HÜHNERN ...
         for (let i = this.throwableObjects.length - 1; i >= 0; i--) {
@@ -233,11 +241,11 @@ class World {
     }
 
     collectCoin(index) {
-        this.level.coins.splice(index, 1);   // Münze aus dem Level entfernenn
-        this.addScore(3);                    // Score-Punkte für Münze-Auflesen
-        this.level.coins.splice(index, 1);   // Münze entfernen
+        this.level.coins.splice(index, 1);    // Münze entfernen ...
+        this.collectedCoins++;                // Zähler erhöhen ...
+        this.updateCoinBar();                 // Statusbar aktualisieren ...
+        this.addScore(3);                     // Score-Punkte für Sammeln einer Münze
     }
-
 
     showBottlePickupEffect() {
         // Zeige Flaschen-Aufheben-Effekt ...
@@ -354,11 +362,21 @@ class World {
 
 
     updateBottleBar() {
+        // Prozentanteil der Flaschen berechnen ... 
         let percentage = (this.collectedBottles / 5) * 100;
         if (percentage > 100) percentage = 100;
         if (percentage < 0) percentage = 0;
         this.bottleBar.setPercentage(percentage);
     }
+
+    updateCoinBar() {
+        // Prozentanteil der Münzen berechnen ...
+        let percentage = (this.collectedCoins / 15) * 100;
+        if (percentage > 100) percentage = 100;
+        if (percentage < 0) percentage = 0;
+        this.coinBar.setPercentage(percentage);
+    }
+
 
     // ZEICHNUNG der SPIELWELT ...
     draw() {

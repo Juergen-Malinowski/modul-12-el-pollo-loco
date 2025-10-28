@@ -68,4 +68,4 @@ class Coin extends MovableObject {
             self.y = self.centerY - self.heigth / 2 + bob;
         }, 50);
     }
-} // ← DIESE Klammer fehlte!
+}
