@@ -322,6 +322,7 @@ class World {
             );
 
             this.throwableObjects.push(bottle);
+            soundHub.playEffect(soundHub.soundThrow);
             this.addScore(1);
             this.character.playThrowAnimation();
             this.character.lastActionTime = Date.now();
