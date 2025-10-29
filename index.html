@@ -59,24 +59,24 @@
     <!-- === AUDIO-OVERLAY === -->
     <div id="audioOverlay" onclick="closeAudioSettings()">
         <div id="audioBox" onclick="event.stopPropagation()">
-            <h2>🎧 Audio Einstellungen</h2>
+            <h2>🎧 Audio Settings</h2>
 
             <!-- Musik -->
             <div class="audioControlRow">
-                <label for="musicVolume">Musiklautstärke:</label>
+                <label for="musicVolume">Music Volume:</label>
                 <input type="range" id="musicVolume" min="0" max="1" step="0.05" value="0.3"
                     onchange="updateMusicVolume(this.value)">
             </div>
 
             <!-- Effekte -->
             <div class="audioControlRow">
-                <label for="effectVolume">Effektlautstärke:</label>
+                <label for="effectVolume">Effects Volume:</label>
                 <input type="range" id="effectVolume" min="0" max="1" step="0.05" value="1"
                     onchange="updateEffectVolume(this.value)">
             </div>
 
             <div class="audioControlRow">
-                <button id="toggleMuteButton" onclick="toggleMuteAll()">🔇 Ton an/aus</button>
+                <button id="toggleMuteButton" onclick="toggleMuteAll()">🔇 Sound on / off</button>
             </div>
 
             <p id="closeAudioHint" onclick="closeAudioSettings()">Click to close</p>

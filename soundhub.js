@@ -12,6 +12,7 @@ class SoundHub {
         this.backgroundMusic = new Audio('./assets/sound/background-music.mp3');
         this.backgroundMusic.loop = true;
         this.backgroundMusic.volume = 0.3;
+        this.backgroundMusic.preload = 'auto';
 
         // === SOUND-EFFEKTE ===
         this.soundThrow = new Audio('./assets/sound/flying-bottle.mp3');          // Flasche geworfen
@@ -23,53 +24,50 @@ class SoundHub {
         this.soundBottlePickup = new Audio('./assets/sound/plopp.mp3');           // Flasche eingesammelt
         this.soundBossStart = new Audio('./assets/sound/great-Chicken-Cry.mp3');  // Endboss aktiviert
 
-        this.lastHitSoundTime = 0;       // Zeitstempel des letzten Charakter-Treffer-Sounds
-        this.hitSoundCooldown = 2000;    // Mindestzeit in Millisekunden, bevor erneut Sound möglich
+        // === ALLGEMEINE VARIABLEN ===
+        this.lastHitSoundTime = 0;        // Zeitstempel des letzten Charakter-Treffer-Sounds
+        this.hitSoundCooldown = 2000;     // Mindestzeit in Millisekunden, bevor erneut Sound möglich
+        this.isMuted = false;             // globaler Mute-Schalter
 
-
-        // === STATUS-FLAG ===
-        this.isMuted = false;     // globaler Mute-Schalter
+        // === Audioeinstellungen aus localStorage laden ===
+        this.loadSettings();
     }
 
 
 
     /**
-     * === Musik an- oder ausschalten ===
+     * === HINTERGRUNDMUSIK sicher starten ===
      */
-    toggleMusic() {
-        if (this.backgroundMusic.paused) {
-            this.backgroundMusic.play();
-        } else {
+    playBackgroundMusic() {
+        if (this.isMuted) {
+            return; // Wenn global stummgeschaltet, nichts tun
+        }
+
+        if (!this.backgroundMusic.paused) {
             this.backgroundMusic.pause();
+            this.backgroundMusic.currentTime = 0;
         }
+
+        this.backgroundMusic.loop = true;
+        this.backgroundMusic.volume = 0.3;
+        this.backgroundMusic.play().catch(function (e) {
+            console.warn("Musik konnte nicht automatisch gestartet werden:", e);
+        });
     }
 
 
 
     /**
-     * === ALLE Sounds stummschalten oder wieder aktivieren ===
+     * === HINTERGRUNDMUSIK stoppen ===
      */
-    toggleMute() {
-        this.isMuted = !this.isMuted;
-
-        // === Alle Sounds in ein Array packen ===
-        var allSounds = [
-            this.backgroundMusic,        // Hintergrundmusik
-            this.soundThrow,             // Flasche fliegt durch die Luft
-            this.soundChickenHit,        // Pepe trifft Huhn von oben ... Huhn schreit
-            this.soundCoin,              // Münze aufgehoben
-            this.soundHit,               // Charakter wird verletzt
-            this.soundBottlePickup,      // Flaschen-Sound
-            this.soundBossStart,         // Endboss startet
-            this.soundJumping,           // Sprung-Sound Charakter
-            this.soundChickenMud,        // Pepe springt auf Huhn und zermatscht es
-        ];
-
-        // === Alle Sounds auf den neuen Status setzen ===
-        for (var i = 0; i < allSounds.length; i++) {
-            allSounds[i].muted = this.isMuted;
+    stopBackgroundMusic() {
+        if (this.backgroundMusic && !this.backgroundMusic.paused) {
+            this.backgroundMusic.pause();
+            this.backgroundMusic.currentTime = 0;
         }
     }
+
+
 
     /**
      * === Einzelnen Sound-Effekt abspielen (wenn nicht stummgeschaltet) ===
@@ -82,38 +80,149 @@ class SoundHub {
     }
 
 
+
     /**
-     * === Hintergrundmusik sicher starten ===
+     * === Alle Effekt-Sounds als Liste zurückgeben ===
      */
-    playBackgroundMusic() {
-        if (this.isMuted) {
-            return; // Wenn global stummgeschaltet, nichts tun
-        }
-
-        // Falls Musik bereits läuft → erst stoppen
-        if (!this.backgroundMusic.paused) {
-            this.backgroundMusic.pause();
-            this.backgroundMusic.currentTime = 0;
-        }
-
-        // Dann neu starten
-        this.backgroundMusic.loop = true;
-        this.backgroundMusic.volume = 0.3;
-        this.backgroundMusic.play().catch(function (e) {
-            console.warn("Musik konnte nicht automatisch gestartet werden:", e);
-        });
+    getAllEffects() {
+        return [
+            this.soundThrow,
+            this.soundCoin,
+            this.soundHit,
+            this.soundChickenMud,
+            this.soundJumping,
+            this.soundChickenHit,
+            this.soundBottlePickup,
+            this.soundBossStart
+        ];
     }
 
+
+
     /**
-     * === Hintergrundmusik stoppen ===
+     * === Musiklautstärke 0..1 setzen ===
      */
-    stopBackgroundMusic() {
-        if (this.backgroundMusic && !this.backgroundMusic.paused) {
+    setMusicVolume(value) {
+        var v = parseFloat(value);
+        if (isNaN(v)) return;
+        if (v < 0) v = 0;
+        if (v > 1) v = 1;
+
+        this.backgroundMusic.volume = v;
+
+        try {
+            localStorage.setItem('audio_music_volume', v.toString());
+        } catch (err) {}
+    }
+
+
+
+    /**
+     * === Effektlautstärke 0..1 für alle Effekte setzen ===
+     */
+    setEffectsVolume(value) {
+        var v = parseFloat(value);
+        if (isNaN(v)) return;
+        if (v < 0) v = 0;
+        if (v > 1) v = 1;
+
+        var effects = this.getAllEffects();
+        for (var i = 0; i < effects.length; i++) {
+            effects[i].volume = v;
+        }
+
+        try {
+            localStorage.setItem('audio_effects_volume', v.toString());
+        } catch (err) {}
+    }
+
+
+
+    /**
+     * === Global stumm schalten / wieder aktivieren ===
+     */
+    setMuted(isMuted) {
+        this.isMuted = !!isMuted;
+
+        this.backgroundMusic.muted = this.isMuted;
+        if (this.isMuted && this.backgroundMusic && !this.backgroundMusic.paused) {
             this.backgroundMusic.pause();
-            this.backgroundMusic.currentTime = 0;
+        }
+
+        var effects = this.getAllEffects();
+        for (var i = 0; i < effects.length; i++) {
+            effects[i].muted = this.isMuted;
+        }
+
+        try {
+            localStorage.setItem('audio_muted', this.isMuted ? 'true' : 'false');
+        } catch (err) {}
+    }
+
+
+
+    /**
+     * === Umschalten (Mute / Unmute) ===
+     */
+    toggleMute() {
+        this.setMuted(!this.isMuted);
+    }
+
+
+
+    /**
+     * === Musiklautstärke abrufen ===
+     */
+    getMusicVolume() {
+        return this.backgroundMusic.volume;
+    }
+
+
+
+    /**
+     * === Effektlautstärke abrufen ===
+     */
+    getEffectsVolume() {
+        var effects = this.getAllEffects();
+        if (effects.length > 0) {
+            return effects[0].volume;
+        }
+        return 1.0;
+    }
+
+
+
+    /**
+     * === Audioeinstellungen aus dem localStorage laden ===
+     */
+    loadSettings() {
+        try {
+            var m = localStorage.getItem('audio_music_volume');
+            var e = localStorage.getItem('audio_effects_volume');
+            var mute = localStorage.getItem('audio_muted');
+
+            if (m !== null) {
+                var mv = parseFloat(m);
+                if (!isNaN(mv)) {
+                    this.setMusicVolume(mv);
+                }
+            }
+            if (e !== null) {
+                var ev = parseFloat(e);
+                if (!isNaN(ev)) {
+                    this.setEffectsVolume(ev);
+                }
+            }
+            if (mute !== null) {
+                this.setMuted(mute === 'true');
+            }
+        } catch (err) {
+            console.warn('Audioeinstellungen konnten nicht geladen werden:', err);
         }
     }
 }
+
+
 
 /**
  * ===========================================================
