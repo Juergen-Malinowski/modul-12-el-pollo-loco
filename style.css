@@ -82,13 +82,30 @@ h1 {
     z-index: 10;
 }
 
-
-
-
 #startImage {
     width: 720px;
     height: 480px;
     object-fit: cover;
+}
+
+/* === ÜBERLAGERUNGS-BILDER auf dem Startbild === */
+.overlayImage {
+    position: absolute;
+    z-index: 15;    /* über dem Startbild, aber unter Menüleiste */  
+    width: 200px;   /* Grundgröße (kannst du später anpassen) */
+    height: auto;
+}
+
+/* Fledermaus */
+#batImage {
+    top: 16%;   /* Höhenposition */
+    left: 65%;  /* wie weit nach rechts verschoben */
+}
+
+/* Kleiner Teufel */
+#devilImage {
+    top: 18%;      /* Höhenposition */
+    left: 20%;     /* wie weit nach rechts verschoben */
 }
 
 #startButton {
