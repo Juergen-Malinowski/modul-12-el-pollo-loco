@@ -29,8 +29,9 @@ class SoundHub {
         this.hitSoundCooldown = 2000;     // Mindestzeit in Millisekunden, bevor erneut Sound möglich
         this.isMuted = false;             // globaler Mute-Schalter
 
-        // === Audioeinstellungen aus localStorage laden ===
+        // === Audioeinstellungen aus localStorage laden / speichern background-volume ===
         this.loadSettings();
+        this.musicVolume = this.backgroundMusic.volume;
     }
 
 
@@ -48,8 +49,8 @@ class SoundHub {
             this.backgroundMusic.currentTime = 0;
         }
 
+        this.backgroundMusic.volume = this.musicVolume != null ? this.musicVolume : this.backgroundMusic.volume;
         this.backgroundMusic.loop = true;
-        this.backgroundMusic.volume = 0.3;
         this.backgroundMusic.play().catch(function (e) {
             console.warn("Musik konnte nicht automatisch gestartet werden:", e);
         });
@@ -108,11 +109,12 @@ class SoundHub {
         if (v < 0) v = 0;
         if (v > 1) v = 1;
 
+        this.musicVolume = v;
         this.backgroundMusic.volume = v;
 
         try {
             localStorage.setItem('audio_music_volume', v.toString());
-        } catch (err) {}
+        } catch (err) { }
     }
 
 
@@ -133,7 +135,7 @@ class SoundHub {
 
         try {
             localStorage.setItem('audio_effects_volume', v.toString());
-        } catch (err) {}
+        } catch (err) { }
     }
 
 
@@ -156,7 +158,7 @@ class SoundHub {
 
         try {
             localStorage.setItem('audio_muted', this.isMuted ? 'true' : 'false');
-        } catch (err) {}
+        } catch (err) { }
     }
 
 

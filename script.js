@@ -139,12 +139,12 @@ function syncAudioUIFromSoundHub() {
 
     if (musicSlider && typeof soundHub.getMusicVolume === "function") {
         var mv = soundHub.getMusicVolume();
-        musicSlider.value = (typeof mv === "number") ? mv.toFixed(2) : "0.30";
+        if (typeof mv === "number") musicSlider.value = mv;
     }
 
     if (effectsSlider && typeof soundHub.getEffectsVolume === "function") {
         var ev = soundHub.getEffectsVolume();
-        effectsSlider.value = (typeof ev === "number") ? ev.toFixed(2) : "1.00";
+        if (typeof ev === "number") effectsSlider.value = ev;
     }
 
     if (muteBtn) {
