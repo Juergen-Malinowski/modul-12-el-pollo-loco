@@ -67,4 +67,24 @@ function closeHighscore() {
     overlay.style.display = "none";
 }
 
+function openImpressum() {
+    // Overlay und Frame-Element holen ...
+    var overlay = document.getElementById("impressumOverlay");
+    var frame = document.getElementById("impressumFrame");
+
+    // Inhalt (HTML-Datei) laden ...
+    frame.src = "./info.html";
+
+    // Overlay sichtbar machen ...
+    overlay.style.display = "flex";
+}
+
+function closeImpressum() {
+    // Overlay ausblenden und Frame leeren ...
+    var overlay = document.getElementById("impressumOverlay");
+    var frame = document.getElementById("impressumFrame");
+    overlay.style.display = "none";
+    frame.src = "";
+}
+
 
