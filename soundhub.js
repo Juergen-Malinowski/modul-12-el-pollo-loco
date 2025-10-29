@@ -14,12 +14,15 @@ class SoundHub {
         this.backgroundMusic.volume = 0.3;
 
         // === SOUND-EFFEKTE ===
-        this.soundJump = new Audio('./assets/sound/jump.mp3');                    // Beispiel: Sprung
-        this.soundCoin = new Audio('./assets/sound/coin.mp3');                    // Beispiel: Münze eingesammelt
-        this.soundHit = new Audio('./assets/sound/hit.mp3');                      // Beispiel: Treffer durch Gegner
-        this.soundThrow = new Audio('./assets/sound/throw.mp3');                  // Beispiel: Flasche geworfen
+        this.soundJump = new Audio('./assets/sound/jump.mp3');                    // Sprung
+        this.soundCoin = new Audio('./assets/sound/coin.mp3');                    // Münze eingesammelt
+        this.soundHit = new Audio('./assets/sound/hit.mp3');                      // Treffer durch Gegner
+        this.soundThrow = new Audio('./assets/sound/throw.mp3');                  // Flasche geworfen
+
         this.soundChickenHit = new Audio('./assets/sound/chicken-clucking.mp3');  // Huhn getroffen
-        this.soundBottlePickup = new Audio('./assets/sound/plopp.mp3');           // 🆕 Flasche eingesammelt
+        this.soundBottlePickup = new Audio('./assets/sound/plopp.mp3');           // Flasche eingesammelt
+        this.soundBossStart = new Audio('./assets/sound/great-Chicken-Cry.mp3');  // Endboss aktiviert
+
 
         // === STATUS-FLAG ===
         this.isMuted = false;     // globaler Mute-Schalter
@@ -54,7 +57,8 @@ class SoundHub {
             this.soundHit,
             this.soundThrow,
             this.soundChickenHit,
-            this.soundBottlePickup      // 🆕 Flaschen-Sound mit aufnehmen
+            this.soundBottlePickup,      // Flaschen-Sound
+            this.soundBossStart,         // Endboss startet
         ];
 
         // === Alle Sounds auf den neuen Status setzen ===

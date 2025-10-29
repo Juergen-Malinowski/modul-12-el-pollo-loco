@@ -83,7 +83,7 @@ class Endboss extends MovableObject {
             if (this.isDeadBoss) return;
             if (this.world && this.world.character) {
                 // Wenn Charakter Positon X=1500 erreicht, dann startet Endboss ...
-                if (!this.isAlerted && this.world.character.x >= 1400 ) {
+                if (!this.isAlerted && this.world.character.x >= 1400) {
                     this.triggerAlert();
                 }
             }
@@ -124,14 +124,31 @@ class Endboss extends MovableObject {
     }
 
     triggerAlert() {
-        // Endboss wurde alamiert und greift nun Charakter aktiv an ...
+        // Endboss wurde alarmiert und greift nun Charakter aktiv an ...
         this.isAlerted = true;
+
+        // === NEU: wiederkehrender Schrei alle 5 Sekunden ===
+        this.screamInterval = setInterval(() => {
+            if (!this.isDeadBoss && this.isAlerted) {
+                soundHub.playEffect(soundHub.soundBossStart);
+            } else {
+                clearInterval(this.screamInterval); // falls Boss stirbt, beenden
+            }
+        }, 5000); // alle 5 Sekunden
+
+        // === Erster Schrei sofort ===
+        soundHub.playEffect(soundHub.soundBossStart);
+
+        // === Alarmanimation starten ===
         this.playAlertAnimation(() => {
             // Nach Abschluss → in den Walk-Modus wechseln ...
             this.isWalking = true;
             this.startWalkingAnimation();
         });
     }
+
+
+
 
     playAlertAnimation(onComplete) {
         // ALARM animieren ...
