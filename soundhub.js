@@ -14,11 +14,11 @@ class SoundHub {
         this.backgroundMusic.volume = 0.3;
 
         // === SOUND-EFFEKTE ===
-        this.soundJump = new Audio('./assets/sound/jump.mp3');                    // Sprung
         this.soundCoin = new Audio('./assets/sound/coin.mp3');                    // Münze eingesammelt
         this.soundHit = new Audio('./assets/sound/hit.mp3');                      // Treffer durch Gegner
         this.soundThrow = new Audio('./assets/sound/throw.mp3');                  // Flasche geworfen
 
+        this.soundJumping = new Audio('./assets/sound/jumping.mp3');              // Pepe springt
         this.soundChickenHit = new Audio('./assets/sound/chicken-clucking.mp3');  // Huhn getroffen
         this.soundBottlePickup = new Audio('./assets/sound/plopp.mp3');           // Flasche eingesammelt
         this.soundBossStart = new Audio('./assets/sound/great-Chicken-Cry.mp3');  // Endboss aktiviert
@@ -59,6 +59,7 @@ class SoundHub {
             this.soundChickenHit,
             this.soundBottlePickup,      // Flaschen-Sound
             this.soundBossStart,         // Endboss startet
+            this.soundJumping            // Sprung-Sound Charakter
         ];
 
         // === Alle Sounds auf den neuen Status setzen ===

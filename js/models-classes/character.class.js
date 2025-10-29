@@ -123,6 +123,7 @@ class Character extends MovableObject {
             }
 
             if (this.world.keyboard.SPACE && !this.isAboveGround()) {
+                soundHub.playEffect(soundHub.soundJumping);     // Sprung-Sound abspielen
                 this.speedY = 45;
                 this.lastActionTime = Date.now(); // Zeitstempel aktualisieren (Spieler aktiv)
             }
