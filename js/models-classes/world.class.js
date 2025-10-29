@@ -87,6 +87,7 @@ class World {
                 if (!(enemy instanceof Endboss)) {
                     this.character.speedY = 25;  // normaler Abprall
                     this.character.y = enemyTop - this.character.heigth;
+                    soundHub.playEffect(soundHub.soundChickenHit);   // Soundeffekt
                     enemy.die();
                     this.addScore(20);        // Score-Punkte für Springen auf Huhn
                     setTimeout(() => {
@@ -98,7 +99,7 @@ class World {
 
                 // === Wenn es der Endboss ist ===
                 if (enemy instanceof Endboss && !enemy.isDeadBoss) {
-
+                    soundHub.playEffect(soundHub.soundChickenHit);  // Soundeffekt
                     // Treffer auslösen (Endboss verliert Energie)
                     enemy.wasHit();
                     this.addScore(50);             // 50 Score-Punkte dafür
@@ -200,6 +201,7 @@ class World {
                     bottle.y < enemy.y + enemy.heigth - enemy.offset.buttom;
 
                 if (hit) {
+                    soundHub.playEffect(soundHub.soundChickenHit);   // Soundeffekt
                     enemy.die();
                     this.addScore(10);        // Score-Punkte für Flaschenwurf auf Huhn
                     this.throwableObjects.splice(i, 1);
