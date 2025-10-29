@@ -111,41 +111,10 @@ function toggleMuteAll() {
     soundHub.toggleMute();
 }
 
-function showEndHighscoreOverlay() {
-    // === Overlay-Hintergrund erstellen ===
-    var overlay = document.createElement("div");
-    overlay.id = "endHighscoreOverlay";
-    overlay.style.position = "fixed";
-    overlay.style.top = "0";
-    overlay.style.left = "0";
-    overlay.style.width = "100%";
-    overlay.style.height = "100%";
-    overlay.style.backgroundColor = "rgba(0,0,0,0.8)";
-    overlay.style.display = "flex";
-    overlay.style.flexDirection = "column";
-    overlay.style.alignItems = "center";
-    overlay.style.justifyContent = "center";
-    overlay.style.zIndex = "40";
-
-    // === Text: Erfolgsmeldung ===
-    var message = document.createElement("p");
-    message.textContent = "🏆 Dein Highscore wurde gespeichert!";
-    message.style.fontFamily = "'Zabars', Arial, Helvetica, sans-serif";
-    message.style.fontSize = "2em";
-    message.style.color = "white";
-    message.style.marginBottom = "30px";
-
-    // === Button: Zurück zum Start ===
-    var button = document.createElement("button");
-    button.className = "overlayButton";  // nutzt deinen einheitlichen Stil
-    button.textContent = "Zurück zum Start";
-    button.onclick = function () {
-        overlay.remove();
-        document.getElementById("canvas").style.display = "none";
-        document.getElementById("startScreen").style.display = "flex";
-    };
-
-    overlay.appendChild(message);
-    overlay.appendChild(button);
-    document.body.appendChild(overlay);
+function closeHighscoreSaved() {
+    // Schließt den Speicherhinweis am Ende des Spiels nach High-Score-Eintrag ...
+    var overlay = document.getElementById('highscoreSavedOverlay');
+    if (overlay) {
+        overlay.style.display = 'none';
+    }
 }

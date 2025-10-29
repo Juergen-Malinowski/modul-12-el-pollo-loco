@@ -29,6 +29,7 @@ class World {
 
 
     constructor(canvas, keyboard) {
+        console.log('World build 2025-10-29 12:00');
         this.ctx = canvas.getContext("2d");
         this.canvas = canvas;
         this.keyboard = keyboard;
@@ -355,6 +356,7 @@ class World {
         this.showYouWin = true;
         this.gameOver = true;
         this.keyboard = new Keyboard();
+
         // Spielername abfragen + Tabelle speichern (mit kurzer Pause
         // für WIN-Bild) ...
         setTimeout(() => {
@@ -363,10 +365,6 @@ class World {
         // Punkteanzeige blinken lassen ...
         this.startScoreBlink();
         // === NEU: Nach Abschluss der Highscore-Speicherung End-Overlay anzeigen ===
-        setTimeout(() => {
-            showEndHighscoreOverlay();  // In script.js definiert
-        }, 5000);  // 1 Sekunde nach dem Speichern
-
     }
 
     // BEENDET das Spiel nach Tod des CHARAKTERS ...
@@ -485,56 +483,56 @@ class World {
             ctx.restore();
         }
 
-        // HIGH-SCORE-TABELLE zeigen (bei Spielende) ...
-        if (this.gameOver && this.showYouWin) {
-            var highScores = this.displayHighScoreTable();
-            if (highScores.length > 0) {
-                var ctx = this.ctx;
-                var x = this.canvas.width / 2;
-                var yStart = this.canvas.height / 2 - 200;
+        // // HIGH-SCORE-TABELLE zeigen (bei Spielende) ...
+        // if (this.gameOver && this.showYouWin) {
+        //     var highScores = this.displayHighScoreTable();
+        //     if (highScores.length > 0) {
+        //         var ctx = this.ctx;
+        //         var x = this.canvas.width / 2;
+        //         var yStart = this.canvas.height / 2 - 200;
 
-                // HINTERGRUND-RECHTECK (weiß, leicht transparent) ...
-                var rectWidth = 500;
-                var rectHeight = 700;
-                ctx.save();
-                ctx.globalAlpha = 0.8;              // Transparenz (0.0 = durchsichtig, 1.0 = deckend)
-                ctx.fillStyle = "white";            // Hintergrundfarbe
-                ctx.fillRect(
-                    x - rectWidth / 2,              // linksbündiger Startpunkt
-                    yStart - 40,                    // oberer Startpunkt
-                    rectWidth,                      // Breite
-                    rectHeight                      // Höhe
-                );
-                ctx.restore();
+        //         // HINTERGRUND-RECHTECK (weiß, leicht transparent) ...
+        //         var rectWidth = 500;
+        //         var rectHeight = 700;
+        //         ctx.save();
+        //         ctx.globalAlpha = 0.8;              // Transparenz (0.0 = durchsichtig, 1.0 = deckend)
+        //         ctx.fillStyle = "white";            // Hintergrundfarbe
+        //         ctx.fillRect(
+        //             x - rectWidth / 2,              // linksbündiger Startpunkt
+        //             yStart - 40,                    // oberer Startpunkt
+        //             rectWidth,                      // Breite
+        //             rectHeight                      // Höhe
+        //         );
+        //         ctx.restore();
 
-                // TEXTAUFBAU ...
-                ctx.save();
-                ctx.font = "bold 50px Zabars";
-                ctx.fillStyle = "gold";
-                ctx.textAlign = "center";
-                ctx.fillText("🏆  Highscore-Tabelle  🏆", x, yStart + 20);
-                ctx.font = "bold 28px Zabars";
-                ctx.fillStyle = "black";
-                var y = yStart + 80;
-                
-                for (var i = 0; i < highScores.length; i++) {
-                    var entry = highScores[i];
-                    var rank = (i + 1).toString().padStart(2, '0');
-                    var text = rank + ".  " + entry.name + " — " + entry.score + " Punkte";
-                    ctx.fillText(text, x, y);
-                    y += 35;
-                }
-                ctx.restore();
-                // Hinweistext am unteren Rand der Highscore-Tabelle ...
-                ctx.save();
-                ctx.font = "bold 34px Zabars";                  // gleiche Schriftart, etwas kleiner
-                ctx.fillStyle = "black";                        // schwarze Schriftfarbe
-                ctx.textAlign = "center";                       // zentriert
-                ctx.fillText("C l i c k  t o  c o n t i n u e", x, y);   // leicht unterhalb der letzten Zeile
-                ctx.restore();
+        //         // TEXTAUFBAU ...
+        //         ctx.save();
+        //         ctx.font = "bold 50px Zabars";
+        //         ctx.fillStyle = "gold";
+        //         ctx.textAlign = "center";
+        //         ctx.fillText("🏆  Highscore-Tabelle  🏆", x, yStart + 20);
+        //         ctx.font = "bold 28px Zabars";
+        //         ctx.fillStyle = "black";
+        //         var y = yStart + 80;
 
-            }
-        }
+        //         for (var i = 0; i < highScores.length; i++) {
+        //             var entry = highScores[i];
+        //             var rank = (i + 1).toString().padStart(2, '0');
+        //             var text = rank + ".  " + entry.name + " — " + entry.score + " Punkte";
+        //             ctx.fillText(text, x, y);
+        //             y += 35;
+        //         }
+        //         ctx.restore();
+        //         // Hinweistext am unteren Rand der Highscore-Tabelle ...
+        //         // ctx.save();
+        //         // ctx.font = "bold 34px Zabars";                  // gleiche Schriftart, etwas kleiner
+        //         // ctx.fillStyle = "black";                        // schwarze Schriftfarbe
+        //         // ctx.textAlign = "center";                       // zentriert
+        //         // ctx.fillText("C l i c k  t o  c o n t i n u e", x, y);   // leicht unterhalb der letzten Zeile
+        //         // ctx.restore();
+
+        //     }
+        // }
 
         // Wiederholtes Neuzeichnen ...
         const self = this;
@@ -578,36 +576,54 @@ class World {
         }, 700);
     }
 
+
     // ===============================================
     // HIGHSCORE-SYSTEM (TOP 10 MIT NAMEN)
     // ===============================================
-
     saveHighScoreEntry() {
-        // Spielername abfragen ...
-        var playerName = prompt("Bitte gib deinen Namen ein:", "Player");
-        if (!playerName) {
-            playerName = "Unbekannt";
+        if (this.highscoreAlreadySaved) {
+            // Mehrfachausführung verhindern ...
+            return;
         }
+        this.highscoreAlreadySaved = true;
+        // Spielername abfragen ...
+        var playerName = prompt("Please, write your name:", "Player");
+        if (!playerName) {
+            playerName = "unknown";
+        }
+
         // Highscore-Daten aus localStorage holen ...
         var storedData = localStorage.getItem('highScoreTable');
         var highScores = storedData ? JSON.parse(storedData) : [];
+
         // Neuen Eintrag anlegen ...
         var newEntry = {
             name: playerName.trim(),
             score: this.score,
             date: new Date().toLocaleDateString('de-DE')
         };
-        highScores.push(newEntry);                   // Neuen Eintrag hinzufügen ...  
+        highScores.push(newEntry);
+
+        // Sortieren (höchster Score zuerst) ...
         highScores.sort(function (a, b) {
-            // Nach Score sortieren (absteigend) ...
             return b.score - a.score;
         });
+
+        // Nur die besten 10 behalten ...
         if (highScores.length > 10) {
-            // Nur die besten 10 behalten ...
             highScores = highScores.slice(0, 10);
         }
-        localStorage.setItem('highScoreTable', JSON.stringify(highScores));     // Speichern im localStorage ...
+
+        // Speichern ...
+        localStorage.setItem('highScoreTable', JSON.stringify(highScores));
+
+        // ✅ Neues Overlay anzeigen
+        var overlay = document.getElementById('highscoreSavedOverlay');
+        if (overlay) {
+            overlay.style.display = 'flex';
+        }
     }
+
 
     displayHighScoreTable() {
         // HIGH-SCORE-Daten speichern für spätere Ausgabe ...

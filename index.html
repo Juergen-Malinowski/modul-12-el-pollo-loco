@@ -49,6 +49,16 @@
         </div>
     </div>
 
+    <!-- === HIGHSCORE-SAVED OVERLAY (Bestätigung nach Speichern) === -->
+    <div id="highscoreSavedOverlay" onclick="closeHighscoreSaved()" style="display:none;">
+        <div id="highscoreSavedBox" onclick="event.stopPropagation()">
+            <h2>✅ Highscore gespeichert!</h2>
+            <p>Dein Ergebnis wurde erfolgreich in der Highscore-Liste gespeichert.</p>
+            <button id="closeHighscoreSavedButton" onclick="closeHighscoreSaved()">OK</button>
+        </div>
+    </div>
+
+
     <!-- === AUDIO-OVERLAY === -->
     <div id="audioOverlay" onclick="closeAudioSettings()">
         <div id="audioBox" onclick="event.stopPropagation()">
