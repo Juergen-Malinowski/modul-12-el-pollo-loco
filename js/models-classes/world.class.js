@@ -144,6 +144,12 @@ class World {
 
 
             if (!enemy.isDeadChicken) {
+                // Sound nur abspielen, wenn Cooldown abgelaufen ...
+                var now = Date.now();
+                if (now - soundHub.lastHitSoundTime > soundHub.hitSoundCooldown) {
+                    soundHub.playEffect(soundHub.soundHit);
+                    soundHub.lastHitSoundTime = now;
+                }
                 this.character.wasHit();
                 this.percentage = this.character.energie / this.character.holeEnergie * 100;
                 this.statusBar.setPercentage(this.percentage);

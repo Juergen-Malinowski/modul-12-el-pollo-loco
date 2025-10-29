@@ -15,14 +15,17 @@ class SoundHub {
 
         // === SOUND-EFFEKTE ===
         this.soundCoin = new Audio('./assets/sound/coin.mp3');                    // Münze eingesammelt
-        this.soundHit = new Audio('./assets/sound/hit.mp3');                      // Treffer durch Gegner
         this.soundThrow = new Audio('./assets/sound/throw.mp3');                  // Flasche geworfen
 
+        this.soundHit = new Audio('./assets/sound/pepe-cry.mp3');                 // Treffer durch Gegner
         this.soundChickenMud = new Audio('./assets/sound/chicken-mud.mp3');       // Pepe springt auf Huhn und trifft
         this.soundJumping = new Audio('./assets/sound/jumping.mp3');              // Pepe springt
         this.soundChickenHit = new Audio('./assets/sound/chicken-clucking.mp3');  // Huhn getroffen
         this.soundBottlePickup = new Audio('./assets/sound/plopp.mp3');           // Flasche eingesammelt
         this.soundBossStart = new Audio('./assets/sound/great-Chicken-Cry.mp3');  // Endboss aktiviert
+
+        this.lastHitSoundTime = 0;       // Zeitstempel des letzten Charakter-Treffer-Sounds
+        this.hitSoundCooldown = 2000;    // Mindestzeit in Millisekunden, bevor erneut Sound möglich
 
 
         // === STATUS-FLAG ===
@@ -55,9 +58,10 @@ class SoundHub {
             this.backgroundMusic,
             this.soundJump,
             this.soundCoin,
-            this.soundHit,
             this.soundThrow,
             this.soundChickenHit,
+
+            this.soundHit,               // Charakter wird verletzt
             this.soundBottlePickup,      // Flaschen-Sound
             this.soundBossStart,         // Endboss startet
             this.soundJumping,           // Sprung-Sound Charakter
