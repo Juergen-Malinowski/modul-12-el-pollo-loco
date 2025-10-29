@@ -54,8 +54,7 @@ class SoundHub {
 
         // === Alle Sounds in ein Array packen ===
         var allSounds = [
-            this.backgroundMusic,
-
+            this.backgroundMusic,        // Hintergrundmusik
             this.soundThrow,             // Flasche fliegt durch die Luft
             this.soundChickenHit,        // Pepe trifft Huhn von oben ... Huhn schreit
             this.soundCoin,              // Münze aufgehoben
@@ -72,8 +71,6 @@ class SoundHub {
         }
     }
 
-
-
     /**
      * === Einzelnen Sound-Effekt abspielen (wenn nicht stummgeschaltet) ===
      */
@@ -83,9 +80,40 @@ class SoundHub {
             audio.play();
         }
     }
+
+
+    /**
+     * === Hintergrundmusik sicher starten ===
+     */
+    playBackgroundMusic() {
+        if (this.isMuted) {
+            return; // Wenn global stummgeschaltet, nichts tun
+        }
+
+        // Falls Musik bereits läuft → erst stoppen
+        if (!this.backgroundMusic.paused) {
+            this.backgroundMusic.pause();
+            this.backgroundMusic.currentTime = 0;
+        }
+
+        // Dann neu starten
+        this.backgroundMusic.loop = true;
+        this.backgroundMusic.volume = 0.3;
+        this.backgroundMusic.play().catch(function (e) {
+            console.warn("Musik konnte nicht automatisch gestartet werden:", e);
+        });
+    }
+
+    /**
+     * === Hintergrundmusik stoppen ===
+     */
+    stopBackgroundMusic() {
+        if (this.backgroundMusic && !this.backgroundMusic.paused) {
+            this.backgroundMusic.pause();
+            this.backgroundMusic.currentTime = 0;
+        }
+    }
 }
-
-
 
 /**
  * ===========================================================

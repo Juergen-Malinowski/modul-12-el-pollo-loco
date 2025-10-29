@@ -1,13 +1,11 @@
 function startGame() {
-    // Startbildschirm ausblenden
-    document.getElementById('startScreen').style.display = 'none';
-
-    // Canvas sichtbar machen
-    document.getElementById('canvas').style.display = 'block';
+    document.getElementById('startScreen').style.display = 'none';   // Startbildschirm ausblenden
+    document.getElementById('canvas').style.display = 'block';       // Canvas sichtbar machen
 
     // === SPIEL STARTEN ===
     initLevel();   // Level-Daten laden
     init();        // Welt, Charakter, Steuerung etc. aufbauen
+    soundHub.playBackgroundMusic();        // Hintergrundmusik starten 
 }
 
 function openHighscore() {
