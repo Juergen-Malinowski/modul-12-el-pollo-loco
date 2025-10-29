@@ -94,6 +94,7 @@ class World {
                         const index = this.level.enemies.indexOf(enemy);
                         if (index > -1) this.level.enemies.splice(index, 1);
                     }, 2000);
+                    soundHub.playEffect(soundHub.soundChickenMud);   // Soundeffekt - Pepe Sprung auf Huhn
                     continue;
                 }
 

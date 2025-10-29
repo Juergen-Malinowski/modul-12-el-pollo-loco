@@ -18,6 +18,7 @@ class SoundHub {
         this.soundHit = new Audio('./assets/sound/hit.mp3');                      // Treffer durch Gegner
         this.soundThrow = new Audio('./assets/sound/throw.mp3');                  // Flasche geworfen
 
+        this.soundChickenMud = new Audio('./assets/sound/chicken-mud.mp3');       // Pepe springt auf Huhn und trifft
         this.soundJumping = new Audio('./assets/sound/jumping.mp3');              // Pepe springt
         this.soundChickenHit = new Audio('./assets/sound/chicken-clucking.mp3');  // Huhn getroffen
         this.soundBottlePickup = new Audio('./assets/sound/plopp.mp3');           // Flasche eingesammelt
@@ -59,7 +60,8 @@ class SoundHub {
             this.soundChickenHit,
             this.soundBottlePickup,      // Flaschen-Sound
             this.soundBossStart,         // Endboss startet
-            this.soundJumping            // Sprung-Sound Charakter
+            this.soundJumping,           // Sprung-Sound Charakter
+            this.soundChickenMud,        // Pepe springt auf Huhn und trifft
         ];
 
         // === Alle Sounds auf den neuen Status setzen ===
