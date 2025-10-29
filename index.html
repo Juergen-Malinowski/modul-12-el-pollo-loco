@@ -5,14 +5,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>El Pollo Loco</title>    
+    <title>El Pollo Loco</title>
     <link rel="icon" href="./assets/img/6_salsa_flasche/2_salsa_bottle_on_ground.png" type="image/png" sizes="16x16">
     <link rel="stylesheet" href="./style.css">
 </head>
 
 <!-- <body onload="init()"> -->
-    <body onload="initLevel(); init();">
 
+<body onload="initLevel(); init();">
+
+    <!-- === STARTBILDSCHIRM (Intro) === -->
+    <div id="startScreen">
+
+        <!-- === Menüleiste oben === -->
+        <nav id="startMenu">
+            <button class="menuButton" onclick="startGame()">START</button>
+            <button class="menuButton" onclick="toggleAudio()">AUDIO</button>
+            <button class="menuButton" onclick="openImpressum()">IMPRESSUM & THANKS</button>
+        </nav>
+
+        <!-- === Startbild === -->
+        <img src="./assets/img/9_intro_outro_bildschirm/start/startscreen_2.png" alt="Startscreen" id="startImage">
+
+        <!-- === COPYRIGHT jetzt innerhalb des Startbildschirms === -->
+        <p id="copyright">(C) Jürgen Malinowski, Oktober 2025</p>
+
+    </div>
 
     <h1>EL POLLO LOCO</h1>
 
