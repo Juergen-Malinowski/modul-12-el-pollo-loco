@@ -19,7 +19,7 @@
         <!-- === Menüleiste oben === -->
         <nav id="startMenu">
             <button class="menuButton" onclick="startGame()">START</button>
-            <button class="menuButton" onclick="toggleAudio()">AUDIO</button>
+            <button class="menuButton" onclick="openAudioSettings()">AUDIO</button>
             <button class="menuButton" onclick="openImpressum()">IMPRESSUM & THANKS</button>
             <button class="menuButton" onclick="openHighscore()">HIGHSCORE</button>
         </nav>
@@ -48,6 +48,35 @@
             <p id="closeHint">Click to close</p>
         </div>
     </div>
+
+    <!-- === AUDIO-OVERLAY === -->
+    <div id="audioOverlay" onclick="closeAudioSettings()">
+        <div id="audioBox" onclick="event.stopPropagation()">
+            <h2>🎧 Audio Einstellungen</h2>
+
+            <!-- Musik -->
+            <div class="audioControlRow">
+                <label for="musicVolume">Musiklautstärke:</label>
+                <input type="range" id="musicVolume" min="0" max="1" step="0.05" value="0.3"
+                    onchange="updateMusicVolume(this.value)">
+            </div>
+
+            <!-- Effekte -->
+            <div class="audioControlRow">
+                <label for="effectVolume">Effektlautstärke:</label>
+                <input type="range" id="effectVolume" min="0" max="1" step="0.05" value="1"
+                    onchange="updateEffectVolume(this.value)">
+            </div>
+
+            <div class="audioControlRow">
+                <button id="toggleMuteButton" onclick="toggleMuteAll()">🔇 Ton an/aus</button>
+            </div>
+
+            <p id="closeAudioHint" onclick="closeAudioSettings()">Click to close</p>
+        </div>
+    </div>
+
+
 
     <!-- === IMPRESSUM & THANKS OVERLAY === -->
     <div id="impressumOverlay" onclick="closeImpressum()">
@@ -95,14 +124,7 @@
 
 
 <!-- Thanks für Sound and Grafiks 
-Sound Effect by <a href="https://pixabay.com/users/freesound_community-46691455/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=6379">freesound_community</a> from <a href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=6379">Pixabay</a> 
-Image by <a href="https://pixabay.com/users/kranich17-11197573/?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=4017599">Michaela 💗</a> from <a href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=4017599">Pixabay</a>
 
-Image by <a href="https://pixabay.com/users/garzapaloelhermano-25204685/?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=7082488">Grober Arzapalo</a> from <a href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=7082488">Pixabay</a>
-Image by <a href="https://pixabay.com/users/ideativas-tlm-19346105/?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=7870810">Raquel Candia</a> from <a href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=7870810">Pixabay</a>
-Image by <a href="https://pixabay.com/users/ideativas-tlm-19346105/?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=9862695">Raquel Candia</a> from <a href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=9862695">Pixabay</a>
-Image by <a href="https://pixabay.com/users/openclipart-vectors-30363/?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=1293869">OpenClipart-Vectors</a> from <a href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=1293869">Pixabay</a>
-Image by <a href="https://pixabay.com/users/olenchic-16658974/?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=9882847">Olena</a> from <a href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=9882847">Pixabay</a>
 
 noch unbenutzt ...
 Image by <a href="https://pixabay.com/users/fajarbudi86-1126901/?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=2419495">fajarbudi86</a> from <a href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=2419495">Pixabay</a>

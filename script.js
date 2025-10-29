@@ -86,5 +86,30 @@ function closeImpressum() {
     overlay.style.display = "none";
     frame.src = "";
 }
+function openAudioSettings() {
+    var overlay = document.getElementById("audioOverlay");
+    overlay.style.display = "flex";
+}
+
+function closeAudioSettings() {
+    var overlay = document.getElementById("audioOverlay");
+    overlay.style.display = "none";
+}
+
+function updateMusicVolume(value) {
+    soundHub.backgroundMusic.volume = parseFloat(value);
+}
+
+function updateEffectVolume(value) {
+    var vol = parseFloat(value);
+    soundHub.soundJump.volume = vol;
+    soundHub.soundCoin.volume = vol;
+    soundHub.soundHit.volume = vol;
+    soundHub.soundThrow.volume = vol;
+}
+
+function toggleMuteAll() {
+    soundHub.toggleMute();
+}
 
 
