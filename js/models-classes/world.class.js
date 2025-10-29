@@ -381,8 +381,6 @@ class World {
         }, 1500);
     }
 
-
-
     updateBottleBar() {
         // Prozentanteil der Flaschen berechnen ... 
         let percentage = (this.collectedBottles / 5) * 100;
@@ -484,57 +482,6 @@ class World {
             ctx.restore();
         }
 
-        // // HIGH-SCORE-TABELLE zeigen (bei Spielende) ...
-        // if (this.gameOver && this.showYouWin) {
-        //     var highScores = this.displayHighScoreTable();
-        //     if (highScores.length > 0) {
-        //         var ctx = this.ctx;
-        //         var x = this.canvas.width / 2;
-        //         var yStart = this.canvas.height / 2 - 200;
-
-        //         // HINTERGRUND-RECHTECK (weiß, leicht transparent) ...
-        //         var rectWidth = 500;
-        //         var rectHeight = 700;
-        //         ctx.save();
-        //         ctx.globalAlpha = 0.8;              // Transparenz (0.0 = durchsichtig, 1.0 = deckend)
-        //         ctx.fillStyle = "white";            // Hintergrundfarbe
-        //         ctx.fillRect(
-        //             x - rectWidth / 2,              // linksbündiger Startpunkt
-        //             yStart - 40,                    // oberer Startpunkt
-        //             rectWidth,                      // Breite
-        //             rectHeight                      // Höhe
-        //         );
-        //         ctx.restore();
-
-        //         // TEXTAUFBAU ...
-        //         ctx.save();
-        //         ctx.font = "bold 50px Zabars";
-        //         ctx.fillStyle = "gold";
-        //         ctx.textAlign = "center";
-        //         ctx.fillText("🏆  Highscore-Tabelle  🏆", x, yStart + 20);
-        //         ctx.font = "bold 28px Zabars";
-        //         ctx.fillStyle = "black";
-        //         var y = yStart + 80;
-
-        //         for (var i = 0; i < highScores.length; i++) {
-        //             var entry = highScores[i];
-        //             var rank = (i + 1).toString().padStart(2, '0');
-        //             var text = rank + ".  " + entry.name + " — " + entry.score + " Punkte";
-        //             ctx.fillText(text, x, y);
-        //             y += 35;
-        //         }
-        //         ctx.restore();
-        //         // Hinweistext am unteren Rand der Highscore-Tabelle ...
-        //         // ctx.save();
-        //         // ctx.font = "bold 34px Zabars";                  // gleiche Schriftart, etwas kleiner
-        //         // ctx.fillStyle = "black";                        // schwarze Schriftfarbe
-        //         // ctx.textAlign = "center";                       // zentriert
-        //         // ctx.fillText("C l i c k  t o  c o n t i n u e", x, y);   // leicht unterhalb der letzten Zeile
-        //         // ctx.restore();
-
-        //     }
-        // }
-
         // Wiederholtes Neuzeichnen ...
         const self = this;
         requestAnimationFrame(() => self.draw());
@@ -582,47 +529,90 @@ class World {
     // HIGHSCORE-SYSTEM (TOP 10 MIT NAMEN)
     // ===============================================
     saveHighScoreEntry() {
+
+        // Verhindert Mehrfachausführung
         if (this.highscoreAlreadySaved) {
-            // Mehrfachausführung verhindern ...
             return;
         }
         this.highscoreAlreadySaved = true;
-        // Spielername abfragen ...
-        var playerName = prompt("Please, write your name:", "Player");
+
+        // --- Highscore-Tabelle laden ---
+        var storedData = localStorage.getItem('highScoreTable');
+        var highScores = storedData ? JSON.parse(storedData) : [];
+
+        // --- Prüfen, ob Score für TOP 10 reicht ---
+        var minScore = 0;
+        if (highScores.length > 0) {
+            // niedrigsten Score in der bestehenden Liste finden
+            minScore = highScores[highScores.length - 1].score;
+        }
+
+        var qualifies =
+            highScores.length < 10 || this.score > minScore;
+
+        // --- Wenn NICHT qualifiziert ---
+        if (!qualifies) {
+            // Kurze Nachricht: nicht in TOP 10
+            this.showHighscoreMessage("😢 SORRY, not enough for the TOP 10 !");
+            return;
+        }
+
+        // --- Wenn qualifiziert: Name abfragen ---
+        var playerName = prompt("Congratulations! You are one of the TOP 10! Please enter your name:", "Player");
         if (!playerName) {
             playerName = "unknown";
         }
 
-        // Highscore-Daten aus localStorage holen ...
-        var storedData = localStorage.getItem('highScoreTable');
-        var highScores = storedData ? JSON.parse(storedData) : [];
-
-        // Neuen Eintrag anlegen ...
+        // --- Eintrag anlegen und hinzufügen ---
         var newEntry = {
             name: playerName.trim(),
             score: this.score,
             date: new Date().toLocaleDateString('de-DE')
         };
+
         highScores.push(newEntry);
 
-        // Sortieren (höchster Score zuerst) ...
-        highScores.sort(function (a, b) {
-            return b.score - a.score;
-        });
-
-        // Nur die besten 10 behalten ...
+        // --- Sortieren und auf 10 begrenzen ---
+        highScores.sort(function (a, b) { return b.score - a.score; });
         if (highScores.length > 10) {
             highScores = highScores.slice(0, 10);
         }
 
-        // Speichern ...
+        // --- Speichern ---
         localStorage.setItem('highScoreTable', JSON.stringify(highScores));
 
-        // ✅ Neues Overlay anzeigen
-        var overlay = document.getElementById('highscoreSavedOverlay');
-        if (overlay) {
-            overlay.style.display = 'flex';
-        }
+        // --- Nachricht: Erfolgreich gespeichert ---
+        this.showHighscoreMessage("✅ Your high score has been saved!");
+    }
+
+    /**
+     * Zeigt eine kurze Meldung zentriert über dem Canvas an
+     * (z. B. „Highscore gespeichert“ oder „nicht geschafft“)
+     */
+    showHighscoreMessage(text) {
+        var overlay = document.createElement("div");
+        overlay.textContent = text;
+        overlay.style.position = "fixed";
+        overlay.style.top = "50%";
+        overlay.style.left = "50%";
+        overlay.style.transform = "translate(-50%, -50%)";
+        overlay.style.backgroundColor = "white";
+        overlay.style.color = "black";
+        overlay.style.padding = "30px 50px";
+        overlay.style.border = "4px solid black";
+        overlay.style.borderRadius = "15px";
+        overlay.style.fontFamily = "'Zabars', Arial, Helvetica, sans-serif";
+        overlay.style.fontSize = "2em";
+        overlay.style.textAlign = "center";
+        overlay.style.zIndex = "9999";
+        overlay.style.boxShadow = "0 0 15px rgba(0,0,0,0.5)";
+
+        document.body.appendChild(overlay);
+
+        // Automatisch nach 3 Sekunden ausblenden
+        setTimeout(() => {
+            overlay.remove();
+        }, 3000);
     }
 
 
