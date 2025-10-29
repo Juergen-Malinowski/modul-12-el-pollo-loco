@@ -14,9 +14,9 @@ class SoundHub {
         this.backgroundMusic.volume = 0.3;
 
         // === SOUND-EFFEKTE ===
-        this.soundCoin = new Audio('./assets/sound/coin.mp3');                    // Münze eingesammelt
         this.soundThrow = new Audio('./assets/sound/throw.mp3');                  // Flasche geworfen
 
+        this.soundCoin = new Audio('./assets/sound/coin-pling.mp3');              // Münze eingesammelt
         this.soundHit = new Audio('./assets/sound/pepe-cry.mp3');                 // Treffer durch Gegner
         this.soundChickenMud = new Audio('./assets/sound/chicken-mud.mp3');       // Pepe springt auf Huhn und trifft
         this.soundJumping = new Audio('./assets/sound/jumping.mp3');              // Pepe springt
@@ -56,11 +56,10 @@ class SoundHub {
         // === Alle Sounds in ein Array packen ===
         var allSounds = [
             this.backgroundMusic,
-            this.soundJump,
-            this.soundCoin,
             this.soundThrow,
-            this.soundChickenHit,
 
+            this.soundChickenHit,
+            this.soundCoin,
             this.soundHit,               // Charakter wird verletzt
             this.soundBottlePickup,      // Flaschen-Sound
             this.soundBossStart,         // Endboss startet
