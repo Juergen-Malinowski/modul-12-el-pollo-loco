@@ -294,6 +294,22 @@ button:hover {
     padding: 30px;
 }
 
+/* === Zusätzliche Klassen für info.html === */
+.text_grafik {
+    padding: 0;
+    margin: 10px 0 0 0;
+}
+
+.href_grafik {
+    text-decoration: underline;
+}
+
+.href_grafik:hover {
+    text-decoration: none;
+    color: #ffcc00;
+}
+
+
 /* Überschriften (h2) größer darstellen */
 .infoContent h2 {
     font-size: 3em;
@@ -420,14 +436,16 @@ canvas {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.6); /* halbtransparent dunkel */
+    background-color: rgba(0, 0, 0, 0.6);
+    /* halbtransparent dunkel */
     z-index: 30;
     align-items: center;
     justify-content: center;
 }
 
 #highscoreSavedBox {
-    background-color: white;            /* Weiße Leinwand für bessere Lesbarkeit */
+    background-color: white;
+    /* Weiße Leinwand für bessere Lesbarkeit */
     border: 4px solid black;
     border-radius: 15px;
     padding: 30px 50px;
@@ -435,7 +453,7 @@ canvas {
     font-family: 'Zabars', Arial, Helvetica, sans-serif;
     max-width: 500px;
     color: black;
-    box-shadow: 0 0 15px rgba(0,0,0,0.4);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
 }
 
 #highscoreSavedBox h2 {
@@ -465,6 +483,28 @@ canvas {
 #closeHighscoreSavedButton:hover {
     background-color: #ffe85c;
     transform: scale(1.2);
+}
+
+/* Alias für info.html */
+.info_content {
+    font-family: 'Zabars', Arial, Helvetica, sans-serif;
+    font-size: 1.6em;
+    line-height: 1.6;
+    margin-top: 0;
+    text-align: center;
+    color: black;
+    padding: 30px;
+}
+
+.info_content h2 {
+    font-size: 3em;
+    margin-bottom: 15px;
+}
+
+.info_content li {
+    font-size: 1.0em;
+    line-height: 1.6;
+    margin-top: 0;
 }
 
 
