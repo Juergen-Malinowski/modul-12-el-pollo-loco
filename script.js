@@ -9,3 +9,8 @@ function startGame() {
     initLevel();   // Level-Daten laden
     init();        // Welt, Charakter, Steuerung etc. aufbauen
 }
+
+function openHighscore() {
+    alert("Highscore-Anzeige wird später ergänzt.");
+}
+

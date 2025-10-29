@@ -38,16 +38,16 @@ h1 {
 
 /* === MENÜLEISTE AUF DEM STARTBILDSCHIRM === */
 #startMenu {
-    width: 100%;
+    width: 80%;
     display: flex;
     justify-content: center;
-    gap: 40px;
+    gap: 20px;
     margin-bottom: 25px;
 }
 
 .menuButton {
     font-family: 'Zabars', Arial, Helvetica, sans-serif;
-    font-size: 2.5em;
+    font-size: 2.3em;
     color: white;
     background-color: #ffcc00;
     border: 3px solid black;
