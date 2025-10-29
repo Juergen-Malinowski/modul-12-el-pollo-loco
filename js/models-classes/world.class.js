@@ -29,7 +29,6 @@ class World {
 
 
     constructor(canvas, keyboard) {
-        console.log('World build 2025-10-29 12:00');
         this.ctx = canvas.getContext("2d");
         this.canvas = canvas;
         this.keyboard = keyboard;
@@ -242,6 +241,7 @@ class World {
     }
 
     collectBottle(index) {
+        soundHub.playEffect(soundHub.soundBottlePickup);   // Soundeffekt
         // FLASCHEN aufsammeln ...
         this.level.bottles.splice(index, 1);
         this.collectedBottles++;

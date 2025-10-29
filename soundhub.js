@@ -18,7 +18,8 @@ class SoundHub {
         this.soundCoin = new Audio('./assets/sound/coin.mp3');                    // Beispiel: Münze eingesammelt
         this.soundHit = new Audio('./assets/sound/hit.mp3');                      // Beispiel: Treffer durch Gegner
         this.soundThrow = new Audio('./assets/sound/throw.mp3');                  // Beispiel: Flasche geworfen
-        this.soundChickenHit = new Audio('./assets/sound/chicken-clucking.mp3');  // NEU: Huhn getroffen
+        this.soundChickenHit = new Audio('./assets/sound/chicken-clucking.mp3');  // Huhn getroffen
+        this.soundBottlePickup = new Audio('./assets/sound/plopp.mp3');           // 🆕 Flasche eingesammelt
 
         // === STATUS-FLAG ===
         this.isMuted = false;     // globaler Mute-Schalter
@@ -52,7 +53,8 @@ class SoundHub {
             this.soundCoin,
             this.soundHit,
             this.soundThrow,
-            this.soundChickenHit
+            this.soundChickenHit,
+            this.soundBottlePickup      // 🆕 Flaschen-Sound mit aufnehmen
         ];
 
         // === Alle Sounds auf den neuen Status setzen ===
