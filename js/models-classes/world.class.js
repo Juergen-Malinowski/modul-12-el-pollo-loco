@@ -359,9 +359,14 @@ class World {
         // für WIN-Bild) ...
         setTimeout(() => {
             this.saveHighScoreEntry();   // Spielername + Tabelle anzeigen
-        }, 4000);                        // 4 Sekunde warten
+        }, 2000);                        // 4 Sekunde warten
         // Punkteanzeige blinken lassen ...
         this.startScoreBlink();
+        // === NEU: Nach Abschluss der Highscore-Speicherung End-Overlay anzeigen ===
+        setTimeout(() => {
+            showEndHighscoreOverlay();  // In script.js definiert
+        }, 5000);  // 1 Sekunde nach dem Speichern
+
     }
 
     // BEENDET das Spiel nach Tod des CHARAKTERS ...
@@ -511,6 +516,7 @@ class World {
                 ctx.font = "bold 28px Zabars";
                 ctx.fillStyle = "black";
                 var y = yStart + 80;
+                
                 for (var i = 0; i < highScores.length; i++) {
                     var entry = highScores[i];
                     var rank = (i + 1).toString().padStart(2, '0');

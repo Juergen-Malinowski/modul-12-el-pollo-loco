@@ -11,10 +11,6 @@ function startGame() {
 }
 
 function openHighscore() {
-    alert("Highscore-Anzeige wird später ergänzt.");
-}
-
-function openHighscore() {
     // Overlay- und Content-Elemente holen ...
     var overlay = document.getElementById("highscoreOverlay");
     var content = document.getElementById("highscoreContent");
@@ -44,21 +40,24 @@ function openHighscore() {
                 return b.score - a.score;
             });
 
-            var listHtml = "<ol style='text-align:left; margin:0; padding-left:1.4em;'>";
+            var listHtml = "<ol class='hsList' style='text-align:left; margin:0; padding-left:1.4em;'>";
             for (var i = 0; i < highScores.length; i++) {
                 var entry = highScores[i];
-                var rank = (i + 1).toString().padStart(2, "0");
+
+                // Fallbacks sauber halten
                 var name = entry && entry.name ? entry.name : "Unbekannt";
-                var score = entry && typeof entry.score === "number" ? entry.score : 0;
-                listHtml += "<li>" + rank + ". " + name + " — " + score + " Punkte</li>";
+                var scoreVal = entry && typeof entry.score === "number" ? entry.score : 0;
+
+                // KEINE manuelle Rangnummer mehr voranstellen!
+                listHtml += "<li>" + name + " — " + scoreVal + " Punkte</li>";
             }
             listHtml += "</ol>";
             content.innerHTML = listHtml;
         }
-    }
 
-    // Overlay sichtbar machen (Flex-Ausrichtung greift jetzt) ...
-    overlay.style.display = "flex";
+        // Overlay sichtbar machen (Flex-Ausrichtung greift jetzt) ...
+        overlay.style.display = "flex";
+    }
 }
 
 function closeHighscore() {
@@ -112,4 +111,41 @@ function toggleMuteAll() {
     soundHub.toggleMute();
 }
 
+function showEndHighscoreOverlay() {
+    // === Overlay-Hintergrund erstellen ===
+    var overlay = document.createElement("div");
+    overlay.id = "endHighscoreOverlay";
+    overlay.style.position = "fixed";
+    overlay.style.top = "0";
+    overlay.style.left = "0";
+    overlay.style.width = "100%";
+    overlay.style.height = "100%";
+    overlay.style.backgroundColor = "rgba(0,0,0,0.8)";
+    overlay.style.display = "flex";
+    overlay.style.flexDirection = "column";
+    overlay.style.alignItems = "center";
+    overlay.style.justifyContent = "center";
+    overlay.style.zIndex = "40";
 
+    // === Text: Erfolgsmeldung ===
+    var message = document.createElement("p");
+    message.textContent = "🏆 Dein Highscore wurde gespeichert!";
+    message.style.fontFamily = "'Zabars', Arial, Helvetica, sans-serif";
+    message.style.fontSize = "2em";
+    message.style.color = "white";
+    message.style.marginBottom = "30px";
+
+    // === Button: Zurück zum Start ===
+    var button = document.createElement("button");
+    button.className = "overlayButton";  // nutzt deinen einheitlichen Stil
+    button.textContent = "Zurück zum Start";
+    button.onclick = function () {
+        overlay.remove();
+        document.getElementById("canvas").style.display = "none";
+        document.getElementById("startScreen").style.display = "flex";
+    };
+
+    overlay.appendChild(message);
+    overlay.appendChild(button);
+    document.body.appendChild(overlay);
+}

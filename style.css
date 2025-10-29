@@ -314,6 +314,15 @@ button:hover {
     margin: 10px 0 0 0;
 }
 
+/* Gestaltung High-Score-Tabelle */
+.hsList {
+    counter-reset: item;
+}
+
+.hsList li {
+    margin: 6px 0;
+}
+
 
 /* Canvas anfangs ausblenden */
 canvas {
