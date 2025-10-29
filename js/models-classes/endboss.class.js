@@ -5,7 +5,7 @@ class Endboss extends MovableObject {
     y = 180;                  // Startposition Endboss auf der Y-Achse
     x = 1750;                 // Startposition Endboss auf der X-Achse
     energieBoss = 300;        // Lebens-ENERGIE Endboss
-    moveSpeed = 3.0;          // Grundgeschwindigkeit Endboss
+    moveSpeed = 5.0;          // Grundgeschwindigkeit Endboss
     minX = 400;               // linke Grenze (innerhalb des Levels)
     maxX = 2100;              // rechte Grenze (innerhalb des Levels)
 
