@@ -19,6 +19,8 @@ class World {
     showYouWin = false;                    // Steuerung, ob das Bild angezeigt wird
     blinkActive = false;                   // steuert, ob die Score-Anzeige blinken soll
     blinkVisible = true;                   // aktueller Sichtbarkeitszustand für Blinkeffekt
+    soundIcon = new Image();               // Icon für Sound ist ausgeschaltet für Hinweis im Canvas
+
 
 
     // Variablen für Sarg-Animation ...
@@ -32,8 +34,9 @@ class World {
         this.ctx = canvas.getContext("2d");
         this.canvas = canvas;
         this.keyboard = keyboard;
-        this.coffinImg.src = 'assets/img/2_charakter_pepe/5_dead/coffin.png'; // Sarg-Bild laden
-        this.youWinImg.src = 'assets/img/0_you_won_you_lost/You Win A.png';   // You-Win-Bild laden
+        this.coffinImg.src = 'assets/img/2_charakter_pepe/5_dead/coffin.png';        // Sarg-Bild laden
+        this.youWinImg.src = 'assets/img/0_you_won_you_lost/You Win A.png';          // You-Win-Bild laden
+        this.soundIcon.src = 'assets/img/9_intro_outro_bildschirm/start/sound.gif';  // Sound-OFF-Icon laden
         this.setWorld();
         this.draw();
         this.run();
@@ -351,7 +354,7 @@ class World {
 
     // Zeigt das "You Win"-Endbild ...
     showVictoryScreen() {
-        
+
         soundHub.stopBackgroundMusic();                     // Hintergrundmusik stoppen ...
         let bonusFlaschen = this.collectedBottles * 3;      // Score-Punkte pro unbenutzte Flasche ...
         let bonusCoins = this.collectedCoins * 15;          // Score-Punkte  pro gesammelte Münze ...
@@ -487,6 +490,28 @@ class World {
 
         // Wiederholtes Neuzeichnen ...
         const self = this;
+
+        // === SOUNDSTATUS-ICON ZEICHNEN ===
+        if (soundHub.isMuted) {
+            this.ctx.save();
+            const iconSize = 80;  
+            const xPos = (this.canvas.width - iconSize) / 2;
+            const yPos = 15;
+            // Lautsprecher-Bild ...
+            this.ctx.drawImage(this.soundIcon, xPos, yPos, iconSize, iconSize);
+            // ROTES KREUZ darüber zeichnen ...
+            this.ctx.strokeStyle = "rgba(255, 0, 0, 0.7)";     // rot mit 70 % Deckkraft
+            this.ctx.lineWidth = 4;
+            const shorten = iconSize / 6;                        // Strichlänge kürzen für Kreuz
+            this.ctx.beginPath();
+            this.ctx.moveTo(xPos + 10 + shorten, yPos + 10 + shorten);
+            this.ctx.lineTo(xPos + iconSize - 10 - shorten, yPos + iconSize - 10 - shorten);
+            this.ctx.moveTo(xPos + iconSize - 10 - shorten, yPos + 10 + shorten);
+            this.ctx.lineTo(xPos + 10 + shorten, yPos + iconSize - 10 - shorten);
+            this.ctx.stroke();
+            this.ctx.restore();
+        }
+
         requestAnimationFrame(() => self.draw());
     }
 
