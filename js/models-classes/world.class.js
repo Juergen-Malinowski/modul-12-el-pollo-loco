@@ -333,6 +333,7 @@ class World {
     }
 
     // Startet die Sarg-Animation nach dem Tod ...
+    // Startet die Sarg-Animation nach dem Tod ...
     startCoffinAnimation() {
         this.showCoffin = true;
         this.coffinRotation = 0;
@@ -340,22 +341,142 @@ class World {
         let rotationSpeed = 15;
         let spins = 0;
 
+        // === Dreh-Animation (visuell) starten ===
         this.coffinSpin = setInterval(() => {
             this.coffinRotation += rotationSpeed;
             if (this.coffinRotation >= 360) {
                 this.coffinRotation = 0;
                 spins++;
             }
+        }, 30);
 
-            // === Wenn die Sarg-Animation 3 Umdrehungen gemacht hat ===
-            if (spins >= 3) {
-                clearInterval(this.coffinSpin);
+        // === Nach 5 Sekunden oder Klick ins Canvas → zurück zum Hauptmenü ===
 
-                // === Buttons erst jetzt anzeigen ===
-                this.showEndButtons();
+        // 1. Klick ins Canvas: sofort ins Hauptmenü
+        const canvasClickHandler = () => {
+            this.endCoffinSequence(canvasClickHandler);
+        };
+        this.canvas.addEventListener('mousedown', canvasClickHandler);
+
+        // 2. Timer nach 5 Sekunden: ebenfalls ins Hauptmenü
+        setTimeout(() => {
+            this.endCoffinSequence(canvasClickHandler);
+        }, 5000);
+    }
+
+    /**
+     * Beendet die Sarg-Animation und kehrt ins Hauptmenü zurück.
+     */
+    // Startet die Sarg-Animation nach dem Tod ...
+    startCoffinAnimation() {
+        this.showCoffin = true;
+        this.coffinRotation = 0;
+
+        let rotationSpeed = 15;
+        let spins = 0;
+
+        // === Dreh-Animation (visuell) starten ===
+        this.coffinSpin = setInterval(() => {
+            this.coffinRotation += rotationSpeed;
+            if (this.coffinRotation >= 360) {
+                this.coffinRotation = 0;
+                spins++;
+            }
+        }, 30);
+
+        // === Nach 5 Sekunden oder Klick ins Canvas → zurück zum Hauptmenü ===
+
+        // 1. Klick ins Canvas: sofort ins Hauptmenü
+        const canvasClickHandler = () => {
+            this.endCoffinSequence(canvasClickHandler);
+        };
+        this.canvas.addEventListener('mousedown', canvasClickHandler);
+
+        // 2. Timer nach 5 Sekunden: ebenfalls ins Hauptmenü
+        setTimeout(() => {
+            this.endCoffinSequence(canvasClickHandler);
+        }, 5000);
+    }
+
+    /**
+     * Beendet die Sarg-Animation und kehrt ins Hauptmenü zurück.
+     */
+    // Startet die Sarg-Animation nach dem Tod ...
+    startCoffinAnimation() {
+        this.showCoffin = true;
+        this.coffinRotation = 0;
+        var rotationSpeed = 15;    // Startgeschwindigkeit der Rotation (in Grad pro Tick)
+        var spins = 0;             // Zähler für volle Umdrehungen
+        var self = this;           // Referenz auf das aktuelle World-Objekt
+        // Sarg-Animation: 3 Umdrehungen, dann langsam auslaufen ...
+        this.coffinSpin = setInterval(function () {
+            self.coffinRotation += rotationSpeed;
+            // volle Umdrehung abgeschlossen ?
+            if (self.coffinRotation >= 360) {
+                self.coffinRotation = 0;
+                spins++;
+            }
+            // nach 3 Umdrehungen sanft abbremsen ...
+            if (spins >= 3 && rotationSpeed > 0) {
+                rotationSpeed -= 0.8;      // schrittweise langsamer werden
+                if (rotationSpeed <= 0) {
+                    rotationSpeed = 0;
+                    self.coffinRotation = 0;   // Sarg am Ende wieder aufrecht ausrichten (0°)
+                    clearInterval(self.coffinSpin);
+                    self.coffinSpin = null;
+
+                    // Nach Stillstand des Sarges: 5 Sek. warten oder Klick → Hauptmenü ...
+                    self.waitAndReturnToMenu();
+                }
             }
         }, 30);
     }
+
+
+    /**
+     * Wartet 5 Sekunden oder reagiert auf Klick ins Canvas → zurück ins Hauptmenü
+     */
+    waitAndReturnToMenu() {
+        // Klick ins Canvas → sofort zurück
+        const canvasClickHandler = () => {
+            this.endCoffinSequence(canvasClickHandler);
+        };
+        this.canvas.addEventListener('mousedown', canvasClickHandler);
+
+        // Timer: nach 5 Sekunden ebenfalls zurück
+        setTimeout(() => {
+            this.endCoffinSequence(canvasClickHandler);
+        }, 5000);
+    }
+
+    /**
+     * Beendet die Sarg-Animation und kehrt ins Hauptmenü zurück.
+     */
+    endCoffinSequence(canvasClickHandler) {
+        // Klick-Listener entfernen (nicht mehrfach reagieren)
+        this.canvas.removeEventListener('mousedown', canvasClickHandler);
+
+        // Anzeige-Flags
+        this.showCoffin = false;
+        this.gameOver = true;
+
+        // Sounds stoppen
+        if (typeof soundHub !== "undefined" && soundHub) {
+            if (typeof soundHub.stopBackgroundMusic === "function") {
+                soundHub.stopBackgroundMusic();
+            }
+            if (typeof soundHub.stopAllEffects === "function") {
+                soundHub.stopAllEffects();
+            }
+        }
+
+        // Canvas ausblenden, Menü zeigen
+        const cvs = document.getElementById('canvas');
+        const start = document.getElementById('startScreen');
+        if (cvs) cvs.style.display = 'none';
+        if (start) start.style.display = 'flex';
+    }
+
 
 
     /**
