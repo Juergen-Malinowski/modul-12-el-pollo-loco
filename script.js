@@ -282,6 +282,21 @@ function showEndHighscoreOverlay() {
     document.body.appendChild(overlay);
 }
 
+function showHighscoreSavedOverlay() {
+    var overlay = document.getElementById('highscoreSavedOverlay');
+    if (overlay) {
+        overlay.style.display = 'flex';
+    }
+
+    // Fokus auf den OK-Button setzen (bessere UX)
+    var okBtn = document.getElementById('closeHighscoreSavedButton');
+    if (okBtn) {
+        okBtn.focus();
+    }
+}
+
+
+
 /**
  * Schließt den kleinen OK-Hinweis (index.html: #highscoreSavedOverlay)
  */

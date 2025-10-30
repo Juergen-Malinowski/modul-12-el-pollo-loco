@@ -547,4 +547,67 @@ class World {
         this.ctx.drawImage(movableObject.img, 0, 0, movableObject.width, movableObject.heigth);
         this.ctx.restore();
     }
+
+    // Score blinkend darstellen (nach Sieg) ...
+    startScoreBlink() {
+        this.blinkActive = true;
+        this.blinkVisible = true;
+
+        let self = this;
+        setInterval(function () {
+            if (!self.blinkActive) return;
+            self.blinkVisible = !self.blinkVisible;
+        }, 500);    // alle 0,5 Sekunden wechseln
+    }
+
+
+    // Speichert den aktuellen Highscore-Eintrag (Name + Punkte) ...
+    saveHighScoreEntry() {
+        let playerName = prompt("You won! Enter your name for the Highscore:", "Player");
+        if (!playerName) {
+            return;    // kein Eintrag ohne Namen
+        }
+
+        let highScores = JSON.parse(localStorage.getItem("highScoreTable") || "[]");
+        highScores.push({
+            name: playerName,
+            score: this.score
+        });
+
+        localStorage.setItem("highScoreTable", JSON.stringify(highScores));
+
+        // Anzeige des Overlays (aus script.js) ...
+        if (typeof showHighscoreSavedOverlay === "function") {
+            showHighscoreSavedOverlay();
+        }
+    }
+
+    // Zeigt eine kurze Meldung zentriert über dem Canvas an ...
+    showHighscoreMessage(text) {
+        let overlay = document.createElement("div");
+        overlay.textContent = text;
+        overlay.style.position = "fixed";
+        overlay.style.top = "50%";
+        overlay.style.left = "50%";
+        overlay.style.transform = "translate(-50%, -50%)";
+        overlay.style.backgroundColor = "white";
+        overlay.style.color = "black";
+        overlay.style.padding = "30px 50px";
+        overlay.style.border = "4px solid black";
+        overlay.style.borderRadius = "15px";
+        overlay.style.fontFamily = "'Zabars', Arial, Helvetica, sans-serif";
+        overlay.style.fontSize = "2em";
+        overlay.style.textAlign = "center";
+        overlay.style.zIndex = "9999";
+        overlay.style.boxShadow = "0 0 15px rgba(0,0,0,0.5)";
+
+        document.body.appendChild(overlay);
+
+        // Automatisch nach 3 Sekunden ausblenden ...
+        setTimeout(function () {
+            overlay.remove();
+        }, 3000);
+    }
+
+
 }
