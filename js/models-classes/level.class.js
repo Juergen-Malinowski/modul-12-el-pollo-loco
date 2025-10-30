@@ -14,4 +14,3 @@ class level {
         this.backgroundObjects = backgroundObjects;
     }
 }
- 

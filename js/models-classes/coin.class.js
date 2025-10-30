@@ -17,7 +17,7 @@ class Coin extends MovableObject {
     centerY = 0;
 
     constructor(x, y) {
-        super().loadImage('../assets/img/8_muenzen/coin_2.png');
+        super().loadImage('./assets/img/8_muenzen/coin_2.png');
 
         // Startposition (entweder Vorgabe oder zufällig)
         if (typeof x === 'number') {

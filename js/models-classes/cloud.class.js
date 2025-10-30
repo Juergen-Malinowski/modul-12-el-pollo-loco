@@ -3,7 +3,7 @@ class Cloud extends MovableObject {
     speed = 0.2;
 
     constructor(x, y) {
-        super().loadImage('../assets/img/5_hintergrund/layers/4_clouds/1.png');
+        super().loadImage('./assets/img/5_hintergrund/layers/4_clouds/1.png');
         this.x = x;           // exakte horizontale Position
         this.y = y;           // exakte vertikale Position
         this.width = 400;     // feste Wolkengröße (kannst du bei Bedarf anpassen)

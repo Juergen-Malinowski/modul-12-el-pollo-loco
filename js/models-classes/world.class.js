@@ -34,10 +34,10 @@ class World {
         this.ctx = canvas.getContext("2d");
         this.canvas = canvas;
         this.keyboard = keyboard;
-        this.coffinImg.src = 'assets/img/2_charakter_pepe/5_dead/coffin.png';        // Sarg-Bild laden
-        this.youWinImg.src = 'assets/img/0_you_won_you_lost/You Win A.png';          // You-Win-Bild laden
-        this.gameOverImg.src = 'assets/img/9_intro_outro_bildschirm/game_over/game over.png';  // Game-Over-Bild laden
-        this.soundIcon.src = 'assets/img/9_intro_outro_bildschirm/start/sound.gif';  // Sound-OFF-Icon laden
+        this.coffinImg.src = './assets/img/2_charakter_pepe/5_dead/coffin.png';        // Sarg-Bild laden
+        this.youWinImg.src = './assets/img/0_you_won_you_lost/You Win A.png';          // You-Win-Bild laden
+        this.gameOverImg.src = './assets/img/9_intro_outro_bildschirm/game_over/game over.png';  // Game-Over-Bild laden
+        this.soundIcon.src = './assets/img/9_intro_outro_bildschirm/start/sound.gif';  // Sound-OFF-Icon laden
         this.setWorld();
         this.draw();
         this.run();
@@ -615,32 +615,9 @@ class World {
         if (typeof showHighscoreSavedOverlay === "function") {
             showHighscoreSavedOverlay();
         } else {
-            this.showHighscoreMessage("🏆 Dein Highscore wurde gespeichert!");
+            this.showHighscoreMessage("🏆 Your high score has been saved !");
         }
     }
-
-
-
-
-    // saveHighScoreEntry() {
-    //     let playerName = prompt("You won! Enter your name for the Highscore:", "Player");
-    //     if (!playerName) {
-    //         return;    // kein Eintrag ohne Namen
-    //     }
-
-    //     let highScores = JSON.parse(localStorage.getItem("highScoreTable") || "[]");
-    //     highScores.push({
-    //         name: playerName,
-    //         score: this.score
-    //     });
-
-    //     localStorage.setItem("highScoreTable", JSON.stringify(highScores));
-
-    //     // Anzeige des Overlays (aus script.js) ...
-    //     if (typeof showHighscoreSavedOverlay === "function") {
-    //         showHighscoreSavedOverlay();
-    //     }
-    // }
 
     // Zeigt eine kurze Meldung zentriert über dem Canvas an ...
     showHighscoreMessage(text) {

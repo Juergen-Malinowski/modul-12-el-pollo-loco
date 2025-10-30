@@ -18,7 +18,6 @@ class MovableObject extends DrawableObjects {
     // chickenCry = new Audio('assets/sound/chicken-1.mp3');   // aufgeregtes Huhn
 
 
-
     isAboveGround() {
         // WENN ein "ThrowableObjects", DANN sofort RETURN ... 
         if (this instanceof ThrowableObjects) {

@@ -9,5 +9,4 @@ class Keyboard {
     ENTER = false; 
 
     constructor() {}
-
 }

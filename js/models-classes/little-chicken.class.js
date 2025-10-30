@@ -13,18 +13,18 @@ class LittleChicken extends MovableObject {
     }
 
     imagesWalking = [
-        '../assets/img/3_feinde_huehner/chicken_small/1_walk/1_w.png',
-        '../assets/img/3_feinde_huehner/chicken_small/1_walk/2_w.png',
-        '../assets/img/3_feinde_huehner/chicken_small/1_walk/3_w.png',
+        './assets/img/3_feinde_huehner/chicken_small/1_walk/1_w.png',
+        './assets/img/3_feinde_huehner/chicken_small/1_walk/2_w.png',
+        './assets/img/3_feinde_huehner/chicken_small/1_walk/3_w.png',
     ];
 
-    imageDead = '../assets/img/3_feinde_huehner/chicken_small/2_dead/dead.png'; // Bild für „totes Huhn“ (liegt am Boden)
+    imageDead = './assets/img/3_feinde_huehner/chicken_small/2_dead/dead.png'; // Bild für „totes Huhn“ (liegt am Boden)
 
     isDeadChicken = false;     // Status: lebt oder ist bereits tot
 
 
     constructor() {
-        super().loadImage('../assets/img/3_feinde_huehner/chicken_small/1_walk/1_w.png');
+        super().loadImage('./assets/img/3_feinde_huehner/chicken_small/1_walk/1_w.png');
         this.x = 300 + Math.random() * 1800;       // Startposition des Huhns auf der X-Achse
         this.speed = 0.4 + Math.random() * 0.3;    // Jedes Huhn bekommt eine individuelle Geschwindigkeit
         this.loadImages(this.imagesWalking);       // Bewegungsbild laden   

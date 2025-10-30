@@ -11,12 +11,12 @@ class StatusBar extends DrawableObjects {
         if (type === 'health') {
             // === STATUSBAR LEBENSENERGIE ===
             this.images = [
-                'assets/img/7_statusbars/1_statusbar/2_statusbar_health/green/100.png',
-                'assets/img/7_statusbars/1_statusbar/2_statusbar_health/green/80.png',
-                'assets/img/7_statusbars/1_statusbar/2_statusbar_health/green/60.png',
-                'assets/img/7_statusbars/1_statusbar/2_statusbar_health/green/40.png',
-                'assets/img/7_statusbars/1_statusbar/2_statusbar_health/orange/20.png',
-                'assets/img/7_statusbars/1_statusbar/2_statusbar_health/orange/0.png'
+                './assets/img/7_statusbars/1_statusbar/2_statusbar_health/green/100.png',
+                './assets/img/7_statusbars/1_statusbar/2_statusbar_health/green/80.png',
+                './assets/img/7_statusbars/1_statusbar/2_statusbar_health/green/60.png',
+                './assets/img/7_statusbars/1_statusbar/2_statusbar_health/green/40.png',
+                './assets/img/7_statusbars/1_statusbar/2_statusbar_health/orange/20.png',
+                './assets/img/7_statusbars/1_statusbar/2_statusbar_health/orange/0.png'
             ];
             this.x = 10;
             this.y = 10;
@@ -26,12 +26,12 @@ class StatusBar extends DrawableObjects {
         if (type === 'bottle') {
             // === STATUSBAR FLASCHEN ===
             this.images = [
-                'assets/img/7_statusbars/1_statusbar/3_statusbar_bottle/blue/100.png',
-                'assets/img/7_statusbars/1_statusbar/3_statusbar_bottle/blue/80.png',
-                'assets/img/7_statusbars/1_statusbar/3_statusbar_bottle/blue/60.png',
-                'assets/img/7_statusbars/1_statusbar/3_statusbar_bottle/blue/40.png',
-                'assets/img/7_statusbars/1_statusbar/3_statusbar_bottle/blue/20.png',
-                'assets/img/7_statusbars/1_statusbar/3_statusbar_bottle/blue/0.png'
+                './assets/img/7_statusbars/1_statusbar/3_statusbar_bottle/blue/100.png',
+                './assets/img/7_statusbars/1_statusbar/3_statusbar_bottle/blue/80.png',
+                './assets/img/7_statusbars/1_statusbar/3_statusbar_bottle/blue/60.png',
+                './assets/img/7_statusbars/1_statusbar/3_statusbar_bottle/blue/40.png',
+                './assets/img/7_statusbars/1_statusbar/3_statusbar_bottle/blue/20.png',
+                './assets/img/7_statusbars/1_statusbar/3_statusbar_bottle/blue/0.png'
             ];
             this.x = 10;
             this.y = 70;
@@ -42,12 +42,12 @@ class StatusBar extends DrawableObjects {
             // === STATUSBAR MÜNZEN ===
             // Reihenfolge jetzt korrekt: 100 → 0 Prozent
             this.images = [
-                'assets/img/7_statusbars/1_statusbar/1_statusbar_coin/orange/100.png',
-                'assets/img/7_statusbars/1_statusbar/1_statusbar_coin/orange/80.png',
-                'assets/img/7_statusbars/1_statusbar/1_statusbar_coin/orange/60.png',
-                'assets/img/7_statusbars/1_statusbar/1_statusbar_coin/orange/40.png',
-                'assets/img/7_statusbars/1_statusbar/1_statusbar_coin/orange/20.png',
-                'assets/img/7_statusbars/1_statusbar/1_statusbar_coin/orange/0.png'
+                './assets/img/7_statusbars/1_statusbar/1_statusbar_coin/orange/100.png',
+                './assets/img/7_statusbars/1_statusbar/1_statusbar_coin/orange/80.png',
+                './assets/img/7_statusbars/1_statusbar/1_statusbar_coin/orange/60.png',
+                './assets/img/7_statusbars/1_statusbar/1_statusbar_coin/orange/40.png',
+                './assets/img/7_statusbars/1_statusbar/1_statusbar_coin/orange/20.png',
+                './assets/img/7_statusbars/1_statusbar/1_statusbar_coin/orange/0.png'
             ];
             this.x = 10;
             this.y = 130;    // unter Flaschen-Bar
@@ -57,12 +57,12 @@ class StatusBar extends DrawableObjects {
         if (type === 'endboss') {
             // === STATUSBAR ENDBOSS ===
             this.images = [
-                'assets/img/7_statusbars/2_statusbar_endboss/green/green100.png',
-                'assets/img/7_statusbars/2_statusbar_endboss/green/green80.png',
-                'assets/img/7_statusbars/2_statusbar_endboss/green/green60.png',
-                'assets/img/7_statusbars/2_statusbar_endboss/green/green40.png',
-                'assets/img/7_statusbars/2_statusbar_endboss/green/green20.png',
-                'assets/img/7_statusbars/2_statusbar_endboss/green/green0.png'
+                './assets/img/7_statusbars/2_statusbar_endboss/green/green100.png',
+                './assets/img/7_statusbars/2_statusbar_endboss/green/green80.png',
+                './assets/img/7_statusbars/2_statusbar_endboss/green/green60.png',
+                './assets/img/7_statusbars/2_statusbar_endboss/green/green40.png',
+                './assets/img/7_statusbars/2_statusbar_endboss/green/green20.png',
+                './assets/img/7_statusbars/2_statusbar_endboss/green/green0.png'
             ];
             this.x = 10;
             this.y = 190;

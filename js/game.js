@@ -5,17 +5,11 @@ let keyboard = new Keyboard();  // Variablen für Rückmeldung des "keydown" in 
 let score = 0;                  // Globale SCORE-Zählvariable für Spielpunkte
 
 
-
 function init() {
     // grundsätzliche Einbindung für canvas und Darstellungsart (2D/3D) ...
     canvas = document.getElementById("canvas");
     initLevel();        // jetzt wird Welt erschaffen
     world = new World(canvas, keyboard);              // Welt anlegen und Canvas (id canvas) und gedrückte Taste übergeben
-    // Charakter-Bild laden ... dauert etwas, weshalb "ctx.drawImage" in eine TIMEOUT-Funktion gepackt wird ...
-    // character.src = "../assets/img/2_charakter_pepe/2_walk/W-21.png";
-    // setTimeout(function () {   // setzt den TIMEOUT, damit das PNG Zeit zum Laden hat ...
-    //     ctx.drawImage(character, 20, 20, 50, 150);
-    // }, 1000);
 };
 
 window.addEventListener("keydown", (e) => {
