@@ -95,7 +95,12 @@ class World {
                     this.character.y = enemyTop - this.character.heigth;
                     soundHub.playEffect(soundHub.soundChickenHit);   // Soundeffekt
                     enemy.die();
-                    this.addScore(20);        // Score-Punkte für Springen auf Huhn
+                    // Score-Punkte für Springen auf Huhn ...
+                    if (enemy instanceof LittleChicken) {
+                        this.addScore(10);    // Kleine Hühner 
+                    } else {
+                        this.addScore(20);    // Normale Hühner
+                    }     
                     setTimeout(() => {
                         const index = this.level.enemies.indexOf(enemy);
                         if (index > -1) this.level.enemies.splice(index, 1);
