@@ -346,11 +346,71 @@ class World {
                 this.coffinRotation = 0;
                 spins++;
             }
+
+            // === Wenn die Sarg-Animation 3 Umdrehungen gemacht hat ===
             if (spins >= 3) {
                 clearInterval(this.coffinSpin);
+
+                // === Buttons erst jetzt anzeigen ===
+                this.showEndButtons();
             }
         }, 30);
     }
+
+
+    /**
+ * === Buttons nach Spielende anzeigen ===
+ */
+    showEndButtons() {
+        // Prüfen, ob Buttons bereits existieren ...
+        if (document.getElementById('tryAgainButton')) {
+            return;
+        }
+
+        // Container für die Buttons ...
+        var buttonContainer = document.createElement('div');
+        buttonContainer.id = 'endButtonContainer';
+        buttonContainer.style.position = 'fixed';
+        buttonContainer.style.top = '20px';
+        buttonContainer.style.left = '50%';
+        buttonContainer.style.transform = 'translateX(-50%)';
+        buttonContainer.style.display = 'flex';
+        buttonContainer.style.gap = '20px';
+        buttonContainer.style.zIndex = '1000';
+        document.body.appendChild(buttonContainer);
+
+        // Try Again Button ...
+        var tryAgain = document.createElement('button');
+        tryAgain.id = 'tryAgainButton';
+        tryAgain.textContent = 'Try again';
+        tryAgain.className = 'menuButton';
+        tryAgain.onclick = () => {
+            buttonContainer.remove();        // Buttons entfernen
+            // Canvas und Welt neu starten (neue World-Instanz) ...
+            document.getElementById('canvas').style.display = 'block';
+            const canvas = document.getElementById('canvas');
+            const keyboard = new Keyboard();
+            world = new World(canvas, keyboard);
+            soundHub.playBackgroundMusic();   // Musik wieder starten
+        };
+
+        buttonContainer.appendChild(tryAgain);
+
+        // === Back to Menu Button ===
+        var backMenu = document.createElement('button');
+        backMenu.id = 'backToMenuButton';
+        backMenu.textContent = 'Back to Menu';
+        backMenu.className = 'menuButton';
+        backMenu.onclick = function () {
+            // zurück zum Startbildschirm (Canvas ausblenden, Startbild zeigen)
+            document.getElementById('canvas').style.display = 'none';
+            document.getElementById('startScreen').style.display = 'flex';
+            // Buttons entfernen
+            buttonContainer.remove();
+        };
+        buttonContainer.appendChild(backMenu);
+    }
+
 
     // Zeigt das "You Win"-Endbild ...
     showVictoryScreen() {
@@ -494,7 +554,7 @@ class World {
         // === SOUNDSTATUS-ICON ZEICHNEN ===
         if (soundHub.isMuted) {
             this.ctx.save();
-            const iconSize = 80;  
+            const iconSize = 80;
             const xPos = (this.canvas.width - iconSize) / 2;
             const yPos = 15;
             // Lautsprecher-Bild ...
