@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" translate="no">
 
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,18 +18,17 @@
         <!-- === Menüleiste oben === -->
         <nav id="startMenu">
             <button class="menuButton" onclick="startGame()">START</button>
+            <button class="menuButton" onclick="openGameControl()">GAME CONTROL</button>
             <button class="menuButton" onclick="openAudioSettings()">AUDIO</button>
             <button class="menuButton" onclick="openImpressum()">IMPRESSUM & THANKS</button>
             <button class="menuButton" onclick="openHighscore()">HIGHSCORE</button>
         </nav>
 
-
         <!-- === Startbild === -->
         <img src="./assets/img/9_intro_outro_bildschirm/start/startscreen_2.png" alt="Startscreen" id="startImage">
 
         <!-- === ÜBERLAGERUNGS-BILDER === -->
-        <img src="./assets/img/9_intro_outro_bildschirm/start/bat.png" alt="Fledermaus" class="overlayImage"
-            id="batImage">
+        <img src="./assets/img/9_intro_outro_bildschirm/start/bat.png" alt="Fledermaus" class="overlayImage" id="batImage">
 
         <!-- === COPYRIGHT jetzt innerhalb des Startbildschirms === -->
         <p id="copyright">(C) Jürgen Malinowski, Oktober 2025</p>
@@ -55,7 +53,6 @@
         </div>
     </div>
 
-
     <!-- === AUDIO-OVERLAY === -->
     <div id="audioOverlay" onclick="closeAudioSettings()">
         <div id="audioBox" onclick="event.stopPropagation()">
@@ -66,7 +63,6 @@
                 <label for="musicVolume">Music Volume:</label>
                 <input type="range" id="musicVolume" min="0" max="1" step="0.05" value="0.3"
                     oninput="updateMusicVolume(this.value)">
-
             </div>
 
             <!-- Effekte -->
@@ -84,8 +80,6 @@
         </div>
     </div>
 
-
-
     <!-- === IMPRESSUM & THANKS OVERLAY === -->
     <div id="impressumOverlay" onclick="closeImpressum()">
         <div id="impressumBox" onclick="event.stopPropagation()">
@@ -95,18 +89,21 @@
         </div>
     </div>
 
-
-
+    <!-- === GAME CONTROL OVERLAY === -->
+    <div id="gameControlOverlay" onclick="closeGameControl()">
+        <div id="gameControlBox" onclick="event.stopPropagation()">
+            <h2>🎮 Game Control</h2>
+            <p id="gameControlText">Hallo, ich bin der Erklärungstext</p>
+            <p id="closeGameControlHint" onclick="closeGameControl()">Click to close</p>
+        </div>
+    </div>
 
     <h1>EL POLLO LOCO</h1>
 
-    <canvas id="canvas" width="720" height="480">
-
-    </canvas>
+    <canvas id="canvas" width="720" height="480"></canvas>
 
 </body>
 <!-- ACHTUNG !!!!  "initLevel()" muss später mit dem SPIEL-START-BUTTON verbunden SEIN !!! -->
-
 
 <script src="./js/models-classes/drawable-objects.class.js"></script>
 <script src="./js/models-classes/movable-objects.class.js"></script>
@@ -127,10 +124,8 @@
 <script src="./soundhub.js"></script>
 <script src="./script.js"></script>
 
-
 <!-- Thanks für Sound and Grafiks 
 GIF by <a href="https://pixabay.com/users/funkikids-37640703/?utm_source=link-attribution&utm_medium=referral&utm_campaign=animation&utm_content=16450">Stefano Toro</a> from <a href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=animation&utm_content=16450">Pixabay</a>
-
 
 noch unbenutzt ...
 Image by <a href="https://pixabay.com/users/fajarbudi86-1126901/?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=2419495">fajarbudi86</a> from <a href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=2419495">Pixabay</a>
@@ -138,7 +133,6 @@ Image by <a href="https://pixabay.com/users/alexas_fotos-686414/?utm_source=link
 Image by <a href="https://pixabay.com/users/geralt-9301/?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=1536652">Gerd Altmann</a> from <a href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=1536652">Pixabay</a>
 Image by <a href="https://pixabay.com/users/aureliajhunter-18994837/?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=6754212">Aurelia J Hunter</a> from <a href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=6754212">Pixabay</a>
 Image by <a href="https://pixabay.com/users/fotocitizen-397314/?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=569514">Jorge Guillen</a> from <a href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=569514">Pixabay</a>
-
 -->
 
 </html>

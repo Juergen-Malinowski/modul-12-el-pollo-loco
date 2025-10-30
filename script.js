@@ -169,6 +169,11 @@ function openAudioSettings() {
     syncAudioUIFromSoundHub();
 }
 
+function openGameControl() {
+    alert("Game Control – hier folgt bald die Steuerungsübersicht!");
+}
+
+
 /**
  * Schließt das Audio-Overlay
  */
@@ -178,6 +183,15 @@ function closeAudioSettings() {
         overlay.style.display = "none";
     }
 }
+
+function openGameControl() {
+    document.getElementById('gameControlOverlay').style.display = 'flex';
+}
+
+function closeGameControl() {
+    document.getElementById('gameControlOverlay').style.display = 'none';
+}
+
 
 /**
  * Wird vom Musik-Lautstärke-Slider aufgerufen (onchange in index.html)
