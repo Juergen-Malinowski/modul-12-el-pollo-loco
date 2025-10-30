@@ -497,10 +497,10 @@ class World {
     addToMap(movableObject) {
         if (movableObject.otherDirection) {
             this.flipImage(movableObject);
-            movableObject.drawFrame(this.ctx);
+            // movableObject.drawFrame(this.ctx);
         } else {
             movableObject.draw(this.ctx);
-            movableObject.drawFrame(this.ctx);
+            // movableObject.drawFrame(this.ctx);
         }
     }
 
