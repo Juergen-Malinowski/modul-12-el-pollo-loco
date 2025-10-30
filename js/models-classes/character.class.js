@@ -127,7 +127,10 @@ class Character extends MovableObject {
                 this.speedY = 45;
                 this.lastActionTime = Date.now(); // Zeitstempel aktualisieren (Spieler aktiv)
             }
-
+            // Falls am oder unter dem Boden und nicht mehr aufwärts ... exakt einschnappen ...
+            if (!this.isAboveGround() && this.speedY <= 0) {
+                this.snapToGround();
+            }
             // Hintergrund-Verschiebung (Variable "cameraX") auf Bewegung des Charakters anpassen !
             this.world.cameraX = -this.x + 200;
         }, 100);
@@ -230,5 +233,14 @@ class Character extends MovableObject {
                 clearInterval(throwInterval);
             }
         }, 20);  // Geschwindigkeit der Wurfanimation (80 ms pro Frame)
+    }
+
+    // Exakt auf die Bodenhöhe einschnappen (nur wenn Bewegung beendet ist) ...
+    snapToGround() {
+        // Nur korrigieren, wenn keine Aufwärts- oder Abwärtsbewegung mehr da ist ...
+        if (this.speedY <= 0 && this.y > 130 && !this.isAboveGround()) {
+            this.y = 130;      // exakt auf Bodenhöhe bringen
+            this.speedY = 0;   // vertikale Bewegung stoppen
+        }
     }
 }

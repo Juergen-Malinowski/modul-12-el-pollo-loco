@@ -82,10 +82,10 @@ class World {
 
             if (!this.character.isColliding(enemy)) continue;
 
-            const faelltNachUnten = this.character.speedY < 0;
+            const faelltNachUnten = this.character.speedY < 5;
             const charBottom = this.character.y + this.character.heigth - (this.character.offset ? this.character.offset.buttom : 0);
             const enemyTop = enemy.y + (enemy.offset ? enemy.offset.top : 0);
-            const oberhalb = charBottom <= (enemy.y + enemy.heigth * 0.5);
+            const oberhalb = charBottom <= (enemy.y + enemy.heigth * 0.70);
 
             if (faelltNachUnten && oberhalb && !enemy.isDeadChicken) {
 
@@ -138,13 +138,15 @@ class World {
                     // Pepe nach oben und zur Seite katapultieren ...
                     this.character.speedY = bounceForceY;
                     this.character.x += bounceDistance * bounceDirection;
-                    this.character.y = enemyTop - this.character.heigth - 20;
 
                     this.character.isBouncingOffBoss = true;
                     setTimeout(() => {
                         this.character.isBouncingOffBoss = false;
+                        // nach der Abprall-Phase exakt auf Bodenhöhe setzen ...
+                        if (typeof this.character.snapToGround === "function") {
+                            this.character.snapToGround();
+                        }
                     }, 500);
-
                     continue;
                 }
             }
