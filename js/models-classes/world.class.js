@@ -100,7 +100,7 @@ class World {
                         this.addScore(10);    // Kleine Hühner 
                     } else {
                         this.addScore(20);    // Normale Hühner
-                    }     
+                    }
                     setTimeout(() => {
                         const index = this.level.enemies.indexOf(enemy);
                         if (index > -1) this.level.enemies.splice(index, 1);
@@ -565,33 +565,58 @@ class World {
         }, 500);    // alle 0,5 Sekunden wechseln
     }
 
-    // Speichert den aktuellen Highscore-Eintrag (Name + Punkte) ...
+    // Speichert den aktuellen Highscore-Eintrag (nur wenn unter Top 10) ...
     saveHighScoreEntry() {
+        let highScores = JSON.parse(localStorage.getItem("highScoreTable") || "[]");
+
+        // Prüfen, ob Liste voll ist und Mindestpunktzahl ermitteln ...
+        let minScore = 0;
+        if (highScores.length >= 10) {
+            // Nach Score sortieren (absteigend)
+            highScores.sort(function (a, b) {
+                return b.score - a.score;
+            });
+            minScore = highScores[highScores.length - 1].score;
+        }
+
+        // Prüfen, ob aktueller Score für Top 10 reicht ...
+        if (highScores.length >= 10 && this.score <= minScore) {
+            // Kein Eintrag, da nicht unter den Top 10
+            this.showHighscoreMessage("Not enough for the TOP-10 !");
+            return;
+        }
+
+        // Nur wenn Platz in Top 10 → Name abfragen ...
         let playerName = prompt("You won! Enter your name for the Highscore:", "Player");
         if (!playerName) {
-            return;              // kein Eintrag ohne Namen
+            return; // kein Eintrag ohne Namen
         }
-        let highScores = JSON.parse(localStorage.getItem("highScoreTable") || "[]");
-        // neuen Eintrag hinzufügen ...
+
+        // Eintrag hinzufügen und sortieren ...
         highScores.push({
             name: playerName,
             score: this.score
         });
-        // nach Score sortieren (absteigend) ...
         highScores.sort(function (a, b) {
             return b.score - a.score;
         });
-        // nur die besten 10 behalten ...
+
+        // Nur Top 10 behalten ...
         if (highScores.length > 10) {
             highScores = highScores.slice(0, 10);
         }
-        // im localStorage speichern ...
+
+        // Im localStorage speichern ...
         localStorage.setItem("highScoreTable", JSON.stringify(highScores));
-        // visuelle Bestätigung anzeigen ...
+
+        // Visuelle Bestätigung (Overlay oder Meldung)
         if (typeof showHighscoreSavedOverlay === "function") {
             showHighscoreSavedOverlay();
+        } else {
+            this.showHighscoreMessage("🏆 Dein Highscore wurde gespeichert!");
         }
     }
+
 
 
 
