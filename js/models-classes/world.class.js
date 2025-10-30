@@ -560,27 +560,55 @@ class World {
         }, 500);    // alle 0,5 Sekunden wechseln
     }
 
-
     // Speichert den aktuellen Highscore-Eintrag (Name + Punkte) ...
     saveHighScoreEntry() {
         let playerName = prompt("You won! Enter your name for the Highscore:", "Player");
         if (!playerName) {
-            return;    // kein Eintrag ohne Namen
+            return;              // kein Eintrag ohne Namen
         }
-
         let highScores = JSON.parse(localStorage.getItem("highScoreTable") || "[]");
+        // neuen Eintrag hinzufügen ...
         highScores.push({
             name: playerName,
             score: this.score
         });
-
+        // nach Score sortieren (absteigend) ...
+        highScores.sort(function (a, b) {
+            return b.score - a.score;
+        });
+        // nur die besten 10 behalten ...
+        if (highScores.length > 10) {
+            highScores = highScores.slice(0, 10);
+        }
+        // im localStorage speichern ...
         localStorage.setItem("highScoreTable", JSON.stringify(highScores));
-
-        // Anzeige des Overlays (aus script.js) ...
+        // visuelle Bestätigung anzeigen ...
         if (typeof showHighscoreSavedOverlay === "function") {
             showHighscoreSavedOverlay();
         }
     }
+
+
+
+    // saveHighScoreEntry() {
+    //     let playerName = prompt("You won! Enter your name for the Highscore:", "Player");
+    //     if (!playerName) {
+    //         return;    // kein Eintrag ohne Namen
+    //     }
+
+    //     let highScores = JSON.parse(localStorage.getItem("highScoreTable") || "[]");
+    //     highScores.push({
+    //         name: playerName,
+    //         score: this.score
+    //     });
+
+    //     localStorage.setItem("highScoreTable", JSON.stringify(highScores));
+
+    //     // Anzeige des Overlays (aus script.js) ...
+    //     if (typeof showHighscoreSavedOverlay === "function") {
+    //         showHighscoreSavedOverlay();
+    //     }
+    // }
 
     // Zeigt eine kurze Meldung zentriert über dem Canvas an ...
     showHighscoreMessage(text) {
