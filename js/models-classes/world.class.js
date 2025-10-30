@@ -16,12 +16,12 @@ class World {
     collectedCoins = 0;                    // gesammelte Münzen
     score = 0;                             // Punkte
     youWinImg = new Image();               // Bildobjekt für "You Win"
+    gameOverImg = new Image();             // Bildobjekt für "Game Over"
     showYouWin = false;                    // Steuerung, ob das Bild angezeigt wird
+    showGameOver = false;                  // Steuerung, ob Game-Over-Bild angezeigt wird
     blinkActive = false;                   // steuert, ob die Score-Anzeige blinken soll
     blinkVisible = true;                   // aktueller Sichtbarkeitszustand für Blinkeffekt
     soundIcon = new Image();               // Icon für Sound ist ausgeschaltet für Hinweis im Canvas
-
-
 
     // Variablen für Sarg-Animation ...
     coffinRotation = 0;
@@ -36,20 +36,22 @@ class World {
         this.keyboard = keyboard;
         this.coffinImg.src = 'assets/img/2_charakter_pepe/5_dead/coffin.png';        // Sarg-Bild laden
         this.youWinImg.src = 'assets/img/0_you_won_you_lost/You Win A.png';          // You-Win-Bild laden
+        this.gameOverImg.src = 'assets/img/9_intro_outro_bildschirm/game_over/game over.png';  // Game-Over-Bild laden
         this.soundIcon.src = 'assets/img/9_intro_outro_bildschirm/start/sound.gif';  // Sound-OFF-Icon laden
         this.setWorld();
         this.draw();
         this.run();
         this.score = score;
         this.updateBottleBar();
+
         // Klick ins Canvas startet das Spiel neu (nach Spielende) ...
         this.canvas.addEventListener('mousedown', () => {
-            if (this.gameOver) {
+            if (this.gameOver && !this.showGameOver) {
                 location.reload();   // Seite neu laden → Spiel wird neu gestartet
             }
         });
-
     }
+
 
     setWorld() {
         this.character.world = this;  // Charakter kennt die Welt
@@ -66,6 +68,7 @@ class World {
             this.checkThrowObjects();
         }, 50);
     }
+
 
     checkCollisions() {
         // keine Kollisionsprüfung mehr, wenn das Spiel beendet ist ...
@@ -86,7 +89,7 @@ class World {
 
             if (faelltNachUnten && oberhalb && !enemy.isDeadChicken) {
 
-                // === Wenn es ein normales Huhn ist ===
+                // Wenn es ein normales Huhn ist ...
                 if (!(enemy instanceof Endboss)) {
                     this.character.speedY = 25;  // normaler Abprall
                     this.character.y = enemyTop - this.character.heigth;
@@ -101,41 +104,37 @@ class World {
                     continue;
                 }
 
-                // === Wenn es der Endboss ist ===
+                // Wenn es der Endboss ist ...
                 if (enemy instanceof Endboss && !enemy.isDeadBoss) {
                     soundHub.playEffect(soundHub.soundChickenHit);  // Soundeffekt
-                    // Treffer auslösen (Endboss verliert Energie)
-                    enemy.wasHit();
-                    this.addScore(50);             // 50 Score-Punkte dafür
+                    enemy.wasHit();             // Endboss verliert Energie
+                    this.addScore(50);          // Punkte dafür
 
+                    // Pepe wird zur Seite geschleudert ...
+                    const bounceDistance = 300;
+                    const bounceForceY = 50;
+                    let bounceDirection;
 
-                    // Pepe soll zur Seite weggeschleudert werden
-                    const bounceDistance = 300;    // seitliche Entfernung nach Abprall
-                    const bounceForceY = 50;       // vertikale Sprungkraft
-                    let bounceDirection;           // Richtung des Abpralls (links oder rechts)
-
-                    // Wenn Pepe links vom Boss war, dann fliegt er nach links — sonst nach rechts
                     if (this.character.x < enemy.x) {
-                        bounceDirection = -1; // nach links wegfliegen
+                        bounceDirection = -1;   // nach links wegfliegen
                     } else {
-                        bounceDirection = 1;  // nach rechts wegfliegen
+                        bounceDirection = 1;    // nach rechts wegfliegen
                     }
 
-                    // Grenzen prüfen – wenn zu nah am Rand, dann Richtung umkehren
+                    // Grenzen prüfen ...
                     const minX = 0;
                     const maxX = this.level.levelEndX - this.character.width;
                     const predictedX = this.character.x + bounceDistance * bounceDirection;
 
                     if (predictedX < minX + 200 || predictedX > maxX - 200) {
-                        bounceDirection *= -1;  // Umdrehen der Richtung
+                        bounceDirection *= -1;
                     }
 
-                    // Pepe nach oben und zur Seite katapultieren
+                    // Pepe nach oben und zur Seite katapultieren ...
                     this.character.speedY = bounceForceY;
                     this.character.x += bounceDistance * bounceDirection;
                     this.character.y = enemyTop - this.character.heigth - 20;
 
-                    // kurze Bewegungssperre, damit der Spieler die Richtung nicht sofort umkehren kann
                     this.character.isBouncingOffBoss = true;
                     setTimeout(() => {
                         this.character.isBouncingOffBoss = false;
@@ -145,9 +144,8 @@ class World {
                 }
             }
 
-
+            // Wenn Pepe getroffen wird ...
             if (!enemy.isDeadChicken) {
-                // Sound nur abspielen, wenn Cooldown abgelaufen ...
                 var now = Date.now();
                 if (now - soundHub.lastHitSoundTime > soundHub.hitSoundCooldown) {
                     soundHub.playEffect(soundHub.soundHit);
@@ -159,7 +157,7 @@ class World {
             }
         }
 
-        // KOLLISION CHARAKTER mit BODEN-FLASCHEN ...
+        // Kollisionen mit Flaschen, Münzen usw. ...
         for (let i = this.level.bottles.length - 1; i >= 0; i--) {
             const bottle = this.level.bottles[i];
             if (this.character.isColliding(bottle)) {
@@ -167,7 +165,6 @@ class World {
             }
         }
 
-        // KOLLISION CHARAKTER mit MÜNZEN ...
         for (let i = this.level.coins.length - 1; i >= 0; i--) {
             const coin = this.level.coins[i];
             if (this.character.isColliding(coin)) {
@@ -175,34 +172,17 @@ class World {
             }
         }
 
-        // KOLLISION CHARAKTER mit MÜNZEN ...
-        for (let i = this.level.coins.length - 1; i >= 0; i--) {
-            const coin = this.level.coins[i];
-            if (this.character.isColliding(coin)) {
-                this.collectCoin(i);
-            }
-        }
-
-        // KOLLISION geworfene FLASCHEN mit normalen HÜHNERN ...
+        // Flaschen gegen Hühner ...
         for (let i = this.throwableObjects.length - 1; i >= 0; i--) {
             const bottle = this.throwableObjects[i];
-
             if (bottle.y > 380) {
                 this.throwableObjects.splice(i, 1);
                 continue;
             }
-
             for (let j = this.level.enemies.length - 1; j >= 0; j--) {
                 const enemy = this.level.enemies[j];
-
-                // Endboss in dieser Schleife NICHT behandeln ...
-                if (enemy instanceof Endboss) {
-                    continue;
-                }
-
-                if (enemy.isDeadChicken) {
-                    continue;
-                }
+                if (enemy instanceof Endboss) continue;
+                if (enemy.isDeadChicken) continue;
 
                 const hit =
                     bottle.x + bottle.width > enemy.x + enemy.offset.left &&
@@ -211,9 +191,9 @@ class World {
                     bottle.y < enemy.y + enemy.heigth - enemy.offset.buttom;
 
                 if (hit) {
-                    soundHub.playEffect(soundHub.soundChickenHit);   // Soundeffekt
+                    soundHub.playEffect(soundHub.soundChickenHit);
                     enemy.die();
-                    this.addScore(10);        // Score-Punkte für Flaschenwurf auf Huhn
+                    this.addScore(10);
                     this.throwableObjects.splice(i, 1);
                     setTimeout(() => {
                         const idx = this.level.enemies.indexOf(enemy);
@@ -224,14 +204,11 @@ class World {
             }
         }
 
-
-        //KOLLISION geworfene FLASCHEN mit ENDBOSS ...
+        // Flaschen gegen Endboss ...
         for (let i = this.throwableObjects.length - 1; i >= 0; i--) {
             const bottle = this.throwableObjects[i];
             const boss = this.level.enemies.find(function (e) { return e instanceof Endboss; });
-            if (!boss || boss.isDeadBoss) {
-                continue;
-            }
+            if (!boss || boss.isDeadBoss) continue;
 
             const hit =
                 bottle.x + bottle.width > boss.x + boss.offset.left &&
@@ -240,19 +217,17 @@ class World {
                 bottle.y < boss.y + boss.heigth - boss.offset.buttom;
 
             if (hit) {
-                // Flasche zuerst entfernen, um Mehrfach-Treffer zu verhindern ...
                 this.throwableObjects.splice(i, 1);
-                // Treffer einmalig registrieren (Cooldown schützt zusätzlich) ...
                 boss.wasHit();
-                this.addScore(10);   // Score-Punkte dafür
-                break;               // Schleife abbrechen – nur ein Treffer pro Flasche zulassen
+                this.addScore(10);
+                break;
             }
         }
     }
 
+
     collectBottle(index) {
-        soundHub.playEffect(soundHub.soundBottlePickup);   // Soundeffekt
-        // FLASCHEN aufsammeln ...
+        soundHub.playEffect(soundHub.soundBottlePickup);
         this.level.bottles.splice(index, 1);
         this.collectedBottles++;
         this.updateBottleBar();
@@ -260,16 +235,17 @@ class World {
         this.showBottlePickupEffect();
     }
 
+
     collectCoin(index) {
-        soundHub.playEffect(soundHub.soundCoin);       // Soundeffekt
-        this.level.coins.splice(index, 1);             // Münze entfernen ...
-        this.collectedCoins++;                         // Zähler erhöhen ...
-        this.updateCoinBar();                          // Statusbar aktualisieren ...
-        this.addScore(3);                              // Score-Punkte für Sammeln einer Münze
+        soundHub.playEffect(soundHub.soundCoin);
+        this.level.coins.splice(index, 1);
+        this.collectedCoins++;
+        this.updateCoinBar();
+        this.addScore(3);
     }
 
+
     showBottlePickupEffect() {
-        // Zeige Flaschen-Aufheben-Effekt ...
         const x = this.character.x + this.character.width / 2;
         const y = this.character.y - 50;
         const ctx = this.ctx;
@@ -286,8 +262,8 @@ class World {
         }, step);
     }
 
+
     addScore(points) {
-        // SCORE-Points geben ...
         this.score += points;
         score = this.score;
         const ctx = this.ctx;
@@ -306,7 +282,7 @@ class World {
         }, step);
     }
 
-    // Flaschen werfen ...
+
     checkThrowObjects() {
         const now = Date.now();
         if ((this.keyboard.SHIFT || this.keyboard.UP) && this.collectedBottles > 0 && (!this.lastThrowTime || now - this.lastThrowTime > 800)) {
@@ -332,135 +308,63 @@ class World {
         }
     }
 
-    // Startet die Sarg-Animation nach dem Tod ...
-    // Startet die Sarg-Animation nach dem Tod ...
-    startCoffinAnimation() {
-        this.showCoffin = true;
-        this.coffinRotation = 0;
 
-        let rotationSpeed = 15;
-        let spins = 0;
-
-        // === Dreh-Animation (visuell) starten ===
-        this.coffinSpin = setInterval(() => {
-            this.coffinRotation += rotationSpeed;
-            if (this.coffinRotation >= 360) {
-                this.coffinRotation = 0;
-                spins++;
-            }
-        }, 30);
-
-        // === Nach 5 Sekunden oder Klick ins Canvas → zurück zum Hauptmenü ===
-
-        // 1. Klick ins Canvas: sofort ins Hauptmenü
-        const canvasClickHandler = () => {
-            this.endCoffinSequence(canvasClickHandler);
-        };
-        this.canvas.addEventListener('mousedown', canvasClickHandler);
-
-        // 2. Timer nach 5 Sekunden: ebenfalls ins Hauptmenü
-        setTimeout(() => {
-            this.endCoffinSequence(canvasClickHandler);
-        }, 5000);
-    }
-
-    /**
-     * Beendet die Sarg-Animation und kehrt ins Hauptmenü zurück.
-     */
     // Startet die Sarg-Animation nach dem Tod ...
     startCoffinAnimation() {
         this.showCoffin = true;
         this.coffinRotation = 0;
+        var rotationSpeed = 15;
+        var spins = 0;
+        var self = this;
 
-        let rotationSpeed = 15;
-        let spins = 0;
-
-        // === Dreh-Animation (visuell) starten ===
-        this.coffinSpin = setInterval(() => {
-            this.coffinRotation += rotationSpeed;
-            if (this.coffinRotation >= 360) {
-                this.coffinRotation = 0;
-                spins++;
-            }
-        }, 30);
-
-        // === Nach 5 Sekunden oder Klick ins Canvas → zurück zum Hauptmenü ===
-
-        // 1. Klick ins Canvas: sofort ins Hauptmenü
-        const canvasClickHandler = () => {
-            this.endCoffinSequence(canvasClickHandler);
-        };
-        this.canvas.addEventListener('mousedown', canvasClickHandler);
-
-        // 2. Timer nach 5 Sekunden: ebenfalls ins Hauptmenü
-        setTimeout(() => {
-            this.endCoffinSequence(canvasClickHandler);
-        }, 5000);
-    }
-
-    /**
-     * Beendet die Sarg-Animation und kehrt ins Hauptmenü zurück.
-     */
-    // Startet die Sarg-Animation nach dem Tod ...
-    startCoffinAnimation() {
-        this.showCoffin = true;
-        this.coffinRotation = 0;
-        var rotationSpeed = 15;    // Startgeschwindigkeit der Rotation (in Grad pro Tick)
-        var spins = 0;             // Zähler für volle Umdrehungen
-        var self = this;           // Referenz auf das aktuelle World-Objekt
         // Sarg-Animation: 3 Umdrehungen, dann langsam auslaufen ...
         this.coffinSpin = setInterval(function () {
             self.coffinRotation += rotationSpeed;
-            // volle Umdrehung abgeschlossen ?
             if (self.coffinRotation >= 360) {
                 self.coffinRotation = 0;
                 spins++;
             }
-            // nach 3 Umdrehungen sanft abbremsen ...
             if (spins >= 3 && rotationSpeed > 0) {
-                rotationSpeed -= 0.8;      // schrittweise langsamer werden
+                rotationSpeed -= 0.8;
                 if (rotationSpeed <= 0) {
                     rotationSpeed = 0;
-                    self.coffinRotation = 0;   // Sarg am Ende wieder aufrecht ausrichten (0°)
+                    self.coffinRotation = 0;   // Sarg am Ende aufrecht
                     clearInterval(self.coffinSpin);
                     self.coffinSpin = null;
-
-                    // Nach Stillstand des Sarges: 5 Sek. warten oder Klick → Hauptmenü ...
-                    self.waitAndReturnToMenu();
+                    self.waitAndReturnToMenu();  // Nach Stillstand weiter ...
                 }
             }
         }, 30);
     }
 
 
-    /**
-     * Wartet 5 Sekunden oder reagiert auf Klick ins Canvas → zurück ins Hauptmenü
-     */
+    // Wartet nach Stillstand des Sarges und zeigt Game-Over-Bild ...
     waitAndReturnToMenu() {
-        // Klick ins Canvas → sofort zurück
-        const canvasClickHandler = () => {
-            this.endCoffinSequence(canvasClickHandler);
-        };
-        this.canvas.addEventListener('mousedown', canvasClickHandler);
-
-        // Timer: nach 5 Sekunden ebenfalls zurück
-        setTimeout(() => {
-            this.endCoffinSequence(canvasClickHandler);
-        }, 5000);
+        this.showGameOverScreen();   // Game-Over-Bild anzeigen ...
     }
 
-    /**
-     * Beendet die Sarg-Animation und kehrt ins Hauptmenü zurück.
-     */
-    endCoffinSequence(canvasClickHandler) {
-        // Klick-Listener entfernen (nicht mehrfach reagieren)
-        this.canvas.removeEventListener('mousedown', canvasClickHandler);
 
-        // Anzeige-Flags
+    // Zeigt das Game-Over-Bild und reagiert auf Klick ...
+    showGameOverScreen() {
+        this.showGameOver = true;
+
+        const canvasClickHandler = () => {
+            this.canvas.removeEventListener('mousedown', canvasClickHandler);
+            setTimeout(() => {
+                this.showGameOver = false;
+                this.returnToMenu();
+            }, 1000);
+        };
+
+        this.canvas.addEventListener('mousedown', canvasClickHandler);
+    }
+
+
+    // Blendet alles aus und kehrt ins Hauptmenü zurück ...
+    returnToMenu() {
         this.showCoffin = false;
         this.gameOver = true;
 
-        // Sounds stoppen
         if (typeof soundHub !== "undefined" && soundHub) {
             if (typeof soundHub.stopBackgroundMusic === "function") {
                 soundHub.stopBackgroundMusic();
@@ -470,114 +374,51 @@ class World {
             }
         }
 
-        // Canvas ausblenden, Menü zeigen
-        const cvs = document.getElementById('canvas');
-        const start = document.getElementById('startScreen');
+        var cvs = document.getElementById('canvas');
+        var start = document.getElementById('startScreen');
         if (cvs) cvs.style.display = 'none';
         if (start) start.style.display = 'flex';
     }
 
 
-
-    /**
- * === Buttons nach Spielende anzeigen ===
- */
-    showEndButtons() {
-        // Prüfen, ob Buttons bereits existieren ...
-        if (document.getElementById('tryAgainButton')) {
-            return;
-        }
-
-        // Container für die Buttons ...
-        var buttonContainer = document.createElement('div');
-        buttonContainer.id = 'endButtonContainer';
-        buttonContainer.style.position = 'fixed';
-        buttonContainer.style.top = '20px';
-        buttonContainer.style.left = '50%';
-        buttonContainer.style.transform = 'translateX(-50%)';
-        buttonContainer.style.display = 'flex';
-        buttonContainer.style.gap = '20px';
-        buttonContainer.style.zIndex = '1000';
-        document.body.appendChild(buttonContainer);
-
-        // Try Again Button ...
-        var tryAgain = document.createElement('button');
-        tryAgain.id = 'tryAgainButton';
-        tryAgain.textContent = 'Try again';
-        tryAgain.className = 'menuButton';
-        tryAgain.onclick = () => {
-            buttonContainer.remove();        // Buttons entfernen
-            // Canvas und Welt neu starten (neue World-Instanz) ...
-            document.getElementById('canvas').style.display = 'block';
-            const canvas = document.getElementById('canvas');
-            const keyboard = new Keyboard();
-            world = new World(canvas, keyboard);
-            soundHub.playBackgroundMusic();   // Musik wieder starten
-        };
-
-        buttonContainer.appendChild(tryAgain);
-
-        // === Back to Menu Button ===
-        var backMenu = document.createElement('button');
-        backMenu.id = 'backToMenuButton';
-        backMenu.textContent = 'Back to Menu';
-        backMenu.className = 'menuButton';
-        backMenu.onclick = function () {
-            // zurück zum Startbildschirm (Canvas ausblenden, Startbild zeigen)
-            document.getElementById('canvas').style.display = 'none';
-            document.getElementById('startScreen').style.display = 'flex';
-            // Buttons entfernen
-            buttonContainer.remove();
-        };
-        buttonContainer.appendChild(backMenu);
-    }
-
-
     // Zeigt das "You Win"-Endbild ...
     showVictoryScreen() {
-
-        soundHub.stopBackgroundMusic();                     // Hintergrundmusik stoppen ...
-        let bonusFlaschen = this.collectedBottles * 3;      // Score-Punkte pro unbenutzte Flasche ...
-        let bonusCoins = this.collectedCoins * 15;          // Score-Punkte  pro gesammelte Münze ...
-        let bonusHealth = Math.max(0, Math.round(this.character.energie));   // Score-Punkte  basierend auf verbleibender Lebensenergie ...
-        let totalBonus = bonusFlaschen + bonusCoins + bonusHealth;           // Gesamtbonus berechnen ...
-        this.addScore(totalBonus);                          // Bonus-Score-Punkte dem Score hinzufügen ...
-        // Spielende-Flags ...
+        soundHub.stopBackgroundMusic();
+        let bonusFlaschen = this.collectedBottles * 3;
+        let bonusCoins = this.collectedCoins * 15;
+        let bonusHealth = Math.max(0, Math.round(this.character.energie));
+        let totalBonus = bonusFlaschen + bonusCoins + bonusHealth;
+        this.addScore(totalBonus);
         this.showYouWin = true;
         this.gameOver = true;
         this.keyboard = new Keyboard();
 
-        // Spielername abfragen + Tabelle speichern (mit kurzer Pause
-        // für WIN-Bild) ...
         setTimeout(() => {
-            this.saveHighScoreEntry();   // Spielername + Tabelle anzeigen
-        }, 2000);                        // 4 Sekunde warten
-        // Punkteanzeige blinken lassen ...
+            this.saveHighScoreEntry();
+        }, 2000);
         this.startScoreBlink();
     }
 
-    // BEENDET das Spiel nach Tod des CHARAKTERS ...
+
     endGame() {
         this.gameOver = true;
-        soundHub.stopBackgroundMusic();   // Musik stoppen
-        // Steuerung deaktivieren ...
-        this.keyboard = new Keyboard();   // Alle Tasten auf FALSE zurücksetzen
-        // Nur beim Tod des CHARAKTERS: Sarg-Animation und "Rest in Peace" anzeigen ...
+        soundHub.stopBackgroundMusic();
+        this.keyboard = new Keyboard();
         setTimeout(() => {
             this.startCoffinAnimation();
         }, 1500);
     }
 
+
     updateBottleBar() {
-        // Prozentanteil der Flaschen berechnen ... 
         let percentage = (this.collectedBottles / 5) * 100;
         if (percentage > 100) percentage = 100;
         if (percentage < 0) percentage = 0;
         this.bottleBar.setPercentage(percentage);
     }
 
+
     updateCoinBar() {
-        // Prozentanteil der Münzen berechnen ...
         let percentage = (this.collectedCoins / 15) * 100;
         if (percentage > 100) percentage = 100;
         if (percentage < 0) percentage = 0;
@@ -585,52 +426,43 @@ class World {
     }
 
 
-    // ZEICHNUNG der SPIELWELT ...
+    // Zeichnung der Spielwelt ...
     draw() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-        // Hintergrund (Air + Landscape)
         this.ctx.translate(this.cameraX, 0);
         this.addObjectsToMap(this.level.backgroundObjects);
-        this.addObjectsToMap(this.level.clouds); // Wolken direkt über Hintergrund
+        this.addObjectsToMap(this.level.clouds);
 
-        // HUD-Elemente (fixe Position)
         this.ctx.translate(-this.cameraX, 0);
         this.addToMap(this.statusBar);
         this.addToMap(this.bottleBar);
         this.addToMap(this.coinBar);
         this.addToMap(this.bossBar);
-        // ANZAHL DER FLASCHEN und MÜNZEN als Zahl hinter der Status-Bar ...
+
         this.ctx.save();
-        this.ctx.font = "bold 36px Zabars";         // große, fette Schrift
-        this.ctx.fillStyle = "white";               // weiße Farbe
-        this.ctx.textAlign = "left";                // linksbündig (passt zur Bar)
-        this.ctx.fillText(`${this.collectedBottles}`, 175, 117); // Position leicht rechts von der Bottle-Bar
-        this.ctx.fillText(`${this.collectedCoins}`, 175, 175);   // Position leicht rechts von der Coin-Bar
+        this.ctx.font = "bold 36px Zabars";
+        this.ctx.fillStyle = "white";
+        this.ctx.textAlign = "left";
+        this.ctx.fillText(`${this.collectedBottles}`, 175, 117);
+        this.ctx.fillText(`${this.collectedCoins}`, 175, 175);
         this.ctx.restore();
 
-
-        // Punkteanzeige
         if (!this.blinkActive || (this.blinkActive && this.blinkVisible)) {
             this.ctx.font = "bold 40px Zabars";
             this.ctx.fillStyle = "#ffcc00";
             this.ctx.fillText(`Score: ${this.score}`, 570, 50);
         }
 
-
         this.ctx.translate(this.cameraX, 0);
-
-        // Spielobjekte
         this.addObjectsToMap(this.level.bottles);
         this.addObjectsToMap(this.level.coins);
         this.addToMap(this.character);
         this.addObjectsToMap(this.level.enemies);
         this.addObjectsToMap(this.throwableObjects);
-
-        // Kamera wieder zurück
         this.ctx.translate(-this.cameraX, 0);
 
-        // GAME OVER: SARG ZEICHNEN ...
+        // Sarg zeichnen ...
         if (this.showCoffin) {
             const ctx = this.ctx;
             const centerX = this.canvas.width / 2;
@@ -638,52 +470,48 @@ class World {
             const coffinWidth = 250;
             const coffinHeight = 150;
 
-            // Sarg rotierend zeichnen ...
             ctx.save();
             ctx.translate(centerX, centerY);
             ctx.rotate(this.coffinRotation * Math.PI / 180);
-            ctx.drawImage(
-                this.coffinImg,
-                -coffinWidth / 2,
-                -coffinHeight / 2,
-                coffinWidth,
-                coffinHeight
-            );
+            ctx.drawImage(this.coffinImg, -coffinWidth / 2, -coffinHeight / 2, coffinWidth, coffinHeight);
             ctx.restore();
 
-            // Schriftzug "Rest in Peace" zeichnen ...
             ctx.save();
-            ctx.font = "bold 90px Zabars";     // große, fette Schrift
-            ctx.fillStyle = "yellow";          // gelbe Farbe
-            ctx.textAlign = "center";          // horizontal zentrieren
-            ctx.fillText("R . i . P.", centerX, centerY - coffinHeight + 65); // etwas über dem Sarg
+            ctx.font = "bold 90px Zabars";
+            ctx.fillStyle = "yellow";
+            ctx.textAlign = "center";
+            ctx.fillText("R . i . P.", centerX, centerY - coffinHeight + 65);
             ctx.restore();
         }
 
-        // GEWINN-BILD ANZEIGEN ...
+        // Gewinn-Bild anzeigen ...
         if (this.showYouWin) {
             const ctx = this.ctx;
             ctx.save();
-            ctx.globalAlpha = 1.0;     // volle Deckkraft
+            ctx.globalAlpha = 1.0;
             ctx.drawImage(this.youWinImg, 0, 0, this.canvas.width, this.canvas.height);
             ctx.restore();
         }
 
-        // Wiederholtes Neuzeichnen ...
-        const self = this;
+        // Game-Over-Bild anzeigen ...
+        if (this.showGameOver) {
+            const ctx = this.ctx;
+            ctx.save();
+            ctx.globalAlpha = 1.0;
+            ctx.drawImage(this.gameOverImg, 0, 0, this.canvas.width, this.canvas.height);
+            ctx.restore();
+        }
 
-        // === SOUNDSTATUS-ICON ZEICHNEN ===
+        // Sound-Icon anzeigen ...
         if (soundHub.isMuted) {
             this.ctx.save();
             const iconSize = 80;
             const xPos = (this.canvas.width - iconSize) / 2;
             const yPos = 15;
-            // Lautsprecher-Bild ...
             this.ctx.drawImage(this.soundIcon, xPos, yPos, iconSize, iconSize);
-            // ROTES KREUZ darüber zeichnen ...
-            this.ctx.strokeStyle = "rgba(255, 0, 0, 0.7)";     // rot mit 70 % Deckkraft
+            this.ctx.strokeStyle = "rgba(255, 0, 0, 0.7)";
             this.ctx.lineWidth = 4;
-            const shorten = iconSize / 6;                        // Strichlänge kürzen für Kreuz
+            const shorten = iconSize / 6;
             this.ctx.beginPath();
             this.ctx.moveTo(xPos + 10 + shorten, yPos + 10 + shorten);
             this.ctx.lineTo(xPos + iconSize - 10 - shorten, yPos + iconSize - 10 - shorten);
@@ -693,22 +521,24 @@ class World {
             this.ctx.restore();
         }
 
+        const self = this;
         requestAnimationFrame(() => self.draw());
     }
+
 
     addObjectsToMap(objects) {
         objects.forEach(o => this.addToMap(o));
     }
 
+
     addToMap(movableObject) {
         if (movableObject.otherDirection) {
             this.flipImage(movableObject);
-            // movableObject.drawFrame(this.ctx);
         } else {
             movableObject.draw(this.ctx);
-            // movableObject.drawFrame(this.ctx);
         }
     }
+
 
     flipImage(movableObject) {
         this.ctx.save();
@@ -716,121 +546,5 @@ class World {
         this.ctx.scale(-1, 1);
         this.ctx.drawImage(movableObject.img, 0, 0, movableObject.width, movableObject.heigth);
         this.ctx.restore();
-    }
-
-    startScoreBlink() {
-        this.blinkActive = true;
-        this.blinkVisible = true;
-        // Blinken alle 500 ms (2x pro Sekunde) ...
-        this.blinkInterval = setInterval(() => {
-            this.blinkVisible = !this.blinkVisible;
-            this.blinkColor = this.blinkVisible ? "#ffcc00" : "#ffffff";
-            // Wenn das Spiel irgendwann komplett neu gestartet wird, abbrechen ...
-            if (this.gameOver && !this.showYouWin) {
-                clearInterval(this.blinkInterval);
-                this.blinkActive = false;
-            }
-        }, 700);
-    }
-
-
-    // ===============================================
-    // HIGHSCORE-SYSTEM (TOP 10 MIT NAMEN)
-    // ===============================================
-    saveHighScoreEntry() {
-
-        // Verhindert Mehrfachausführung
-        if (this.highscoreAlreadySaved) {
-            return;
-        }
-        this.highscoreAlreadySaved = true;
-
-        // --- Highscore-Tabelle laden ---
-        var storedData = localStorage.getItem('highScoreTable');
-        var highScores = storedData ? JSON.parse(storedData) : [];
-
-        // --- Prüfen, ob Score für TOP 10 reicht ---
-        var minScore = 0;
-        if (highScores.length > 0) {
-            // niedrigsten Score in der bestehenden Liste finden
-            minScore = highScores[highScores.length - 1].score;
-        }
-
-        var qualifies =
-            highScores.length < 10 || this.score > minScore;
-
-        // --- Wenn NICHT qualifiziert ---
-        if (!qualifies) {
-            // Kurze Nachricht: nicht in TOP 10
-            this.showHighscoreMessage("😢 SORRY, not enough for the TOP 10 !");
-            return;
-        }
-
-        // --- Wenn qualifiziert: Name abfragen ---
-        var playerName = prompt("Congratulations! You are one of the TOP 10! Please enter your name:", "Player");
-        if (!playerName) {
-            playerName = "unknown";
-        }
-
-        // --- Eintrag anlegen und hinzufügen ---
-        var newEntry = {
-            name: playerName.trim(),
-            score: this.score,
-            date: new Date().toLocaleDateString('de-DE')
-        };
-
-        highScores.push(newEntry);
-
-        // --- Sortieren und auf 10 begrenzen ---
-        highScores.sort(function (a, b) { return b.score - a.score; });
-        if (highScores.length > 10) {
-            highScores = highScores.slice(0, 10);
-        }
-
-        // --- Speichern ---
-        localStorage.setItem('highScoreTable', JSON.stringify(highScores));
-
-        // --- Nachricht: Erfolgreich gespeichert ---
-        this.showHighscoreMessage("✅ Your high score has been saved!");
-    }
-
-    /**
-     * Zeigt eine kurze Meldung zentriert über dem Canvas an
-     * (z. B. „Highscore gespeichert“ oder „nicht geschafft“)
-     */
-    showHighscoreMessage(text) {
-        var overlay = document.createElement("div");
-        overlay.textContent = text;
-        overlay.style.position = "fixed";
-        overlay.style.top = "50%";
-        overlay.style.left = "50%";
-        overlay.style.transform = "translate(-50%, -50%)";
-        overlay.style.backgroundColor = "white";
-        overlay.style.color = "black";
-        overlay.style.padding = "30px 50px";
-        overlay.style.border = "4px solid black";
-        overlay.style.borderRadius = "15px";
-        overlay.style.fontFamily = "'Zabars', Arial, Helvetica, sans-serif";
-        overlay.style.fontSize = "2em";
-        overlay.style.textAlign = "center";
-        overlay.style.zIndex = "9999";
-        overlay.style.boxShadow = "0 0 15px rgba(0,0,0,0.5)";
-
-        document.body.appendChild(overlay);
-
-        // Automatisch nach 3 Sekunden ausblenden
-        setTimeout(() => {
-            overlay.remove();
-        }, 3000);
-    }
-
-
-    displayHighScoreTable() {
-        // HIGH-SCORE-Daten speichern für spätere Ausgabe ...
-        var storedData = localStorage.getItem('highScoreTable');
-        if (!storedData) {
-            return [];
-        }
-        return JSON.parse(storedData);
     }
 }
