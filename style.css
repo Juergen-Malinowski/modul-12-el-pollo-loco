@@ -421,6 +421,8 @@ canvas {
     font-size: 1.6em;
     color: black;
     margin-bottom: 25px;
+    text-align: center;
+    line-height: 1.8;
 }
 
 /* Button zum Schließen */
@@ -569,6 +571,7 @@ canvas {
 .info_content h2 {
     font-size: 3em;
     margin-bottom: 15px;
+    margin-top: 0;
 }
 
 .info_content li {
