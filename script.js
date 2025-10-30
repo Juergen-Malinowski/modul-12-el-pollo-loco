@@ -169,11 +169,6 @@ function openAudioSettings() {
     syncAudioUIFromSoundHub();
 }
 
-function openGameControl() {
-    alert("Game Control – hier folgt bald die Steuerungsübersicht!");
-}
-
-
 /**
  * Schließt das Audio-Overlay
  */
