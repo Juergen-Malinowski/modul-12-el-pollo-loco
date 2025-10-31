@@ -72,11 +72,16 @@ function initLevel() {
             new BackgroundObject('./assets/img/5_hintergrund/layers/3_third_layer/2.png', 720),
             new BackgroundObject('./assets/img/5_hintergrund/layers/2_second_layer/2.png', 720),
             new BackgroundObject('./assets/img/5_hintergrund/layers/1_first_layer/2.png', 720),
-            // je nach LÄNGE des Levels hier nun wieder START mit dem START-Bildschirm und dann so weiter ...
+            // je nach LÄNGE des Levels hier nun wieder START ...
             new BackgroundObject('./assets/img/5_hintergrund/layers/air.png', 1440),
             new BackgroundObject('./assets/img/5_hintergrund/layers/3_third_layer/1.png', 1440),
             new BackgroundObject('./assets/img/5_hintergrund/layers/2_second_layer/1.png', 1440),
             new BackgroundObject('./assets/img/5_hintergrund/layers/1_first_layer/1.png', 1440),
+            // Schwarzes Bild rechts am Spielfeldende vermeiden ...
+            new BackgroundObject('./assets/img/5_hintergrund/layers/air.png', 2160),
+            new BackgroundObject('./assets/img/5_hintergrund/layers/3_third_layer/2.png', 2160),
+            new BackgroundObject('./assets/img/5_hintergrund/layers/2_second_layer/2.png', 2160),
+            new BackgroundObject('./assets/img/5_hintergrund/layers/1_first_layer/2.png', 2160),
         ],
     );
 }

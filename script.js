@@ -49,7 +49,7 @@ function openHighscore() {
     // Highscore-Daten aus dem localStorage holen
     var storedData = localStorage.getItem("highScoreTable");
     if (!storedData) {
-        content.innerHTML = "<p>Keine Highscores vorhanden.</p>";
+        content.innerHTML = "<p>No high score available.</p>";
     } else {
         var highScores;
         try {
@@ -59,7 +59,7 @@ function openHighscore() {
         }
 
         if (!Array.isArray(highScores) || highScores.length === 0) {
-            content.innerHTML = "<p>Keine Highscores vorhanden.</p>";
+            content.innerHTML = "<p>No high score available.</p>";
         } else {
             // Absteigend nach Score sortieren
             highScores.sort(function (a, b) {
@@ -70,9 +70,9 @@ function openHighscore() {
             var listHtml = "<ol class='hsList' style='text-align:left; margin:0; padding-left:1.4em;'>";
             for (var i = 0; i < highScores.length; i++) {
                 var entry = highScores[i];
-                var name = entry && entry.name ? entry.name : "Unbekannt";
+                var name = entry && entry.name ? entry.name : "unknown";
                 var scoreVal = entry && typeof entry.score === "number" ? entry.score : 0;
-                listHtml += "<li>" + name + " — " + scoreVal + " Punkte</li>";
+                listHtml += "<li>" + name + " — " + scoreVal + " Points</li>";
             }
             listHtml += "</ol>";
             content.innerHTML = listHtml;
