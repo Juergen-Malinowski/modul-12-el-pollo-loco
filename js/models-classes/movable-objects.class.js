@@ -59,17 +59,24 @@ class MovableObject extends DrawableObjects {
         );
     }
 
+    // Datei: js/models-classes/movable-objects.class.js
+
     wasHit() {
         // Schnarchen-Audio beenden ...
         if (this instanceof Character && typeof soundHub !== "undefined" && soundHub && typeof soundHub.stopSnoring === "function") {
-            soundHub.stopSnoring();
+            try { soundHub.stopSnoring(); } catch (e) { }
         }
+        // Spieler als "aktiv" markieren, damit Idle/Long-Idle nicht sofort nachrücken ...
+        if (this instanceof Character) {
+            try { this.lastActionTime = Date.now(); } catch (e) { }
+        }
+
         // Schadenverarbeitung ...
-        this.energie -= 1;       // ENERGIE abziehen pro Zeiteinheit ms
+        this.energie -= 1;    // ENERGIE abziehen ...
         if (this.energie < 0) {
-            this.energie = 0;    // Minimum ist 0 Energie
+            this.energie = 0; // Minimum ist 0 ...
         } else {
-            this.lastHit = new Date().getTime();  // "Date()" und "getTime()" halten Zeitpunkt Treffer fest ... speichert in "lastHit"
+            this.lastHit = new Date().getTime();  // Zeitpunkt Treffer speichern ...
         }
     }
 
@@ -77,8 +84,12 @@ class MovableObject extends DrawableObjects {
         // Zeitverzögerung nach Verletzung ...
         let passedTime = new Date().getTime() - this.lastHit;    // Differenz im ms zwischen letzten Treffer und aktueller Zeit
         passedTime = passedTime / 1000;                          // aus ms (Milli-Sekunden) werden Sekunden
-        return passedTime < 1;                                   // wird TRUE, wenn seit letzten Treffer weniger als 3 Sek. vergangen, sonst FALSE
+        return passedTime < 3;                                   // wird TRUE, wenn seit letzten Treffer weniger als 3 Sek. vergangen, sonst FALSE
     }
+
+
+
+
 
     isDead() {
         return this.energie == 0;
