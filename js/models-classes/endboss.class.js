@@ -9,15 +9,20 @@ class Endboss extends MovableObject {
     minX = 400;               // linke Grenze (innerhalb des Levels)
     maxX = 2100;              // rechte Grenze (innerhalb des Levels)
 
+    // === NEU: Parameter für Spezialangriff (Blitzangriff) ===
+    isCharging = false;       // führt der Endboss gerade den Blitzangriff aus?
+    chargeInterval = null;    // Timer für periodischen Spezialangriff
+    chargeCooldown = 7000;    // Zeitabstand zwischen zwei Blitzangriffen (ms)
+    chargeSpeed = 20;         // Bewegungsgeschwindigkeit während Blitzangriff
+    chargeDistance = 600;     // Laufstrecke des Blitzangriffs in Pixeln
 
     // kurzer Hit-Cooldown, damit Endboss pro Flasche nur einmal Schaden erhält ...
     lastHitTime = 0;          // Zeitstempel des letzten gültigen Treffers
     hitCooldownMs = 400;      // Dauer der Kurz-Unverwundbarkeit in Millisekunden
 
-
     offset = { top: 50, buttom: 10, left: 20, right: 20 };
 
-    // Bild-Arrays ...
+    // === BILDER ===
     imagesWalking = [
         './assets/img/4_feinde_boss_huhn/1_walk/G1.png',
         './assets/img/4_feinde_boss_huhn/1_walk/G2.png',
@@ -26,6 +31,7 @@ class Endboss extends MovableObject {
     ];
 
     imagesAlert = [
+        // Endboss wurde durch Pepe alamiert ...
         './assets/img/4_feinde_boss_huhn/2_alert/G5.png',
         './assets/img/4_feinde_boss_huhn/2_alert/G6.png',
         './assets/img/4_feinde_boss_huhn/2_alert/G7.png',
@@ -37,6 +43,7 @@ class Endboss extends MovableObject {
     ];
 
     imagesAttack = [
+        // Endboss greift an ...
         './assets/img/4_feinde_boss_huhn/3_attack/G13.png',
         './assets/img/4_feinde_boss_huhn/3_attack/G14.png',
         './assets/img/4_feinde_boss_huhn/3_attack/G15.png',
@@ -45,6 +52,15 @@ class Endboss extends MovableObject {
         './assets/img/4_feinde_boss_huhn/3_attack/G18.png',
         './assets/img/4_feinde_boss_huhn/3_attack/G19.png',
         './assets/img/4_feinde_boss_huhn/3_attack/G20.png',
+    ];
+
+    imagesThunderRun = [
+        // Sturmlauf-Angriff ...
+        './assets/img/4_feinde_boss_huhn/3_attack/G17.png',
+        './assets/img/4_feinde_boss_huhn/3_attack/G18.png',
+        './assets/img/4_feinde_boss_huhn/1_walk/G1.png',
+        './assets/img/4_feinde_boss_huhn/3_attack/G18.png',
+        './assets/img/4_feinde_boss_huhn/1_walk/G3.png',
     ];
 
     imagesHurt = [
@@ -71,53 +87,49 @@ class Endboss extends MovableObject {
         this.loadImages(this.imagesWalking);
         this.loadImages(this.imagesAlert);
         this.loadImages(this.imagesAttack);
+        this.loadImages(this.imagesThunderRun);
         this.loadImages(this.imagesHurt);
         this.loadImages(this.imagesDead);
         this.animate();
+        this.thunderAttack = new Audio('./assets/sound/thunder-attack.mp3'); this.thunderAttack.preload = 'auto';
     }
 
     animate() {
-        // Haupt-Intervall zur Statusprüfung ...
-        setInterval(() => {
-            // Wenn tot → keine weiteren Aktionen ...
-            if (this.isDeadBoss) return;
+        // Global stoppbarer Intervall für Bossbewegung ...
+        if (this.animateInterval) clearInterval(this.animateInterval);
+        this.animateInterval = setInterval(() => {
+            if (this.isDeadBoss || (this.world && this.world.gameOver)) {
+                clearInterval(this.animateInterval);
+                this.animateInterval = null;
+                return;
+            }
             if (this.world && this.world.character) {
-                // Wenn Charakter Positon X=1500 erreicht, dann startet Endboss ...
                 if (!this.isAlerted && this.world.character.x >= 1400) {
                     this.triggerAlert();
                 }
             }
-
-
-            // Bewegungslogik Endboss ...
-            if (this.isWalking && this.world && this.world.character) {
+            if (this.isWalking && this.world && this.world.character && !this.isCharging) {
                 const pepe = this.world.character;
-
-                // sichere Levelgrenzen bestimmen ...
                 const levelRight = (this.world.level && typeof this.world.level.levelEndX === "number")
                     ? (this.world.level.levelEndX - this.width)
                     : this.maxX;
-
-                // effektive Grenzen ermitteln
                 const leftBound = (typeof this.minX === "number") ? this.minX : 0;
                 const rightBound = Math.max(leftBound, Math.min(this.maxX, levelRight));
 
-                // Richtung bestimmen: steht Charakter links oder rechts vom Endboss?
                 if (pepe.x < this.x) {
-                    this.otherDirection = false;   // nach links schauen
+                    this.otherDirection = false;
                     this.x -= this.moveSpeed;
                 } else {
-                    this.otherDirection = true;    // nach rechts schauen
+                    this.otherDirection = true;
                     this.x += this.moveSpeed;
                 }
 
-                // --- Begrenzung links und rechts: Endboss darf nicht aus dem Bereich laufen ---
                 if (this.x < leftBound) {
                     this.x = leftBound;
-                    this.otherDirection = true;    // umdrehen nach rechts
+                    this.otherDirection = true;
                 } else if (this.x > rightBound) {
                     this.x = rightBound;
-                    this.otherDirection = false;   // umdrehen nach links
+                    this.otherDirection = false;
                 }
             }
         }, 100);
@@ -126,32 +138,43 @@ class Endboss extends MovableObject {
     triggerAlert() {
         // Endboss wurde alarmiert und greift nun Charakter aktiv an ...
         this.isAlerted = true;
-
-        // === NEU: wiederkehrender Schrei alle 5 Sekunden ===
-        this.screamInterval = setInterval(() => {
-            if (!this.isDeadBoss && this.isAlerted) {
+        // wiederkehrender Schrei alle 7 Sekunden ...
+        var self = this;
+        this.screamInterval = setInterval(function () {
+            // Neuer Sicherheits-Check ...
+            if (
+                !self.isDeadBoss &&
+                self.isAlerted &&
+                self.world &&
+                !self.world.gameOver
+            ) {
                 soundHub.playEffect(soundHub.soundBossStart);
             } else {
-                clearInterval(this.screamInterval); // falls Boss stirbt, beenden
+                // Intervall endgültig stoppen und Sound abwürgen ...
+                clearInterval(self.screamInterval);
+                self.screamInterval = null;
+                if (typeof soundHub !== "undefined" && soundHub.soundBossStart) {
+                    soundHub.stopEffect(soundHub.soundBossStart);
+                }
             }
-        }, 5000); // alle 5 Sekunden
+        }, 7000);
 
-        // === Erster Schrei sofort ===
+
+        // Erster Schrei sofort ...
         soundHub.playEffect(soundHub.soundBossStart);
-
-        // === Alarmanimation starten ===
-        this.playAlertAnimation(() => {
+        // Alarmanimation starten ...
+        this.playAlertAnimation(function () {
             // Nach Abschluss → in den Walk-Modus wechseln ...
-            this.isWalking = true;
-            this.startWalkingAnimation();
+            self.isWalking = true;
+            self.startWalkingAnimation();
+            // Sofort erster Blitzangriff nach Alarmierung ...
+            self.performChargeAttack();
+            // Danach regulärer Timer für Wiederholung Sturmangriff ...
+            self.startChargeTimer();
         });
     }
 
-
-
-
     playAlertAnimation(onComplete) {
-        // ALARM animieren ...
         let i = 0;
         const interval = setInterval(() => {
             if (i < this.imagesAlert.length) {
@@ -162,65 +185,118 @@ class Endboss extends MovableObject {
                 clearInterval(interval);
                 if (onComplete) onComplete();
             }
-        }, 200); // Geschwindigkeit der Alarmanimation
+        }, 200);
     }
 
     startWalkingAnimation() {
-        // Endboss geht zeichnen ...
         setInterval(() => {
-            if (this.isWalking && !this.isDeadBoss) {
+            if (this.isWalking && !this.isDeadBoss && !this.isCharging) {
                 this.playAnimation(this.imagesWalking);
             }
         }, 200);
     }
 
-    // Wird aufgerufen, wenn der Endboss getroffen wird ...
-    wasHit() {
-        if (this.isDeadBoss) {
-            return;     // keine weiteren Treffer nach Tod
-        }
+    startChargeTimer() {
+        if (this.chargeInterval) clearInterval(this.chargeInterval);
 
-        // kurzer Hit-Cooldown: Mehrfachauslösung innerhalb weniger Millisekunden verhindern ...
+        this.chargeInterval = setInterval(() => {
+            if (this.isDeadBoss) {
+                clearInterval(this.chargeInterval);
+                return;
+            }
+            if (this.isAlerted && !this.isCharging) {
+                this.performChargeAttack();
+            }
+        }, this.chargeCooldown);
+    }
+
+    performChargeAttack() {
+        if (!this.world || !this.world.character) return;
+
+        this.isCharging = true;
+        const pepe = this.world.character;
+        const toRight = (pepe.x > this.x);
+        this.otherDirection = toRight;
+
+        soundHub.playEffect(soundHub.soundBossCharge);
+
+        const startX = this.x;
+        const attackSpeed = this.chargeSpeed;
+        const targetDistance = this.chargeDistance;
+        let traveled = 0;
+
+        // === ThunderRun-Animation starten ===
+        this.playAnimation(this.imagesThunderRun);
+
+        const moveInterval = setInterval(() => {
+            if (this.isDeadBoss) {
+                clearInterval(moveInterval);
+                this.isCharging = false;
+                return;
+            }
+
+            this.x += attackSpeed * (toRight ? 1 : -1);
+            traveled += Math.abs(attackSpeed);
+
+            // === Prüfung auf Treffer mit Pepe ===
+            if (this.world.character.isColliding(this)) {
+                this.world.character.energie -= 100;
+                if (this.world.character.energie < 0) this.world.character.energie = 0;
+
+                const percent = this.world.character.energie / this.world.character.holeEnergie * 100;
+                this.world.statusBar.setPercentage(percent);
+                soundHub.playEffect(soundHub.soundHit);
+
+                // Rückstoß bei Treffer
+                this.world.character.speedY = 25;
+                clearInterval(moveInterval);
+                this.isCharging = false;
+                return;
+            }
+
+            // === Wenn Pepe erfolgreich ausgewichen ist ===
+            if (traveled >= targetDistance) {
+                clearInterval(moveInterval);
+                this.isCharging = false;
+                this.world.addScore(70);
+                this.x = startX;
+            }
+        }, 40);
+    }
+
+    wasHit() {
+        if (this.isDeadBoss) return;
+
         let now = Date.now();
-        if (now - this.lastHitTime < this.hitCooldownMs) {
-            // innerhalb des Cooldowns → Treffer ignorieren
-            return;
-        }
+        if (now - this.lastHitTime < this.hitCooldownMs) return;
         this.lastHitTime = now;
 
-        // Schaden pro Treffer 
-        this.energieBoss -= 60;    // Abzug Trefferpunkte für Wurftreffer beim Endboss 
+        this.energieBoss -= 60;
 
-        // Endboss-Statusbar aktualisieren ...
         if (this.world && this.world.bossBar) {
             let bossHealthPercentage = (this.energieBoss / 300) * 100;
-            if (bossHealthPercentage < 0) {
-                bossHealthPercentage = 0;
-            }
+            if (bossHealthPercentage < 0) bossHealthPercentage = 0;
             this.world.bossBar.setPercentage(bossHealthPercentage);
         }
+
         this.isHurtBoss = true;
-
-        // kurze Hurt-Animation ...
         this.playAnimation(this.imagesHurt);
-        setTimeout(() => {
-            this.isHurtBoss = false;
-        }, 400);
+        setTimeout(() => this.isHurtBoss = false, 400);
 
-
-        // Wenn Energie leer → sterben ...
         if (this.energieBoss <= 0) {
             this.die();
         }
     }
 
-
     die() {
         if (this.isDeadBoss) return;
-
+        this.stopAllBossSounds();
         this.isDeadBoss = true;
         this.isWalking = false;
         this.isAlerted = false;
+        this.isCharging = false;
+
+        if (this.chargeInterval) clearInterval(this.chargeInterval);
 
         let i = 0;
         const deathInterval = setInterval(() => {
@@ -229,53 +305,154 @@ class Endboss extends MovableObject {
                 i++;
             } else {
                 clearInterval(deathInterval);
-
-                // Letztes Frame (G26) dauerhaft anzeigen
                 const lastFrame = this.imageCache[this.imagesDead[this.imagesDead.length - 1]];
-                if (lastFrame) {
-                    this.img = lastFrame;
-                }
-
-                // Keine weitere Bewegung oder Animation
+                if (lastFrame) this.img = lastFrame;
+                this.stopBossAudioAndTimers();
                 this.stopAllAnimations();
-
-                // SPIELENDE nach Tod des Endbosses ...
                 if (this.world) {
                     setTimeout(() => {
-
-                        // #########################################################
-                        // HIER später SIEGES-Animation oder ähnliches einfügen !!!!
-                        // #########################################################
-
-                        this.world.addScore(150);        // 150 Score-Punkte dafür
-                        this.world.showVictoryScreen();  // Gewinnbild anzeigen
-                    }, 1000);                            // kleine Verzögerung für Wirkung
-                }
-
-
-
-                // SPIELSTOPP nach Tod des Endbosses ...
-                if (this.world) {
-                    setTimeout(() => {
-
-
-
-                        this.world.gameOver = true;   // nur Spiellogik beenden, keine Sarganzeige
+                        this.world.addScore(150);
+                        this.world.showVictoryScreen();
                     }, 1000);
                 }
-
+                if (this.world) {
+                    setTimeout(() => this.world.gameOver = true, 1000);
+                }
             }
         }, 250);
+        this.stopThunderAttackSound();
     }
 
-
-    // Stoppt alle Bewegungs- oder Animations-Intervalle des Endboss.
-    // (Verhindert, dass z. B. die Geh-Animation das Bild überschreibt)
     stopAllAnimations() {
         this.isWalking = false;
         this.isAlerted = false;
         this.isHurtBoss = false;
         this.speed = 0;
         this.acceleration = 0;
+        this.stopAllBossSounds();
+    }
+
+    /**
+    * Stoppt alle Boss-bezogenen Sounds und Timer (Schrei-Loop, Thunder, Run-Animation).
+    * Kann gefahrlos mehrfach aufgerufen werden.
+    */
+    stopBossAudioAndTimers() {
+        // Intervalle / Timer sicher beenden ...
+        try {
+            if (this.screamInterval) {
+                clearInterval(this.screamInterval);
+                this.screamInterval = null;
+            }
+        } catch (e) { }
+        try {
+            if (this.thunderAttackTimer) {
+                clearInterval(this.thunderAttackTimer);
+                this.thunderAttackTimer = null;
+            }
+        } catch (e) { }
+        try {
+            if (this.thunderRunAnimInterval) {
+                clearInterval(this.thunderRunAnimInterval);
+                this.thunderRunAnimInterval = null;
+            }
+        } catch (e) { }
+        try {
+            if (this.walkAnimInterval) {
+                clearInterval(this.walkAnimInterval);
+                this.walkAnimInterval = null;
+            }
+        } catch (e) { }
+
+        // Boss-bezogene Sounds stoppen ...
+        if (typeof soundHub !== "undefined" && soundHub) {
+            // Start-Schrei / Alarm
+            if (soundHub.soundBossStart) {
+                soundHub.stopEffect(soundHub.soundBossStart);
+            }
+            // Thunder-Angriff
+            if (soundHub.soundThunderAttack) {
+                soundHub.stopEffect(soundHub.soundThunderAttack);
+            }
+        }
+    }
+
+    stopAllBossSounds() {
+        // Alle Boss-bezogenen Timer stoppen ...
+        if (this.screamInterval) {
+            clearInterval(this.screamInterval);
+            this.screamInterval = null;
+        }
+        if (this.chargeInterval) {
+            clearInterval(this.chargeInterval);
+            this.chargeInterval = null;
+        }
+        // Laufende Sounds stoppen ...
+        try {
+            if (soundHub && !soundHub.isMuted) {
+                const effects = soundHub.getAllEffects();
+                for (let i = 0; i < effects.length; i++) {
+                    if (effects[i] && !effects[i].paused) {
+                        effects[i].pause();
+                        effects[i].currentTime = 0;
+                    }
+                }
+            }
+        } catch (err) { }
+        this.stopThunderAttackSound();
+    }
+
+    /**
+ * Stoppt den eigenen Thunder-Attack-Sound (nicht Teil des SoundHubs)
+ */
+    stopThunderAttackSound() {
+        try {
+            if (this.thunderAttack) {
+                this.thunderAttack.pause();
+                this.thunderAttack.currentTime = 0;
+            }
+        } catch (e) { }
+    }
+
+    /**
+    * Wird aufgerufen, wenn das Spiel durch Pepes Tod endet (Game-Over).
+    * Stoppt alle Boss-Aktivitäten, Sounds und Timer vollständig.
+    */
+    onGameOverCleanup() {
+        try {
+            this.isAlerted = false;
+            this.isWalking = false;
+            this.isHurtBoss = false;
+            this.isCharging = false;
+            this.isDeadBoss = true;  
+            // Alle Timer abbrechen ...
+            if (this.animateInterval) {
+                clearInterval(this.animateInterval);
+                this.animateInterval = null;
+            }
+            if (this.screamInterval) {
+                clearInterval(this.screamInterval);
+                this.screamInterval = null;
+            }
+            if (this.chargeInterval) {
+                clearInterval(this.chargeInterval);
+                this.chargeInterval = null;
+            }
+            this.stopAllBossSounds();
+            this.stopBossAudioAndTimers();
+            // Sicherheitsstopp aller aktiven Boss-Sounds
+            if (typeof soundHub !== "undefined") {
+                soundHub.stopEffect(soundHub.soundBossStart);
+                soundHub.stopEffect(soundHub.soundBossCharge);
+            }
+        } catch (e) { };
+        if (this.screamInterval) {
+            clearInterval(this.screamInterval);
+            this.screamInterval = null;
+        };
+        if (typeof soundHub !== "undefined") {
+            soundHub.stopEffect(soundHub.soundBossStart);
+            soundHub.stopEffect(soundHub.soundBossCharge);
+        };
+        this.stopThunderAttackSound();
     }
 }

@@ -354,7 +354,7 @@ class World {
     // Zeigt das Game-Over-Bild und reagiert auf Klick ...
     showGameOverScreen() {
         this.showGameOver = true;
-
+        this.silenceAllAudio();
         const canvasClickHandler = () => {
             this.canvas.removeEventListener('mousedown', canvasClickHandler);
             setTimeout(() => {
@@ -362,7 +362,6 @@ class World {
                 this.returnToMenu();
             }, 1000);
         };
-
         this.canvas.addEventListener('mousedown', canvasClickHandler);
     }
 
@@ -375,9 +374,11 @@ class World {
         if (typeof soundHub !== "undefined" && soundHub) {
             if (typeof soundHub.stopBackgroundMusic === "function") {
                 soundHub.stopBackgroundMusic();
+                this.silenceAllAudio();
             }
             if (typeof soundHub.stopAllEffects === "function") {
                 soundHub.stopAllEffects();
+                this.silenceAllAudio();
             }
         }
 
@@ -385,12 +386,17 @@ class World {
         var start = document.getElementById('startScreen');
         if (cvs) cvs.style.display = 'none';
         if (start) start.style.display = 'flex';
+        // Sicherheits-Reload, um wirklich alle Sounds und Timer zu beenden ...
+        setTimeout(function () {
+            location.reload();
+        }, 1000);      // kurze Verzögerung, bevor Menü kurz erscheint
     }
 
 
     // Zeigt das "You Win"-Endbild ...
     showVictoryScreen() {
         soundHub.stopBackgroundMusic();
+        this.silenceAllAudio();
         let bonusFlaschen = this.collectedBottles * 3;
         let bonusCoins = this.collectedCoins * 15;
         let bonusHealth = Math.max(0, Math.round(this.character.energie));
@@ -408,9 +414,34 @@ class World {
 
 
     endGame() {
+        // Endboss bei GAME-OVER (Pepe tot) sofort stilllegen ...
+        if (this.level && this.level.enemies) {
+            var boss = this.level.enemies.find(function (e) { return e instanceof Endboss; });
+            if (boss && typeof boss.onGameOverCleanup === "function") {
+                boss.onGameOverCleanup();
+            }
+        }
         this.gameOver = true;
         soundHub.stopBackgroundMusic();
+        this.silenceAllAudio();
         this.keyboard = new Keyboard();
+        // Sicherstellen, dass Endboss keine Sounds mehr spielt ...
+        if (this.level && this.level.enemies) {
+            this.level.enemies.forEach(enemy => {
+                if (enemy instanceof Endboss && typeof enemy.stopAllBossSounds === "function") {
+                    enemy.stopAllBossSounds();
+                }
+            });
+        }
+        // Endboss bei GAME-OVER (Pepe tot) sofort stilllegen ...
+        var boss = this.level.enemies.find(function (e) { return e instanceof Endboss; });
+        if (boss && typeof boss.onGameOverCleanup === "function") {
+            boss.onGameOverCleanup();
+            if (typeof soundHub !== "undefined") {
+                soundHub.stopEffect(soundHub.soundBossStart);
+                soundHub.stopEffect(soundHub.soundBossCharge);
+            }
+        }
         setTimeout(() => {
             this.startCoffinAnimation();
         }, 1500);
@@ -430,6 +461,35 @@ class World {
         if (percentage > 100) percentage = 100;
         if (percentage < 0) percentage = 0;
         this.coinBar.setPercentage(percentage);
+    }
+
+    /**
+ * Stoppt alle Audioquellen (Musik + Effekte) und räumt Boss-Timer auf.
+ * Zentraler Call für Spielende, Sieg, Rückkehr ins Menü, etc.
+ */
+    silenceAllAudio() {
+        if (typeof soundHub !== "undefined" && soundHub) {
+            if (typeof soundHub.stopBackgroundMusic === "function") {
+                soundHub.stopBackgroundMusic();
+            }
+            if (typeof soundHub.stopAllEffects === "function") {
+                soundHub.stopAllEffects();
+            }
+        }
+
+        // Boss-spezifische Timer und Sounds beenden ...
+        try {
+            var boss = null;
+            for (var i = 0; i < this.level.enemies.length; i++) {
+                if (this.level.enemies[i] instanceof Endboss) {
+                    boss = this.level.enemies[i];
+                    break;
+                }
+            }
+            if (boss && typeof boss.stopBossAudioAndTimers === "function") {
+                boss.stopBossAudioAndTimers();
+            }
+        } catch (e) { }
     }
 
 

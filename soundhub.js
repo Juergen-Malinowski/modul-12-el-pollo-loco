@@ -23,6 +23,8 @@ class SoundHub {
         this.soundChickenHit = new Audio('./assets/sound/chicken-clucking.mp3');  // Huhn getroffen
         this.soundBottlePickup = new Audio('./assets/sound/plopp.mp3');           // Flasche eingesammelt
         this.soundBossStart = new Audio('./assets/sound/great-Chicken-Cry.mp3');  // Endboss aktiviert
+        this.soundBossCharge = new Audio('./assets/sound/thunder-attack.mp3');    // Blitzangriff Endboss
+
 
         // === ALLGEMEINE VARIABLEN ===
         this.lastHitSoundTime = 0;        // Zeitstempel des letzten Charakter-Treffer-Sounds
@@ -68,17 +70,22 @@ class SoundHub {
         }
     }
 
-
-
     /**
-     * === Einzelnen Sound-Effekt abspielen (wenn nicht stummgeschaltet) ===
+     * Einzelnen Sound-Effekt abspielen (wenn nicht stummgeschaltet) ...
      */
     playEffect(audio) {
         if (!this.isMuted && audio) {
-            audio.currentTime = 0;    // Sound von Anfang abspielen
-            audio.play();
+            try {
+                audio.currentTime = 0;               // Sound von Anfang abspielen
+                let playPromise = audio.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(err => { });
+                }
+            } catch (err) { }
         }
     }
+
+
 
 
 
@@ -94,7 +101,8 @@ class SoundHub {
             this.soundJumping,
             this.soundChickenHit,
             this.soundBottlePickup,
-            this.soundBossStart
+            this.soundBossStart,
+            this.soundBossCharge,
         ];
     }
 
@@ -161,16 +169,12 @@ class SoundHub {
         } catch (err) { }
     }
 
-
-
     /**
      * === Umschalten (Mute / Unmute) ===
      */
     toggleMute() {
         this.setMuted(!this.isMuted);
     }
-
-
 
     /**
      * === Musiklautstärke abrufen ===
@@ -179,7 +183,29 @@ class SoundHub {
         return this.backgroundMusic.volume;
     }
 
+    /**
+     * === Einzelnen Effekt-Sound sicher stoppen (pausieren & zurücksetzen) ===
+     */
+    stopEffect(audio) {
+        try {
+            if (audio) {
+                audio.pause();
+                audio.currentTime = 0;
+            }
+        } catch (e) {
+            // leise Fehlerbehandlung
+        }
+    }
 
+    /**
+     * === Alle Effekt-Sounds stoppen (für Spielende / Szenenwechsel) ===
+     */
+    stopAllEffects() {
+        var effects = this.getAllEffects();
+        for (var i = 0; i < effects.length; i++) {
+            this.stopEffect(effects[i]);
+        }
+    }
 
     /**
      * === Effektlautstärke abrufen ===
