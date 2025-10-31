@@ -605,6 +605,7 @@ canvas {
     text-align: center;
     color: black;
     padding: 30px;
+    letter-spacing: 3px;   /* für Lesbarkeit bei der Schriftart */
 }
 
 .info_content h2 {
