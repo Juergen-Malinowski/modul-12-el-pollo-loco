@@ -275,7 +275,6 @@ class World {
         }, step);
     }
 
-
     addScore(points) {
         this.score += points;
         score = this.score;
@@ -294,7 +293,6 @@ class World {
             if (opacity <= 0) clearInterval(interval);
         }, step);
     }
-
 
     checkThrowObjects() {
         const now = Date.now();
@@ -465,7 +463,7 @@ class World {
         this.silenceAllAudio();
         let bonusFlaschen = this.collectedBottles * 3;
         let bonusCoins = this.collectedCoins * 15;
-        let bonusHealth = Math.max(0, Math.round(this.character.energie));
+        let bonusHealth = Math.max(0, Math.round(this.character.energie*0.7));
         let totalBonus = bonusFlaschen + bonusCoins + bonusHealth;
         this.addScore(totalBonus);
         this.showYouWin = true;
