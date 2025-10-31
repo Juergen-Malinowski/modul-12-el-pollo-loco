@@ -12,7 +12,7 @@ class ThrowableObjects extends MovableObject {
             this.x = 200 + Math.random() * 1600;
             this.y = 380;
         } else {
-            this.loadImage('./assets/img/6_salsa_flasche/salsa_bottle.png');            this.x = x;
+            this.loadImage('./assets/img/6_salsa_flasche/salsa_bottle.png'); this.x = x;
             this.y = y;
             this.direction = direction;     //  Richtung übernehmen für Wurf
             this.throwBottle();
@@ -20,9 +20,12 @@ class ThrowableObjects extends MovableObject {
     }
 
     throwBottle() {
+        // Wenn Pepe wirft ... Schnarchgeräusch sofort stoppen ...
+        if (window.world && world.character && typeof world.character.stopSnoringSound === "function") {
+            world.character.stopSnoringSound();
+        }
         this.speedY = 30;
         this.applyGravity();
-
         setInterval(() => {
             this.x += 10 * this.direction; // nach links oder rechts werfen
         }, 20);

@@ -100,16 +100,28 @@ class MovableObject extends DrawableObjects {
 
     moveLeft() {
         // Bewegung nach LINKS ...
-        this.x -= this.speed;      // Modifikation der x-Position 
+        this.x -= this.speed;
+        // Schnarchen sofort stoppen, wenn Pepe sich bewegt ...
+        if (this instanceof Character && typeof this.stopSnoringSound === "function") {
+            this.stopSnoringSound();
+        }
     }
 
     moveRight() {
         // Bewegung nach RECHTS ...
-        this.x += this.speed;      // Modifikation der x-Position 
+        this.x += this.speed;
+        // Schnarchen sofort stoppen, wenn Pepe sich bewegt ...
+        if (this instanceof Character && typeof this.stopSnoringSound === "function") {
+            this.stopSnoringSound();
+        }
     }
 
     jump() {
         // Sprung nach oben ...
         this.speedY = 45;
+        // Schnarchen sofort stoppen, wenn Pepe springt ...
+        if (this instanceof Character && typeof this.stopSnoringSound === "function") {
+            this.stopSnoringSound();
+        }
     }
 }

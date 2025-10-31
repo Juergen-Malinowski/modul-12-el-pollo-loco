@@ -94,7 +94,10 @@ class Character extends MovableObject {
         this.loadImages(this.imagesWating);        // Idle-Animation laden
         this.loadImages(this.imagesLongWaiting);   // Long Idle-Animation laden
         this.loadImages(this.imagesThrowing);      // Wurf-Animation laden
-
+        this.soundSnoring = new Audio('./assets/sound/snoring.mp3');
+        this.soundSnoring.loop = true;
+        this.soundSnoring.volume = 0.7;
+        this.soundSnoring.preload = 'auto';
         this.applyGravity();
         this.animate();
     }
@@ -138,19 +141,16 @@ class Character extends MovableObject {
 
         // ANIMATIONS-STEUERUNG ...
         setInterval(() => {
-
             // 1) Sterben erkannt, aber Animation noch nicht gestartet → starten und SOFORT abbrechen ...
             if (this.isDead() && !this.isDeadAnimationPlaying) {
                 this.isDeadAnimationPlaying = true;   // KEIN wiederholtes Abspielen !!!
                 this.playDeadAnimation();
                 return;                               // keine andere Animation in diesem Tick mehr ausführen
             }
-
             // 2) Sterbeanimation läuft bereits → nichts anderes abspielen ...
             if (this.isDeadAnimationPlaying) {
                 return;
             }
-
             // 3) Normales Animationsrouting (nur wenn NICHT tot) ...
             if (this.isHurt()) {
                 this.playAnimation(this.imagesHurt);
@@ -165,12 +165,23 @@ class Character extends MovableObject {
                 if (idleTime < 3) {
                     // Spieler steht erst kurz still → Idle
                     this.playAnimation(this.imagesWating);
-                } else if (idleTime >= 4) {
+                } else if (idleTime >= 5) {
                     // Spieler steht sehr lange still → Long Idle
                     this.playAnimation(this.imagesLongWaiting);
+                    // Schnarch-Sound starten, falls noch nicht läuft ===
+                    if (this.soundSnoring && this.soundSnoring.paused && !soundHub.isMuted) {
+                        this.soundSnoring.currentTime = 0;
+                        this.soundSnoring.play();
+                    }
+                }
+                else {
+                    // Spieler bewegt sich oder ist normal idle → sicherstellen, dass Schnarchen stoppt
+                    if (this.soundSnoring && !this.soundSnoring.paused) {
+                        this.soundSnoring.pause();
+                        this.soundSnoring.currentTime = 0;
+                    }
                 }
             }
-
         }, 150);
     };
 
@@ -242,5 +253,17 @@ class Character extends MovableObject {
             this.y = 130;      // exakt auf Bodenhöhe bringen
             this.speedY = 0;   // vertikale Bewegung stoppen
         }
+    }
+
+    /**
+ * Stoppt das Schnarchgeräusch sofort, wenn Pepe aktiv wird.
+ */
+    stopSnoringSound() {
+        try {
+            if (this.soundSnoring && !this.soundSnoring.paused) {
+                this.soundSnoring.pause();
+                this.soundSnoring.currentTime = 0;
+            }
+        } catch (e) { }
     }
 }
