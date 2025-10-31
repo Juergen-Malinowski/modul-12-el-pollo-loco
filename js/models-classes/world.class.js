@@ -358,18 +358,78 @@ class World {
 
 
     // Zeigt das Game-Over-Bild und reagiert auf Klick ...
+    // Zeigt das Game-Over-Bild und reagiert auf Klick ...
     showGameOverScreen() {
         this.showGameOver = true;
         this.silenceAllAudio();
-        const canvasClickHandler = () => {
-            this.canvas.removeEventListener('mousedown', canvasClickHandler);
-            setTimeout(() => {
-                this.showGameOver = false;
-                this.returnToMenu();
-            }, 1000);
+
+        // Game-Over-Buttons anzeigen (Menu / Try again?) ...
+        const canvas = this.canvas;
+        const ctx = this.ctx;
+        const buttonHeight = 60;
+        const buttonWidth = 220;
+        const bottomY = this.canvas.height * 0.75;  // unteres Viertel des Canvas ...
+        const centerX = this.canvas.width / 2;
+
+        // Button-Positionen berechnen ...
+        this.menuButtonArea = {
+            x: centerX - buttonWidth - 40,
+            y: bottomY,
+            width: buttonWidth,
+            height: buttonHeight
         };
-        this.canvas.addEventListener('mousedown', canvasClickHandler);
+        this.tryAgainButtonArea = {
+            x: centerX + 40,
+            y: bottomY,
+            width: buttonWidth,
+            height: buttonHeight
+        };
+
+        // Klick-Handler hinzufügen ...
+        const self = this;
+        function canvasClickHandler(event) {
+            const rect = canvas.getBoundingClientRect();
+            const clickX = event.clientX - rect.left;
+            const clickY = event.clientY - rect.top;
+
+            // Klick auf "Try again?" ...
+            if (
+                clickX >= self.tryAgainButtonArea.x &&
+                clickX <= self.tryAgainButtonArea.x + self.tryAgainButtonArea.width &&
+                clickY >= self.tryAgainButtonArea.y &&
+                clickY <= self.tryAgainButtonArea.y + self.tryAgainButtonArea.height
+            ) {
+                canvas.removeEventListener('mousedown', canvasClickHandler);
+                self.restartGame();
+                return;
+            }
+
+            // Klick auf "Menu" ...
+            if (
+                clickX >= self.menuButtonArea.x &&
+                clickX <= self.menuButtonArea.x + self.menuButtonArea.width &&
+                clickY >= self.menuButtonArea.y &&
+                clickY <= self.menuButtonArea.y + self.menuButtonArea.height
+            ) {
+                canvas.removeEventListener('mousedown', canvasClickHandler);
+                setTimeout(function () {
+                    self.showGameOver = false;
+                    self.returnToMenu();
+                }, 500);
+                return;
+            }
+
+            // Klick auf freie Fläche ...
+            canvas.removeEventListener('mousedown', canvasClickHandler);
+            setTimeout(function () {
+                self.showGameOver = false;
+                self.returnToMenu();
+            }, 500);
+        }
+
+        canvas.addEventListener('mousedown', canvasClickHandler);
     }
+
 
 
     // Blendet alles aus und kehrt ins Hauptmenü zurück ...
@@ -498,8 +558,6 @@ class World {
         } catch (e) { }
     }
 
-
-    // Zeichnung der Spielwelt ...
     // Zeichnung der Spielwelt ...
     draw() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -518,14 +576,14 @@ class World {
         this.ctx.font = "bold 36px Zabars";
         this.ctx.fillStyle = "white";
         this.ctx.textAlign = "left";
-        this.ctx.fillText(`${this.collectedBottles}`, 175, 117);
-        this.ctx.fillText(`${this.collectedCoins}`, 175, 175);
+        this.ctx.fillText(this.collectedBottles + "", 175, 117);
+        this.ctx.fillText(this.collectedCoins + "", 175, 175);
         this.ctx.restore();
 
         if (!this.blinkActive || (this.blinkActive && this.blinkVisible)) {
             this.ctx.font = "bold 40px Zabars";
             this.ctx.fillStyle = "#ffcc00";
-            this.ctx.fillText(`Score: ${this.score}`, 570, 50);
+            this.ctx.fillText("Score: " + this.score, 570, 50);
         }
 
         this.ctx.translate(this.cameraX, 0);
@@ -538,11 +596,11 @@ class World {
 
         // Sarg zeichnen ...
         if (this.showCoffin) {
-            const ctx = this.ctx;
-            const centerX = this.canvas.width / 2;
-            const centerY = this.canvas.height / 2;
-            const coffinWidth = 250;
-            const coffinHeight = 150;
+            var ctx = this.ctx;
+            var centerX = this.canvas.width / 2;
+            var centerY = this.canvas.height / 2;
+            var coffinWidth = 250;
+            var coffinHeight = 150;
 
             ctx.save();
             ctx.translate(centerX, centerY);
@@ -560,31 +618,73 @@ class World {
 
         // Gewinn-Bild anzeigen ...
         if (this.showYouWin) {
-            const ctx = this.ctx;
-            ctx.save();
-            ctx.globalAlpha = 1.0;
-            ctx.drawImage(this.youWinImg, 0, 0, this.canvas.width, this.canvas.height);
-            ctx.restore();
+            var ctxYw = this.ctx;
+            ctxYw.save();
+            ctxYw.globalAlpha = 1.0;
+            ctxYw.drawImage(this.youWinImg, 0, 0, this.canvas.width, this.canvas.height);
+            ctxYw.restore();
         }
 
         // Game-Over-Bild anzeigen ...
         if (this.showGameOver) {
-            const ctx = this.ctx;
-            ctx.save();
-            ctx.globalAlpha = 1.0;
-            ctx.drawImage(this.gameOverImg, 0, 0, this.canvas.width, this.canvas.height);
-            ctx.restore();
+            var ctxGo = this.ctx;
+            ctxGo.save();
+            ctxGo.globalAlpha = 1.0;
+            ctxGo.drawImage(this.gameOverImg, 0, 0, this.canvas.width, this.canvas.height);
+            ctxGo.restore();
+
+            // Buttons "Menu" und "Try again?" im unteren Viertel einblenden ...
+            var buttonHeight = 60;
+            var buttonWidth = 220;
+            var spacing = 40;
+            var cx = this.canvas.width / 2;
+            var by = Math.floor(this.canvas.height * 0.75);
+
+            // Fallback: Positions-Objekte sicherstellen ...
+            if (!this.menuButtonArea) {
+                this.menuButtonArea = { x: cx - buttonWidth - spacing, y: by, width: buttonWidth, height: buttonHeight };
+            }
+            if (!this.tryAgainButtonArea) {
+                this.tryAgainButtonArea = { x: cx + spacing, y: by, width: buttonWidth, height: buttonHeight };
+            }
+
+            // Gemeinsame Zeichenparameter ...
+            var ctxBtn = this.ctx;
+            ctxBtn.save();
+            ctxBtn.lineWidth = 4;
+            ctxBtn.font = "bold 36px Zabars";
+            ctxBtn.textBaseline = "middle";
+            ctxBtn.textAlign = "center";
+
+            // Button-Style gelb mit schwarzer Kontur ...
+            function drawButtonRect(c, area) {
+                c.fillStyle = "#ffcc00";
+                c.strokeStyle = "black";
+                c.fillRect(area.x, area.y, area.width, area.height);
+                c.strokeRect(area.x, area.y, area.width, area.height);
+            }
+
+            // "Menu" ...
+            drawButtonRect(ctxBtn, this.menuButtonArea);
+            ctxBtn.fillStyle = "black";
+            ctxBtn.fillText("Menu", this.menuButtonArea.x + this.menuButtonArea.width / 2, this.menuButtonArea.y + this.menuButtonArea.height / 2);
+
+            // "Try again?" ...
+            drawButtonRect(ctxBtn, this.tryAgainButtonArea);
+            ctxBtn.fillStyle = "black";
+            ctxBtn.fillText("Try again?", this.tryAgainButtonArea.x + this.tryAgainButtonArea.width / 2, this.tryAgainButtonArea.y + this.tryAgainButtonArea.height / 2);
+
+            ctxBtn.restore();
         }
 
-        // === Sound-Symbol anzeigen (Ton an/aus) ===
+        // Sound-Symbol anzeigen (Ton an/aus) ...
         this.ctx.save();
-        const iconSize = 80;
-        const yPos = 60; // etwas nach unten versetzt für gute Sichtbarkeit
-        this.ctx.font = "70px Zabars";   // gleiche Schriftfamilie für optische Einheit
+        var iconSize = 80;
+        var yPos = 60;
+        this.ctx.font = "70px Zabars";
         this.ctx.textAlign = "center";
         this.ctx.textBaseline = "middle";
         this.ctx.fillStyle = "white";
-
         if (soundHub.isMuted) {
             this.ctx.fillText("🔇", this.canvas.width / 2, yPos);
         } else {
@@ -592,9 +692,10 @@ class World {
         }
         this.ctx.restore();
 
-        const self = this;
-        requestAnimationFrame(() => self.draw());
+        var self = this;
+        requestAnimationFrame(function () { self.draw(); });
     }
+
 
     handleSoundIconClick(x, y) {
         const iconSize = 80;
@@ -726,14 +827,32 @@ class World {
         overlay.style.textAlign = "center";
         overlay.style.zIndex = "9999";
         overlay.style.boxShadow = "0 0 15px rgba(0,0,0,0.5)";
-
         document.body.appendChild(overlay);
-
         // Automatisch nach 3 Sekunden ausblenden ...
         setTimeout(function () {
             overlay.remove();
         }, 3000);
     }
 
+    // Startet das Spiel sofort neu (nach Klick auf "Try again?") ...
+    restartGame() {
+        //...alle Sounds beenden, um Überlagerungen zu vermeiden...
+        this.silenceAllAudio();
 
+        //...Canvas bleibt sichtbar, alte Elemente löschen...
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+        //...Spielstatus zurücksetzen...
+        this.showGameOver = false;
+        this.gameOver = false;
+        this.showCoffin = false;
+
+        //...direkt neues Spiel starten (wie in script.js -> startGame)...
+        if (typeof startGame === "function") {
+            startGame();
+        } else {
+            //...Fallback: Seite neu laden, falls Funktion nicht gefunden...
+            location.reload();
+        }
+    }
 }
