@@ -597,7 +597,6 @@ class World {
     }
 
     handleSoundIconClick(x, y) {
-        // Ton AN und AUS umschalten ...
         const iconSize = 80;
         const iconX = (this.canvas.width - iconSize) / 2;
         const iconY = 20; // obere Position (muss zur draw()-Position passen!)
@@ -605,7 +604,13 @@ class World {
         // Prüfen, ob Klick im Bereich des Symbols liegt
         if (x >= iconX && x <= iconX + iconSize && y >= iconY && y <= iconY + iconSize) {
             if (typeof soundHub !== "undefined" && soundHub && typeof soundHub.toggleMute === "function") {
+                const wasMuted = soundHub.isMuted;
                 soundHub.toggleMute();
+
+                // Wenn Sound wieder eingeschaltet wurde → Musik erneut starten
+                if (wasMuted && !soundHub.isMuted && typeof soundHub.playBackgroundMusic === "function") {
+                    soundHub.playBackgroundMusic();
+                }
 
                 // Audio-Menü-UI aktualisieren (Buttontext etc.)
                 if (typeof syncAudioUIFromSoundHub === "function") {
@@ -614,6 +619,7 @@ class World {
             }
         }
     }
+
 
 
     addObjectsToMap(objects) {
