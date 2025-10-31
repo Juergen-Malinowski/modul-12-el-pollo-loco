@@ -233,6 +233,36 @@ class SoundHub {
             console.warn('Audioeinstellungen konnten nicht geladen werden:', err);
         }
     }
+
+
+    // =============================================================
+    // === HILFSFUNKTION: Boss-Schrei & Sturmangriff-Sound stoppen ===
+    // =============================================================
+    // Diese Funktion stellt sicher, dass beim Spiel-Neustart, bei Game-Over
+    // oder bei Rückkehr ins Menü keine Boss-Schreie weiterlaufen ...
+    // Sie kann überall im Code durch "soundHub.stopBossCharge()" aufgerufen werden ...
+    // =============================================================
+    stopBossCharge() {
+        try {
+            // === Boss-Sturmangriff stoppen ===
+            if (this.soundBossCharge) {
+                this.soundBossCharge.pause();
+                this.soundBossCharge.currentTime = 0;
+                this.soundBossCharge.loop = false;
+            }
+
+            // === Boss-Start-Schrei stoppen ===
+            if (this.soundBossStart) {
+                this.soundBossStart.pause();
+                this.soundBossStart.currentTime = 0;
+                this.soundBossStart.loop = false;
+            }
+
+        } catch (e) {
+            console.warn("Fehler beim Stoppen der Boss-Sounds:", e);
+        }
+    }
+
 }
 
 /**

@@ -445,6 +445,20 @@ class World {
                 this.silenceAllAudio();
             }
         }
+        // Boss-Schrei und Sturmangriff sicher beenden ...
+        if (typeof soundHub !== "undefined" && typeof soundHub.stopBossCharge === "function") {
+            soundHub.stopBossCharge();
+            // ...Sicherheits-Stop des alten Endboss-Objekts...
+            if (this.level && this.level.enemies) {
+                for (var i = 0; i < this.level.enemies.length; i++) {
+                    var enemy = this.level.enemies[i];
+                    if (enemy instanceof Endboss && typeof enemy.forceStopBossAudio === "function") {
+                        enemy.forceStopBossAudio();
+                    }
+                }
+            }
+        }
+
 
         var cvs = document.getElementById('canvas');
         var start = document.getElementById('startScreen');
@@ -463,7 +477,7 @@ class World {
         this.silenceAllAudio();
         let bonusFlaschen = this.collectedBottles * 3;
         let bonusCoins = this.collectedCoins * 15;
-        let bonusHealth = Math.max(0, Math.round(this.character.energie*0.7));
+        let bonusHealth = Math.max(0, Math.round(this.character.energie * 0.7));
         let totalBonus = bonusFlaschen + bonusCoins + bonusHealth;
         this.addScore(totalBonus);
         this.showYouWin = true;
@@ -834,22 +848,32 @@ class World {
 
     // Startet das Spiel sofort neu (nach Klick auf "Try again?") ...
     restartGame() {
-        //...alle Sounds beenden, um Überlagerungen zu vermeiden...
+        // alle Sounds beenden, um Überlagerungen zu vermeiden...
         this.silenceAllAudio();
-
-        //...Canvas bleibt sichtbar, alte Elemente löschen...
+        // zusätzlich Boss-Schreie stoppen (Monsterschrei etc.) ...
+        if (typeof soundHub !== "undefined" && typeof soundHub.stopBossCharge === "function") {
+            soundHub.stopBossCharge();
+            // ...Sicherheits-Stop des alten Endboss-Objekts...
+            if (this.level && this.level.enemies) {
+                for (var i = 0; i < this.level.enemies.length; i++) {
+                    var enemy = this.level.enemies[i];
+                    if (enemy instanceof Endboss && typeof enemy.forceStopBossAudio === "function") {
+                        enemy.forceStopBossAudio();
+                    }
+                }
+            }
+        }
+        // Canvas bleibt sichtbar, alte Elemente löschen...
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-        //...Spielstatus zurücksetzen...
+        // Spielstatus zurücksetzen...
         this.showGameOver = false;
         this.gameOver = false;
         this.showCoffin = false;
-
-        //...direkt neues Spiel starten (wie in script.js -> startGame)...
+        // direkt neues Spiel starten (wie in script.js -> startGame)...
         if (typeof startGame === "function") {
             startGame();
         } else {
-            //...Fallback: Seite neu laden, falls Funktion nicht gefunden...
+            // Fallback: Seite neu laden, falls Funktion nicht gefunden...
             location.reload();
         }
     }

@@ -423,7 +423,7 @@ class Endboss extends MovableObject {
             this.isWalking = false;
             this.isHurtBoss = false;
             this.isCharging = false;
-            this.isDeadBoss = true;  
+            this.isDeadBoss = true;
             // Alle Timer abbrechen ...
             if (this.animateInterval) {
                 clearInterval(this.animateInterval);
@@ -454,5 +454,38 @@ class Endboss extends MovableObject {
             soundHub.stopEffect(soundHub.soundBossCharge);
         };
         this.stopThunderAttackSound();
+    }
+
+    /**
+ * ===========================================================
+ *  Zentrale Sicherheitsfunktion zum kompletten Stoppen aller
+ *  Boss-Sounds und Intervalle (auch beim "Try Again").
+ *  Kann jederzeit gefahrlos aufgerufen werden ...
+ * ===========================================================
+ */
+    forceStopBossAudio() {
+        try {
+            // Alle internen Timer sicher abbrechen ...
+            if (this.screamInterval) { clearInterval(this.screamInterval); this.screamInterval = null; }
+            if (this.chargeInterval) { clearInterval(this.chargeInterval); this.chargeInterval = null; }
+            if (this.animateInterval) { clearInterval(this.animateInterval); this.animateInterval = null; }
+
+            // Flags neutralisieren ...
+            this.isAlerted = false;
+            this.isWalking = false;
+            this.isCharging = false;
+            this.isDeadBoss = true;
+
+            // Lokale Sounds stoppen ...
+            this.stopThunderAttackSound();
+
+            // SoundHub-Effekte stoppen (Schrei & Sturmangriff) ...
+            if (typeof soundHub !== "undefined" && typeof soundHub.stopBossCharge === "function") {
+                soundHub.stopBossCharge();
+            }
+
+        } catch (e) {
+            console.warn("Fehler beim kompletten Stoppen der Boss-Sounds:", e);
+        }
     }
 }
