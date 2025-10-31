@@ -58,8 +58,6 @@ class SoundHub {
         });
     }
 
-
-
     /**
      * === HINTERGRUNDMUSIK stoppen ===
      */
@@ -85,10 +83,6 @@ class SoundHub {
         }
     }
 
-
-
-
-
     /**
      * === Alle Effekt-Sounds als Liste zurückgeben ===
      */
@@ -106,8 +100,6 @@ class SoundHub {
         ];
     }
 
-
-
     /**
      * === Musiklautstärke 0..1 setzen ===
      */
@@ -119,13 +111,10 @@ class SoundHub {
 
         this.musicVolume = v;
         this.backgroundMusic.volume = v;
-
         try {
             localStorage.setItem('audio_music_volume', v.toString());
         } catch (err) { }
     }
-
-
 
     /**
      * === Effektlautstärke 0..1 für alle Effekte setzen ===
@@ -145,8 +134,6 @@ class SoundHub {
             localStorage.setItem('audio_effects_volume', v.toString());
         } catch (err) { }
     }
-
-
 
     /**
      * === Global stumm schalten / wieder aktivieren ===
@@ -218,8 +205,6 @@ class SoundHub {
         return 1.0;
     }
 
-
-
     /**
      * === Audioeinstellungen aus dem localStorage laden ===
      */
@@ -249,8 +234,6 @@ class SoundHub {
         }
     }
 }
-
-
 
 /**
  * ===========================================================
