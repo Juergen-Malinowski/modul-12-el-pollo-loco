@@ -141,6 +141,13 @@ button:hover {
 
 
 /* === Fledermaus fixiert am Startbild, unabhängig vom Browserzoom ... */
+/* =========================================================== */
+/* Fledermaus (batImage) wird fix an das Startbild gebunden.   */
+/* Statt position: relative oder absolute-Bezug zum Fenster    */
+/* wird hier mit calc() + translate() gearbeitet, damit die    */
+/* Fledermaus beim Browserzoom stabil an Ort und Stelle bleibt */
+/* =========================================================== */
+
 #batImage {
     position: absolute;
     width: 230px;

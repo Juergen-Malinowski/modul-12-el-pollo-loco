@@ -60,6 +60,10 @@ class MovableObject extends DrawableObjects {
     }
 
     wasHit() {
+        // Schnarchen-Audio beenden ...
+        if (this instanceof Character && typeof soundHub !== "undefined" && soundHub && typeof soundHub.stopSnoring === "function") {
+            soundHub.stopSnoring();
+        }
         // Schadenverarbeitung ...
         this.energie -= 1;       // ENERGIE abziehen pro Zeiteinheit ms
         if (this.energie < 0) {
