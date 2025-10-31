@@ -21,7 +21,6 @@ class World {
     showGameOver = false;                  // Steuerung, ob Game-Over-Bild angezeigt wird
     blinkActive = false;                   // steuert, ob die Score-Anzeige blinken soll
     blinkVisible = true;                   // aktueller Sichtbarkeitszustand für Blinkeffekt
-    soundIcon = new Image();               // Icon für Sound ist ausgeschaltet für Hinweis im Canvas
 
     // Variablen für Sarg-Animation ...
     coffinRotation = 0;
@@ -37,7 +36,6 @@ class World {
         this.coffinImg.src = './assets/img/2_charakter_pepe/5_dead/coffin.png';        // Sarg-Bild laden
         this.youWinImg.src = './assets/img/0_you_won_you_lost/You Win A.png';          // You-Win-Bild laden
         this.gameOverImg.src = './assets/img/9_intro_outro_bildschirm/game_over/game over.png';  // Game-Over-Bild laden
-        this.soundIcon.src = './assets/img/9_intro_outro_bildschirm/start/sound.gif';  // Sound-OFF-Icon laden
         this.setWorld();
         this.draw();
         this.run();
@@ -50,6 +48,14 @@ class World {
                 location.reload();   // Seite neu laden → Spiel wird neu gestartet
             }
         });
+        // Klick auf das Sound-Icon im Canvas ...
+        this.canvas.addEventListener('mousedown', (event) => {
+            const rect = this.canvas.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+            this.handleSoundIconClick(x, y);
+        });
+
     }
 
 
@@ -494,6 +500,7 @@ class World {
 
 
     // Zeichnung der Spielwelt ...
+    // Zeichnung der Spielwelt ...
     draw() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
@@ -569,27 +576,43 @@ class World {
             ctx.restore();
         }
 
-        // Sound-Icon anzeigen ...
+        // === Sound-Symbol anzeigen (Ton an/aus) ===
+        this.ctx.save();
+        const iconSize = 80;
+        const yPos = 60; // etwas nach unten versetzt für gute Sichtbarkeit
+        this.ctx.font = "70px Zabars";   // gleiche Schriftfamilie für optische Einheit
+        this.ctx.textAlign = "center";
+        this.ctx.textBaseline = "middle";
+        this.ctx.fillStyle = "white";
+
         if (soundHub.isMuted) {
-            this.ctx.save();
-            const iconSize = 80;
-            const xPos = (this.canvas.width - iconSize) / 2;
-            const yPos = 15;
-            this.ctx.drawImage(this.soundIcon, xPos, yPos, iconSize, iconSize);
-            this.ctx.strokeStyle = "rgba(255, 0, 0, 0.7)";
-            this.ctx.lineWidth = 4;
-            const shorten = iconSize / 6;
-            this.ctx.beginPath();
-            this.ctx.moveTo(xPos + 10 + shorten, yPos + 10 + shorten);
-            this.ctx.lineTo(xPos + iconSize - 10 - shorten, yPos + iconSize - 10 - shorten);
-            this.ctx.moveTo(xPos + iconSize - 10 - shorten, yPos + 10 + shorten);
-            this.ctx.lineTo(xPos + 10 + shorten, yPos + iconSize - 10 - shorten);
-            this.ctx.stroke();
-            this.ctx.restore();
+            this.ctx.fillText("🔇", this.canvas.width / 2, yPos);
+        } else {
+            this.ctx.fillText("🔊", this.canvas.width / 2, yPos);
         }
+        this.ctx.restore();
 
         const self = this;
         requestAnimationFrame(() => self.draw());
+    }
+
+    handleSoundIconClick(x, y) {
+        // Ton AN und AUS umschalten ...
+        const iconSize = 80;
+        const iconX = (this.canvas.width - iconSize) / 2;
+        const iconY = 20; // obere Position (muss zur draw()-Position passen!)
+
+        // Prüfen, ob Klick im Bereich des Symbols liegt
+        if (x >= iconX && x <= iconX + iconSize && y >= iconY && y <= iconY + iconSize) {
+            if (typeof soundHub !== "undefined" && soundHub && typeof soundHub.toggleMute === "function") {
+                soundHub.toggleMute();
+
+                // Audio-Menü-UI aktualisieren (Buttontext etc.)
+                if (typeof syncAudioUIFromSoundHub === "function") {
+                    syncAudioUIFromSoundHub();
+                }
+            }
+        }
     }
 
 
