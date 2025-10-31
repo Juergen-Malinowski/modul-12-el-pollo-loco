@@ -3,6 +3,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: flex-start;
     background-color: black;
     background-image: url(./assets/img/5_hintergrund/layers/background_picture/background_sunset.jpg);
     background-size: cover;
@@ -42,9 +43,21 @@ h1 {
 h1 {
     font-size: 6em;
     margin: 0;
+    margin-top: 2px;
+    /* minimaler Abstand nach oben ... */
+    margin-bottom: 2px;
+    /* Abstand nach unten zu den Menü-Buttons ... */
     font-style: italic;
     letter-spacing: 5px;
     text-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+    position: relative;
+    z-index: 16;
+    /* über dem StartScreen (10) und über der Fledermaus (12) ... */
+}
+
+
+#startMenu {
+    margin-top: 2px;
 }
 
 /* === MENÜLEISTE AUF DEM STARTBILDSCHIRM === */
@@ -121,18 +134,28 @@ button:hover {
     position: absolute;
     z-index: 15;
     /* über dem Startbild, aber unter Menüleiste */
-    width: 200px;
+    width: 250px;
     /* Grundgröße (kannst du später anpassen) */
     height: auto;
 }
 
-/* Fledermaus */
+
+/* === Fledermaus fixiert am Startbild, unabhängig vom Browserzoom ... */
 #batImage {
-    top: 16%;
-    /* Höhenposition */
-    left: 65%;
-    /* wie weit nach rechts verschoben */
+    position: absolute;
+    width: 230px;
+    height: auto;
+    top: calc(50% - 80px);
+    /* vertikale Fixierung bezogen auf Bildmitte ... */
+    left: calc(50% + 260px);
+    /* horizontale Fixierung rechts vom Mittelpunkt ... */
+    transform: translate(-50%, -50%);
+    z-index: 12;
+    /* unter Menü, über Hintergrund ... */
+    pointer-events: none;
+    /* blockiert keine Klicks ... */
 }
+
 
 /* Kleiner Teufel */
 #devilImage {
@@ -275,7 +298,8 @@ button:hover {
 
 footer .copyright {
     font-family: 'Zabars', Arial, Helvetica, sans-serif;
-    font-size: 2.2em;         /* gleiche Größe wie restlicher Text */
+    font-size: 2.2em;
+    /* gleiche Größe wie restlicher Text */
     color: black;
     text-align: center;
     margin-top: 20px;
@@ -587,8 +611,6 @@ canvas {
     line-height: 1.6;
     margin-top: 0;
 }
-
-
 
 /* === SMARTPHONE resposive === */
 @media only screen and (max-width: 720px) {
