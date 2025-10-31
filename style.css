@@ -268,9 +268,17 @@ button:hover {
 
 #closeImpressumHint {
     font-family: 'Zabars', Arial, Helvetica, sans-serif;
-    font-size: 1.5em;
+    font-size: 1.7em;
     color: black;
     margin-top: 10px;
+}
+
+footer .copyright {
+    font-family: 'Zabars', Arial, Helvetica, sans-serif;
+    font-size: 2.2em;         /* gleiche Größe wie restlicher Text */
+    color: black;
+    text-align: center;
+    margin-top: 20px;
 }
 
 /* === CLOSE-BUTTON im Impressum visuell hervorheben === */
