@@ -103,9 +103,9 @@ class World {
                     enemy.die();
                     // Score-Punkte für Springen auf Huhn ...
                     if (enemy instanceof LittleChicken) {
-                        this.addScore(10);    // Kleine Hühner 
+                        this.addScore(15);    // 15 Score-Punkte für Sprung auf KLEINES Huhn
                     } else {
-                        this.addScore(20);    // Normale Hühner
+                        this.addScore(20);    // 20 Score-Punkte für Sprung auf GROSSES Huhn 
                     }
                     setTimeout(() => {
                         const index = this.level.enemies.indexOf(enemy);
@@ -119,7 +119,7 @@ class World {
                 if (enemy instanceof Endboss && !enemy.isDeadBoss) {
                     soundHub.playEffect(soundHub.soundChickenHit);  // Soundeffekt
                     enemy.wasHit();             // Endboss verliert Energie
-                    this.addScore(50);          // Punkte dafür
+                    this.addScore(65);          // 65 Score-Punkte für Springen auf Endboss
 
                     // Pepe wird zur Seite geschleudert ...
                     const bounceDistance = 300;
@@ -206,7 +206,7 @@ class World {
                 if (hit) {
                     soundHub.playEffect(soundHub.soundChickenHit);
                     enemy.die();
-                    this.addScore(10);
+                    this.addScore(20);    // 20 Score-Punkte für Einsammeln einer Münze
                     this.throwableObjects.splice(i, 1);
                     setTimeout(() => {
                         const idx = this.level.enemies.indexOf(enemy);
@@ -232,7 +232,7 @@ class World {
             if (hit) {
                 this.throwableObjects.splice(i, 1);
                 boss.wasHit();
-                this.addScore(10);
+                this.addScore(40);     // 40 Score-Punkte für Einsammeln einer Münze
                 break;
             }
         }
@@ -244,7 +244,7 @@ class World {
         this.level.bottles.splice(index, 1);
         this.collectedBottles++;
         this.updateBottleBar();
-        this.addScore(2);
+        this.addScore(2);             // 2 Score-Punkte für Einsammeln einer Flasche
         this.showBottlePickupEffect();
     }
 
@@ -254,7 +254,7 @@ class World {
         this.level.coins.splice(index, 1);
         this.collectedCoins++;
         this.updateCoinBar();
-        this.addScore(3);
+        this.addScore(3);             // 3 Score-Punkte für Einsammeln einer Münze
     }
 
 
@@ -313,7 +313,7 @@ class World {
 
             this.throwableObjects.push(bottle);
             soundHub.playEffect(soundHub.soundThrow);
-            this.addScore(1);
+            this.addScore(3);                     // 3 Score-Punkte für Flaschenwurf
             this.character.playThrowAnimation();
             this.character.lastActionTime = Date.now();
         }
