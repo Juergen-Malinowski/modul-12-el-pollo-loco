@@ -28,6 +28,14 @@ class World {
     coffinImg = new Image();
     coffinSpin = null;
 
+    // Sieg-Overlay (Highscore + Buttons) ...
+    showVictoryOptionsOverlay = false;     // steuert Anzeige des Sieg-Overlays
+    victoryWindowRect = null;              // { x, y, width, height } des Fensters
+    victoryMenuButtonArea = null;          // Klickbereich "Menu"
+    victoryPlayAgainButtonArea = null;     // Klickbereich "Play again?"
+    victoryClickHandlerBound = null;       // Referenz auf den Canvas-Listener für das Overlay...
+
+
 
     constructor(canvas, keyboard) {
         this.ctx = canvas.getContext("2d");
@@ -42,12 +50,16 @@ class World {
         this.score = score;
         this.updateBottleBar();
 
-        // Klick ins Canvas startet das Spiel neu (nach Spielende) ...
-        this.canvas.addEventListener('mousedown', () => {
+        // Klick ins Canvas nach Sieg öffnet die Sieg-Optionen (Highscore + Buttons) ...
+        this.canvas.addEventListener('mousedown', function () {
             if (this.gameOver && !this.showGameOver) {
-                location.reload();   // Seite neu laden → Spiel wird neu gestartet
+                // Spieler hat GEWONNEN (showYouWin==true) → Sieg-Overlay mit Highscore + Buttons öffnen ...
+                if (this.showYouWin) {
+                    this.showVictoryOptions();   // kein Reload mehr!
+                }
             }
-        });
+        }.bind(this));
+
         // Klick auf das Sound-Icon im Canvas ...
         this.canvas.addEventListener('mousedown', (event) => {
             const rect = this.canvas.getBoundingClientRect();
@@ -637,6 +649,16 @@ class World {
             ctxYw.restore();
         }
 
+        // Sieg-Overlay (Highscore + Buttons) anzeigen, sobald aktiviert ...
+        if (this.showYouWin && this.showVictoryOptionsOverlay) {
+            this.drawVictoryOptions(this.ctx);
+        }
+
+        // Sieg-Overlay (Highscore + Buttons) anzeigen, sobald aktiviert ...
+        if (this.showYouWin && this.showVictoryOptionsOverlay) {
+            this.drawVictoryOptions(this.ctx);
+        }
+
         // Game-Over-Bild anzeigen ...
         if (this.showGameOver) {
             var ctxGo = this.ctx;
@@ -845,6 +867,224 @@ class World {
             overlay.remove();
         }, 3000);
     }
+
+    // Öffnet das Sieg-Overlay (Highscore + Buttons) nach einem Klick bei "You Win" ...
+    showVictoryOptions() {
+        // Falls bereits sichtbar, nichts tun ...
+        if (this.showVictoryOptionsOverlay) {
+            return;
+        }
+
+        // Alle Audios absichern (insb. Boss-Schrei / Charge) ...
+        this.silenceAllAudio();
+        if (typeof soundHub !== "undefined" && typeof soundHub.stopBossCharge === "function") {
+            try { soundHub.stopBossCharge(); } catch (e) { }
+        }
+        // zusätzlich das existierende Endboss-Objekt (falls noch im Array) hart stoppen ...
+        try {
+            if (this.level && this.level.enemies) {
+                for (var i = 0; i < this.level.enemies.length; i++) {
+                    var enemy = this.level.enemies[i];
+                    if (enemy instanceof Endboss) {
+                        if (typeof enemy.stopAllBossSounds === "function") { enemy.stopAllBossSounds(); }
+                        if (typeof enemy.stopBossAudioAndTimers === "function") { enemy.stopBossAudioAndTimers(); }
+                    }
+                }
+            }
+        } catch (e) { }
+
+        // Overlay sichtbar schalten ...
+        this.showVictoryOptionsOverlay = true;
+
+        // Fenster- und Button-Geometrien vorbereiten ...
+        var cvsW = this.canvas.width;
+        var cvsH = this.canvas.height;
+
+        // Highscore-Fenster etwas kleiner (ca. 70% Breite, 60% Höhe) ...
+        var winW = Math.floor(cvsW * 0.7);
+        var winH = Math.floor(cvsH * 0.6);
+        var winX = Math.floor((cvsW - winW) / 2);
+        var winY = Math.floor((cvsH - winH) / 2);
+
+        this.victoryWindowRect = { x: winX, y: winY, width: winW, height: winH };
+
+        // Buttons unter dem Fenster – gleiche Breite wie bei Game-Over ...
+        var buttonWidth = 220;
+        var buttonHeight = 60;
+        var spacing = 40;
+        var by = winY + winH + 20;
+        var cx = Math.floor(cvsW / 2);
+
+        this.victoryMenuButtonArea = {
+            x: cx - buttonWidth - spacing,
+            y: by,
+            width: buttonWidth,
+            height: buttonHeight
+        };
+        this.victoryPlayAgainButtonArea = {
+            x: cx + spacing,
+            y: by,
+            width: buttonWidth,
+            height: buttonHeight
+        };
+
+        // Klick-Handler nur für das Sieg-Overlay (Buttons + Klick außerhalb) ...
+        var self = this;
+        this.victoryClickHandlerBound = function (event) {
+            var rect = self.canvas.getBoundingClientRect();
+            var clickX = event.clientX - rect.left;
+            var clickY = event.clientY - rect.top;
+
+            // 1) Klick auf "Play again?" → direkt neues Spiel ...
+            if (self.isPointInArea(clickX, clickY, self.victoryPlayAgainButtonArea)) {
+                self.detachVictoryClickHandler();
+                self.showVictoryOptionsOverlay = false;
+                self.restartGame();
+                return;
+            }
+
+            // 2) Klick auf "Menu" → zurück ins Hauptmenü ...
+            if (self.isPointInArea(clickX, clickY, self.victoryMenuButtonArea)) {
+                self.detachVictoryClickHandler();
+                self.showVictoryOptionsOverlay = false;
+                self.returnToMenu();
+                return;
+            }
+
+            // 3) Klick außerhalb des Fensters → wie "Menu"
+            if (!self.isPointInArea(clickX, clickY, self.victoryWindowRect)) {
+                self.detachVictoryClickHandler();
+                self.showVictoryOptionsOverlay = false;
+                self.returnToMenu();
+                return;
+            }
+        };
+
+        this.canvas.addEventListener('mousedown', this.victoryClickHandlerBound);
+    }
+
+    // Zeichnet das Highscore-Fenster + Buttons "Menu" / "Play again?" ...
+    drawVictoryOptions(ctx) {
+        if (!this.victoryWindowRect) {
+            return;
+        }
+
+        var win = this.victoryWindowRect;
+
+        // Fensterhintergrund (weiß) + schwarze Kontur ...
+        ctx.save();
+        ctx.fillStyle = "white";
+        ctx.strokeStyle = "black";
+        ctx.lineWidth = 4;
+        ctx.fillRect(win.x, win.y, win.width, win.height);
+        ctx.strokeRect(win.x, win.y, win.width, win.height);
+
+        // Titelzeile ...
+        ctx.font = "bold 42px Zabars";
+        ctx.fillStyle = "black";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "top";
+        ctx.fillText("Highscore", win.x + Math.floor(win.width / 2), win.y + 15);
+
+        // Highscore-Tabelle (aus localStorage) zeichnen ...
+        var list = [];
+        try {
+            list = JSON.parse(localStorage.getItem("highScoreTable") || "[]");
+        } catch (e) { list = []; }
+
+        // Nur Top 10 anzeigen ...
+        if (list && list.length > 10) {
+            list = list.slice(0, 10);
+        }
+
+        // Spalten-Layout ...
+        var colRankX = win.x + 40;
+        var colNameX = win.x + 140;
+        var colScoreX = win.x + win.width - 120;
+
+        ctx.font = "bold 28px Zabars";
+        ctx.textAlign = "left";
+        ctx.fillText("Rank", colRankX, win.y + 70);
+        ctx.fillText("Name", colNameX, win.y + 70);
+        ctx.textAlign = "right";
+        ctx.fillText("Score", colScoreX, win.y + 70);
+
+        // Einträge ...
+        var startY = win.y + 110;
+        var lineH = 34;
+
+        ctx.font = "28px Zabars";
+        var i;
+        for (i = 0; i < list.length; i++) {
+            var entry = list[i];
+            var rank = (i + 1) + ".";
+            var name = entry && entry.name ? entry.name : "Player";
+            var scoreVal = entry && typeof entry.score === "number" ? entry.score : 0;
+
+            ctx.textAlign = "left";
+            ctx.fillText(rank, colRankX, startY + i * lineH);
+            ctx.fillText(name, colNameX, startY + i * lineH);
+            ctx.textAlign = "right";
+            ctx.fillText(scoreVal + "", colScoreX, startY + i * lineH);
+        }
+
+        ctx.restore();
+
+        // Buttons unter dem Fenster (gelb mit schwarzer Kontur), identisch zu Game-Over-Style ...
+        if (!this.victoryMenuButtonArea || !this.victoryPlayAgainButtonArea) {
+            return;
+        }
+        var btn = this.victoryMenuButtonArea;
+        var btn2 = this.victoryPlayAgainButtonArea;
+
+        ctx.save();
+        ctx.lineWidth = 4;
+        ctx.font = "bold 36px Zabars";
+        ctx.textBaseline = "middle";
+        ctx.textAlign = "center";
+
+        // Helper zum Zeichnen eines Buttons ...
+        function drawButtonRect(c, area) {
+            c.fillStyle = "#ffcc00";
+            c.strokeStyle = "black";
+            c.fillRect(area.x, area.y, area.width, area.height);
+            c.strokeRect(area.x, area.y, area.width, area.height);
+        }
+
+        // "Menu" ...
+        drawButtonRect(ctx, btn);
+        ctx.fillStyle = "black";
+        ctx.fillText("Menu", btn.x + Math.floor(btn.width / 2), btn.y + Math.floor(btn.height / 2));
+
+        // "Play again?" ...
+        drawButtonRect(ctx, btn2);
+        ctx.fillStyle = "black";
+        ctx.fillText("Play again?", btn2.x + Math.floor(btn2.width / 2), btn2.y + Math.floor(btn2.height / 2));
+
+        ctx.restore();
+    }
+
+    // Punkt-in-Rechteck-Prüfung (Hilfsfunktion für Button-Klicks) ...
+    isPointInArea(x, y, area) {
+        if (!area) {
+            return false;
+        }
+        return x >= area.x &&
+            x <= area.x + area.width &&
+            y >= area.y &&
+            y <= area.y + area.height;
+    }
+
+    // Entfernt den temporären Klick-Handler des Sieg-Overlays ...
+    detachVictoryClickHandler() {
+        try {
+            if (this.victoryClickHandlerBound) {
+                this.canvas.removeEventListener('mousedown', this.victoryClickHandlerBound);
+                this.victoryClickHandlerBound = null;
+            }
+        } catch (e) { }
+    }
+
 
     // Startet das Spiel sofort neu (nach Klick auf "Try again?") ...
     restartGame() {
