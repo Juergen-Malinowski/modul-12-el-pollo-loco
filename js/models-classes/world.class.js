@@ -559,34 +559,78 @@ class World {
         this.coinBar.setPercentage(percentage);
     }
 
-    /**
- * Stoppt alle Audioquellen (Musik + Effekte) und räumt Boss-Timer auf.
- * Zentraler Call für Spielende, Sieg, Rückkehr ins Menü, etc.
- */
-    silenceAllAudio() {
-        if (typeof soundHub !== "undefined" && soundHub) {
-            if (typeof soundHub.stopBackgroundMusic === "function") {
-                soundHub.stopBackgroundMusic();
-            }
-            if (typeof soundHub.stopAllEffects === "function") {
-                soundHub.stopAllEffects();
-            }
-        }
 
-        // Boss-spezifische Timer und Sounds beenden ...
+    /**
+     * ===========================================================
+     *  Stoppt ALLE Audioquellen (Musik, Effekte, Spezial-Sounds)
+     *  -----------------------------------------------------------
+     *  Wird bei Spielende, Sieg oder Rückkehr ins Menü aufgerufen.
+     *  Stoppt:
+     *   - Hintergrundmusik (soundHub)
+     *   - Alle Effekt-Sounds (soundHub)
+     *   - Endboss-Audios und Timer
+     *   - Schnarchen des Charakters (lokale Instanz)
+     * ===========================================================
+     *  (C) Jürgen Malinowski – Letzte Bearbeitung: 01.11.2025 – 19:22 Uhr
+     * ===========================================================
+     */
+    silenceAllAudio() {
         try {
-            var boss = null;
-            for (var i = 0; i < this.level.enemies.length; i++) {
-                if (this.level.enemies[i] instanceof Endboss) {
-                    boss = this.level.enemies[i];
-                    break;
+            // === 1) Globale Hintergrundmusik stoppen ===
+            if (typeof soundHub !== "undefined" && soundHub) {
+                if (typeof soundHub.stopBackgroundMusic === "function") {
+                    soundHub.stopBackgroundMusic();
+                }
+                if (typeof soundHub.stopAllEffects === "function") {
+                    soundHub.stopAllEffects();
+                }
+                if (typeof soundHub.stopBossCharge === "function") {
+                    soundHub.stopBossCharge();
                 }
             }
-            if (boss && typeof boss.stopBossAudioAndTimers === "function") {
-                boss.stopBossAudioAndTimers();
+
+            // === 2) Lokales Schnarchen (Character) sicher stoppen ===
+            if (this.character && this.character.soundSnoring) {
+                try {
+                    this.character.soundSnoring.pause();
+                    this.character.soundSnoring.currentTime = 0;
+                } catch (e) { }
             }
-        } catch (e) { }
+
+            // === 3) Boss-spezifische Sounds & Timer stoppen ===
+            if (this.level && this.level.enemies) {
+                for (var i = 0; i < this.level.enemies.length; i++) {
+                    var enemy = this.level.enemies[i];
+                    if (enemy instanceof Endboss) {
+
+                        // Timer / Sounds / Spezialattacken abbrechen
+                        if (typeof enemy.stopAllBossSounds === "function") {
+                            enemy.stopAllBossSounds();
+                        }
+                        if (typeof enemy.stopBossAudioAndTimers === "function") {
+                            enemy.stopBossAudioAndTimers();
+                        }
+                        if (typeof enemy.stopThunderAttackSound === "function") {
+                            enemy.stopThunderAttackSound();
+                        }
+                    }
+                }
+            }
+
+            // === 4) Sicherheits-Mute aller laufenden Audios im DOM (Fallback) ===
+            try {
+                var allAudio = document.getElementsByTagName('audio');
+                for (var j = 0; j < allAudio.length; j++) {
+                    allAudio[j].pause();
+                    allAudio[j].currentTime = 0;
+                }
+            } catch (e) { }
+
+        } catch (err) {
+            console.warn("Fehler in silenceAllAudio():", err);
+        }
     }
+
 
     // Zeichnung der Spielwelt ...
     draw() {

@@ -201,13 +201,13 @@ class Character extends MovableObject {
                     // ... Schnarch-Sound starten, falls noch nicht läuft ...
                     if (this.soundSnoring && this.soundSnoring.paused && !soundHub.isMuted) {
                         this.soundSnoring.currentTime = 0;
-                        this.soundSnoring.play();
+                        soundHub.playSnoring();
                     }
 
                 } else {
                     // ... Spieler bewegt sich oder ist normal idle → sicherstellen, dass Schnarchen stoppt ...
                     if (this.soundSnoring && !this.soundSnoring.paused) {
-                        this.soundSnoring.pause();
+                        soundHub.stopSnoring();
                         this.soundSnoring.currentTime = 0;
                     }
                 }

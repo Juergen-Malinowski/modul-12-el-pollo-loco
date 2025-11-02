@@ -25,7 +25,6 @@ class SoundHub {
         this.soundBossStart = new Audio('./assets/sound/great-Chicken-Cry.mp3');  // Endboss aktiviert
         this.soundBossCharge = new Audio('./assets/sound/thunder-attack.mp3');    // Blitzangriff Endboss
 
-
         // === ALLGEMEINE VARIABLEN ===
         this.lastHitSoundTime = 0;        // Zeitstempel des letzten Charakter-Treffer-Sounds
         this.hitSoundCooldown = 2000;     // Mindestzeit in Millisekunden, bevor erneut Sound möglich
@@ -234,13 +233,8 @@ class SoundHub {
         }
     }
 
-
     // =============================================================
     // === HILFSFUNKTION: Boss-Schrei & Sturmangriff-Sound stoppen ===
-    // =============================================================
-    // Diese Funktion stellt sicher, dass beim Spiel-Neustart, bei Game-Over
-    // oder bei Rückkehr ins Menü keine Boss-Schreie weiterlaufen ...
-    // Sie kann überall im Code durch "soundHub.stopBossCharge()" aufgerufen werden ...
     // =============================================================
     stopBossCharge() {
         try {
@@ -267,9 +261,9 @@ class SoundHub {
 
 /**
  * ===========================================================
- *  GLOBALE VARIABLE
+ *  SOUNDHUB - DATEI-STATUS
  *  -----------------
- *  Damit das SoundHub-Objekt im gesamten Spiel erreichbar ist.
+ *  (C) Jürgen Malinowski – Letzte Bearbeitung:
+ *  01.11.2025 – 18:42 Uhr
  * ===========================================================
  */
-var soundHub = new SoundHub();
