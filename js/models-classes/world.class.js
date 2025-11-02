@@ -902,7 +902,7 @@ class World {
 
         // Highscore-Fenster etwas kleiner (ca. 70% Breite, 60% Höhe) ...
         var winW = Math.floor(cvsW * 0.7);
-        var winH = Math.floor(cvsH * 0.6);
+        var winH = Math.floor(cvsH * 0.72);
         var winX = Math.floor((cvsW - winW) / 2);
         var winY = Math.floor((cvsH - winH) / 2);
 
@@ -963,7 +963,17 @@ class World {
         this.canvas.addEventListener('mousedown', this.victoryClickHandlerBound);
     }
 
-    // Zeichnet das Highscore-Fenster + Buttons "Menu" / "Play again?" ...
+    /**
+     * ===========================================================
+     *  ZEICHNET DAS SIEG-OVERLAY (Highscore + Buttons)
+     *  -----------------------------------------------------------
+     *  Wird nach einem Sieg angezeigt, sobald der Spieler klickt.
+     *  Enthält: Fenster, Highscore-Tabelle, Buttons "Menu" / "Play again?"
+     * ===========================================================
+     */
+    /**
+     * Zeichnet das Highscore-Fenster + Buttons "Menu" / "Play again?" ...
+     */
     drawVictoryOptions(ctx) {
         if (!this.victoryWindowRect) {
             return;
@@ -990,7 +1000,9 @@ class World {
         var list = [];
         try {
             list = JSON.parse(localStorage.getItem("highScoreTable") || "[]");
-        } catch (e) { list = []; }
+        } catch (e) {
+            list = [];
+        }
 
         // Nur Top 10 anzeigen ...
         if (list && list.length > 10) {
@@ -1002,6 +1014,7 @@ class World {
         var colNameX = win.x + 140;
         var colScoreX = win.x + win.width - 120;
 
+        // Spaltenüberschriften ...
         ctx.font = "bold 28px Zabars";
         ctx.textAlign = "left";
         ctx.fillText("Rank", colRankX, win.y + 70);
@@ -1009,24 +1022,42 @@ class World {
         ctx.textAlign = "right";
         ctx.fillText("Score", colScoreX, win.y + 70);
 
-        // Einträge ...
-        var startY = win.y + 110;
-        var lineH = 34;
 
-        ctx.font = "28px Zabars";
-        var i;
-        for (i = 0; i < list.length; i++) {
+
+        // === Berechnung des Tabellenraums ===
+        var maxVisibleRows = 10;
+
+        // Positionen etwas angepasst: weniger Leerraum oberhalb der Tabelle
+        var tableTop = win.y + 115;                 // vorher +130 → enger an Überschrift
+        var tableBottom = win.y + win.height - 140; // Platz für Buttons bleibt gleich
+        var availableHeight = tableBottom - tableTop;
+
+        // Schriftgröße um ca. 30 % reduziert (kleiner als vorher)
+        var baseFontSize = Math.max(20, Math.floor(win.height / 18));
+        ctx.font = baseFontSize + "px Zabars";
+
+        // Zeilenhöhe = Schriftgröße + 15 % Luft
+        var lineH = Math.floor(baseFontSize * 1.15);
+
+        // Startposition der ersten Zeile
+        var startY = tableTop;
+
+        // === Highscore-Einträge zeichnen ===
+        for (var i = 0; i < list.length && i < maxVisibleRows; i++) {
             var entry = list[i];
             var rank = (i + 1) + ".";
             var name = entry && entry.name ? entry.name : "Player";
             var scoreVal = entry && typeof entry.score === "number" ? entry.score : 0;
 
+            var y = startY + i * lineH;
+
             ctx.textAlign = "left";
-            ctx.fillText(rank, colRankX, startY + i * lineH);
-            ctx.fillText(name, colNameX, startY + i * lineH);
+            ctx.fillText(rank, colRankX, y);
+            ctx.fillText(name, colNameX, y);
             ctx.textAlign = "right";
-            ctx.fillText(scoreVal + "", colScoreX, startY + i * lineH);
+            ctx.fillText(scoreVal + "", colScoreX, y);
         }
+
 
         ctx.restore();
 
@@ -1034,6 +1065,7 @@ class World {
         if (!this.victoryMenuButtonArea || !this.victoryPlayAgainButtonArea) {
             return;
         }
+
         var btn = this.victoryMenuButtonArea;
         var btn2 = this.victoryPlayAgainButtonArea;
 
@@ -1059,10 +1091,11 @@ class World {
         // "Play again?" ...
         drawButtonRect(ctx, btn2);
         ctx.fillStyle = "black";
-        ctx.fillText("Play again?", btn2.x + Math.floor(btn2.width / 2), btn2.y + Math.floor(btn2.height / 2));
+        ctx.fillText("Play again?", btn2.x + Math.floor(btn.width / 2), btn2.y + Math.floor(btn.height / 2));
 
         ctx.restore();
     }
+
 
     // Punkt-in-Rechteck-Prüfung (Hilfsfunktion für Button-Klicks) ...
     isPointInArea(x, y, area) {
