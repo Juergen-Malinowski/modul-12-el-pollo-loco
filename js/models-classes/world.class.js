@@ -844,57 +844,67 @@ class World {
         }, 500);    // alle 0,5 Sekunden wechseln
     }
 
-    // Speichert den aktuellen Highscore-Eintrag (nur wenn unter Top 10) ...
+    /**
+     * ===========================================================
+     *  SPEICHERT DEN AKTUELLEN HIGHSCORE-EINTRAG (nur wenn Top 10)
+     *  -----------------------------------------------------------
+     *  - prüft, ob der aktuelle Score unter den Top 10 liegt
+     *  - fügt den Eintrag hinzu, sortiert absteigend
+     *  - markiert den neuesten Eintrag für spätere Blink-Darstellung
+     * ===========================================================
+     *  (C) Jürgen Malinowski – Letzte Bearbeitung: 02.11.2025 – 11:58 Uhr
+     * ===========================================================
+     */
     saveHighScoreEntry() {
-        let highScores = JSON.parse(localStorage.getItem("highScoreTable") || "[]");
+        var highScores = [];
+        try {
+            highScores = JSON.parse(localStorage.getItem("highScoreTable") || "[]");
+        } catch (e) {
+            highScores = [];
+        }
 
-        // Prüfen, ob Liste voll ist und Mindestpunktzahl ermitteln ...
-        let minScore = 0;
+        // Mindest-Score prüfen, wenn bereits 10 Einträge existieren …
+        var minScore = 0;
         if (highScores.length >= 10) {
-            // Nach Score sortieren (absteigend)
             highScores.sort(function (a, b) {
                 return b.score - a.score;
             });
             minScore = highScores[highScores.length - 1].score;
         }
 
-        // Prüfen, ob aktueller Score für Top 10 reicht ...
         if (highScores.length >= 10 && this.score <= minScore) {
-            // Kein Eintrag, da nicht unter den Top 10
             this.showHighscoreMessage("Not enough for the TOP-10 !");
             return;
         }
 
-        // Nur wenn Platz in Top 10 → Name abfragen ...
-        let playerName = prompt("You won! Enter your name for the Highscore:", "Player");
+        // Name abfragen …
+        var playerName = prompt("You won! Enter your name for the Highscore:", "Player");
         if (!playerName) {
-            return; // kein Eintrag ohne Namen
+            return;
         }
 
-        // Eintrag hinzufügen und sortieren ...
-        highScores.push({
-            name: playerName,
-            score: this.score
-        });
+        // Neuen Eintrag hinzufügen und sortieren …
+        var newEntry = { name: playerName, score: this.score };
+        highScores.push(newEntry);
         highScores.sort(function (a, b) {
             return b.score - a.score;
         });
-
-        // Nur Top 10 behalten ...
         if (highScores.length > 10) {
             highScores = highScores.slice(0, 10);
         }
 
-        // Im localStorage speichern ...
+        // Im localStorage speichern + Marker für den neuen Eintrag setzen …
         localStorage.setItem("highScoreTable", JSON.stringify(highScores));
+        localStorage.setItem("newHighscoreEntry", JSON.stringify(newEntry));
 
-        // Visuelle Bestätigung (Overlay oder Meldung)
+        // Visuelle Bestätigung …
         if (typeof showHighscoreSavedOverlay === "function") {
             showHighscoreSavedOverlay();
         } else {
             this.showHighscoreMessage("🏆 Your high score has been saved !");
         }
     }
+
 
     // Zeigt eine kurze Meldung zentriert über dem Canvas an ...
     showHighscoreMessage(text) {
@@ -1026,12 +1036,11 @@ class World {
      * ===========================================================
      *  ZEICHNET DAS SIEG-OVERLAY (Highscore + Buttons)
      *  -----------------------------------------------------------
-     *  Wird nach einem Sieg angezeigt, sobald der Spieler klickt.
-     *  Enthält: Fenster, Highscore-Tabelle, Buttons "Menu" / "Play again?"
+     *  Erweiterung:
+     *   – Der neueste Highscore-Eintrag blinkt rot (Erkennung via localStorage)
      * ===========================================================
-     */
-    /**
-     * Zeichnet das Highscore-Fenster + Buttons "Menu" / "Play again?" ...
+     *  (C) Jürgen Malinowski – Letzte Bearbeitung: 02.11.2025 – 12:02 Uhr
+     * ===========================================================
      */
     drawVictoryOptions(ctx) {
         if (!this.victoryWindowRect) {
@@ -1040,7 +1049,7 @@ class World {
 
         var win = this.victoryWindowRect;
 
-        // Fensterhintergrund (weiß) + schwarze Kontur ...
+        // === 1) Fensterhintergrund ===
         ctx.save();
         ctx.fillStyle = "white";
         ctx.strokeStyle = "black";
@@ -1048,32 +1057,34 @@ class World {
         ctx.fillRect(win.x, win.y, win.width, win.height);
         ctx.strokeRect(win.x, win.y, win.width, win.height);
 
-        // Titelzeile ...
+        // === 2) Titelzeile ===
         ctx.font = "bold 42px Zabars";
         ctx.fillStyle = "black";
         ctx.textAlign = "center";
         ctx.textBaseline = "top";
         ctx.fillText("Highscore", win.x + Math.floor(win.width / 2), win.y + 15);
 
-        // Highscore-Tabelle (aus localStorage) zeichnen ...
+        // === 3) Highscore-Daten auslesen ===
         var list = [];
         try {
             list = JSON.parse(localStorage.getItem("highScoreTable") || "[]");
-        } catch (e) {
-            list = [];
-        }
+        } catch (e) { list = []; }
 
-        // Nur Top 10 anzeigen ...
+        var newEntry = null;
+        try {
+            newEntry = JSON.parse(localStorage.getItem("newHighscoreEntry") || "null");
+        } catch (e) { newEntry = null; }
+
         if (list && list.length > 10) {
             list = list.slice(0, 10);
         }
 
-        // Spalten-Layout ...
+        // === 4) Spaltenkoordinaten ===
         var colRankX = win.x + 40;
         var colNameX = win.x + 140;
         var colScoreX = win.x + win.width - 120;
 
-        // Spaltenüberschriften ...
+        // === 5) Spaltenüberschriften ===
         ctx.font = "bold 28px Zabars";
         ctx.textAlign = "left";
         ctx.fillText("Rank", colRankX, win.y + 70);
@@ -1081,38 +1092,46 @@ class World {
         ctx.textAlign = "right";
         ctx.fillText("Score", colScoreX, win.y + 70);
 
-        // === Berechnung des Tabellenraums ===
+        // === 6) Layout-Parameter ===
         var maxVisibleRows = 10;
-
-        // Oberer Tabellenbeginn: etwas weiter unter der Überschrift (feine Anpassung)
-        var tableTop = win.y + 105;                 // vorher +95 → jetzt +105
-
-        // Untere Grenze stärker angehoben, damit Buttons näher an die Liste rücken
-        var tableBottom = win.y + win.height - 60;  // vorher -100 → jetzt -60
-
-        // Gesamthöhe, die für Zeilen genutzt wird
+        var tableTop = win.y + 105;
+        var tableBottom = win.y + win.height - 60;
         var availableHeight = tableBottom - tableTop;
-
-        // Schriftgröße um ca. 30 % reduziert (kompakte Darstellung)
         var baseFontSize = Math.max(20, Math.floor(win.height / 18));
         ctx.font = baseFontSize + "px Zabars";
-
-        // Zeilenhöhe = Schriftgröße + 15 % Luft (gleichmäßig)
         var lineH = Math.floor(baseFontSize * 1.15);
-
-        // Startposition der ersten Zeile
         var startY = tableTop;
 
-        // === Highscore-Einträge zeichnen ===
+        // === 7) Blink-Mechanismus ===
+        var now = Date.now();
+        var blinkOn = Math.floor(now / 500) % 2 === 0;
+
+        // === 8) Highscore-Zeilen zeichnen ===
         for (var i = 0; i < list.length && i < maxVisibleRows; i++) {
             var entry = list[i];
             var rank = (i + 1) + ".";
             var name = entry && entry.name ? entry.name : "Player";
             var scoreVal = entry && typeof entry.score === "number" ? entry.score : 0;
-
             var y = startY + i * lineH;
 
+            var isHighlighted = false;
+            if (newEntry && entry.name === newEntry.name && entry.score === newEntry.score) {
+                isHighlighted = true;
+            }
+
             ctx.textAlign = "left";
+
+            if (isHighlighted) {
+                // Blinke-Effekt: rot sichtbar / unsichtbar
+                if (blinkOn) {
+                    ctx.fillStyle = "red";
+                } else {
+                    ctx.fillStyle = "white";
+                }
+            } else {
+                ctx.fillStyle = "black";
+            }
+
             ctx.fillText(rank, colRankX, y);
             ctx.fillText(name, colNameX, y);
             ctx.textAlign = "right";
@@ -1121,7 +1140,7 @@ class World {
 
         ctx.restore();
 
-        // Buttons unter dem Fenster (gelb mit schwarzer Kontur), identisch zu Game-Over-Style ...
+        // === 9) Buttons zeichnen (wie bisher) ===
         if (!this.victoryMenuButtonArea || !this.victoryPlayAgainButtonArea) {
             return;
         }
@@ -1129,15 +1148,12 @@ class World {
         var btn = this.victoryMenuButtonArea;
         var btn2 = this.victoryPlayAgainButtonArea;
 
-
         ctx.save();
         ctx.lineWidth = 3;
         ctx.font = "bold 32px Zabars";
-        ctx.textBaseline = "middle";       // Text optisch zentrieren ...
+        ctx.textBaseline = "middle";
         ctx.textAlign = "center";
 
-
-        // Helper zum Zeichnen eines Buttons ...
         function drawButtonRect(c, area) {
             c.fillStyle = "#ffcc00";
             c.strokeStyle = "black";
@@ -1145,18 +1161,17 @@ class World {
             c.strokeRect(area.x, area.y, area.width, area.height);
         }
 
-        // "Menu" ...
         drawButtonRect(ctx, btn);
         ctx.fillStyle = "black";
         ctx.fillText("Menu", btn.x + Math.floor(btn.width / 2), btn.y + Math.floor(btn.height / 2));
 
-        // "Play again?" ...
         drawButtonRect(ctx, btn2);
         ctx.fillStyle = "black";
-        ctx.fillText("Play again?", btn2.x + Math.floor(btn.width / 2), btn2.y + Math.floor(btn.height / 2));
+        ctx.fillText("Play again?", btn2.x + Math.floor(btn2.width / 2), btn2.y + Math.floor(btn2.height / 2));
 
         ctx.restore();
     }
+
 
 
     // Punkt-in-Rechteck-Prüfung (Hilfsfunktion für Button-Klicks) ...
