@@ -497,7 +497,13 @@ class World {
         this.keyboard = new Keyboard();
 
         setTimeout(() => {
+            // Highscore speichern ...
             this.saveHighScoreEntry();
+
+            // Nach Abschluss der Speicherung direkt Sieg-Optionen anzeigen ...
+            if (typeof this.showVictoryOptions === "function") {
+                this.showVictoryOptions();
+            }
         }, 2000);
         this.startScoreBlink();
     }
