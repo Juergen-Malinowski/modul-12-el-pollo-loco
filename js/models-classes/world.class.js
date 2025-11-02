@@ -910,10 +910,15 @@ class World {
 
         // Buttons unter dem Fenster – gleiche Breite wie bei Game-Over ...
         var buttonWidth = 220;
-        var buttonHeight = 60;
+        var buttonHeight = 45;
         var spacing = 40;
-        var by = winY + winH + 20;
+
+        // Abstand zwischen Highscore-Fenster und Buttons ...
+        var by = winY + winH + 10;
+
+
         var cx = Math.floor(cvsW / 2);
+
 
         this.victoryMenuButtonArea = {
             x: cx - buttonWidth - spacing,
@@ -962,6 +967,7 @@ class World {
 
         this.canvas.addEventListener('mousedown', this.victoryClickHandlerBound);
     }
+
 
     /**
      * ===========================================================
@@ -1022,21 +1028,23 @@ class World {
         ctx.textAlign = "right";
         ctx.fillText("Score", colScoreX, win.y + 70);
 
-
-
         // === Berechnung des Tabellenraums ===
         var maxVisibleRows = 10;
 
-        // Positionen etwas angepasst: weniger Leerraum oberhalb der Tabelle
-        var tableTop = win.y + 115;                 // vorher +130 → enger an Überschrift
-        var tableBottom = win.y + win.height - 140; // Platz für Buttons bleibt gleich
+        // Oberer Tabellenbeginn: etwas weiter unter der Überschrift (feine Anpassung)
+        var tableTop = win.y + 105;                 // vorher +95 → jetzt +105
+
+        // Untere Grenze stärker angehoben, damit Buttons näher an die Liste rücken
+        var tableBottom = win.y + win.height - 60;  // vorher -100 → jetzt -60
+
+        // Gesamthöhe, die für Zeilen genutzt wird
         var availableHeight = tableBottom - tableTop;
 
-        // Schriftgröße um ca. 30 % reduziert (kleiner als vorher)
+        // Schriftgröße um ca. 30 % reduziert (kompakte Darstellung)
         var baseFontSize = Math.max(20, Math.floor(win.height / 18));
         ctx.font = baseFontSize + "px Zabars";
 
-        // Zeilenhöhe = Schriftgröße + 15 % Luft
+        // Zeilenhöhe = Schriftgröße + 15 % Luft (gleichmäßig)
         var lineH = Math.floor(baseFontSize * 1.15);
 
         // Startposition der ersten Zeile
@@ -1058,7 +1066,6 @@ class World {
             ctx.fillText(scoreVal + "", colScoreX, y);
         }
 
-
         ctx.restore();
 
         // Buttons unter dem Fenster (gelb mit schwarzer Kontur), identisch zu Game-Over-Style ...
@@ -1069,11 +1076,13 @@ class World {
         var btn = this.victoryMenuButtonArea;
         var btn2 = this.victoryPlayAgainButtonArea;
 
+
         ctx.save();
-        ctx.lineWidth = 4;
-        ctx.font = "bold 36px Zabars";
-        ctx.textBaseline = "middle";
+        ctx.lineWidth = 3;
+        ctx.font = "bold 32px Zabars";
+        ctx.textBaseline = "middle";       // Text optisch zentrieren ...
         ctx.textAlign = "center";
+
 
         // Helper zum Zeichnen eines Buttons ...
         function drawButtonRect(c, area) {
