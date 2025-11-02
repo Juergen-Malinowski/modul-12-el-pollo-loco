@@ -520,6 +520,9 @@ class World {
         this.gameOver = true;
         soundHub.stopBackgroundMusic();
         this.silenceAllAudio();
+        if (typeof this.freezeWorld === "function") {
+            this.freezeWorld();
+        }
         this.keyboard = new Keyboard();
         // Sicherstellen, dass Endboss keine Sounds mehr spielt ...
         if (this.level && this.level.enemies) {
@@ -1207,6 +1210,70 @@ class World {
         } else {
             // Fallback: Seite neu laden, falls Funktion nicht gefunden...
             location.reload();
+        }
+    }
+
+    /**
+ * ===========================================================
+ *  Friert ALLE Bewegungen und Animationen der Spielwelt ein
+ *  -----------------------------------------------------------
+ *  Wird bei Sieg (Endboss tot) oder Game-Over aufgerufen.
+ *  Stoppt:
+ *   - Charakterbewegung
+ *   - Gegner / Endboss-Animationen
+ *   - Wolken / Hintergrundbewegung
+ *   - Alle periodischen Timer (soweit registriert)
+ * ===========================================================
+ *  (C) Jürgen Malinowski – Letzte Bearbeitung: 01.11.2025 – 22:34 Uhr
+ * ===========================================================
+ */
+    freezeWorld() {
+        try {
+            // === Charakter anhalten ===
+            if (this.character) {
+                this.character.speed = 0;
+                this.character.acceleration = 0;
+                if (typeof this.character.stopSnoringSound === "function") {
+                    this.character.stopSnoringSound();
+                }
+            }
+
+            // === Gegner anhalten ===
+            if (this.level && Array.isArray(this.level.enemies)) {
+                for (var i = 0; i < this.level.enemies.length; i++) {
+                    var e = this.level.enemies[i];
+                    if (!e) continue;
+                    e.speed = 0;
+                    e.acceleration = 0;
+
+                    // Intervalls beenden (falls vorhanden)
+                    if (e.animateInterval) { clearInterval(e.animateInterval); e.animateInterval = null; }
+                    if (e.chargeInterval) { clearInterval(e.chargeInterval); e.chargeInterval = null; }
+                    if (e.walkAnimInterval) { clearInterval(e.walkAnimInterval); e.walkAnimInterval = null; }
+                }
+            }
+
+            // === Wolken anhalten ===
+            if (this.level && Array.isArray(this.level.clouds)) {
+                for (var j = 0; j < this.level.clouds.length; j++) {
+                    if (this.level.clouds[j]) {
+                        this.level.clouds[j].speed = 0;
+                    }
+                }
+            }
+
+            // === Hintergrundobjekte (Sicherheitsmaßnahme) ===
+            if (this.level && Array.isArray(this.level.backgroundObjects)) {
+                for (var k = 0; k < this.level.backgroundObjects.length; k++) {
+                    if (this.level.backgroundObjects[k]) {
+                        this.level.backgroundObjects[k].speed = 0;
+                    }
+                }
+            }
+
+            console.log("🌍 freezeWorld(): Bewegung vollständig gestoppt.");
+        } catch (err) {
+            console.warn("Fehler in freezeWorld():", err);
         }
     }
 }

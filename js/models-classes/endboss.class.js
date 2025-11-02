@@ -311,6 +311,12 @@ class Endboss extends MovableObject {
                 this.stopAllAnimations();
                 if (this.world) {
                     setTimeout(() => {
+                        // Zuerst alles visuell einfrieren …
+                        if (typeof this.world.freezeWorld === "function") {
+                            this.world.freezeWorld();
+                        }
+
+                        // Danach Sieges-Screen einleiten …
                         this.world.addScore(150);
                         this.world.showVictoryScreen();
                     }, 1000);
