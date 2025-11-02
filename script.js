@@ -38,8 +38,13 @@ function startGame() {
 
 /* ============================================
    HIGHSCORE-OVERLAY (aus Startmenü)
+   --------------------------------------------
+   Erweiterung:
+   - Erkennt den neuesten Highscore (localStorage.newHighscoreEntry)
+   - Lässt diesen rot blinken, wenn Overlay geöffnet wird
+   ============================================ 
+   (C) Jürgen Malinowski – Letzte Bearbeitung: 02.11.2025 – 12:35 Uhr
    ============================================ */
-
 function openHighscore() {
     var overlay = document.getElementById("highscoreOverlay");
     var content = document.getElementById("highscoreContent");
@@ -48,11 +53,13 @@ function openHighscore() {
         return;
     }
 
-    // Inhalt zunächst leeren
-    content.innerHTML = "";
-
-    // Highscore-Daten aus dem localStorage holen
+    // === Highscore-Daten laden ===
     var storedData = localStorage.getItem("highScoreTable");
+    var newEntry = null;
+    try {
+        newEntry = JSON.parse(localStorage.getItem("newHighscoreEntry") || "null");
+    } catch (e) { newEntry = null; }
+
     if (!storedData) {
         content.innerHTML = "<p>No high score available.</p>";
     } else {
@@ -71,14 +78,28 @@ function openHighscore() {
                 return b.score - a.score;
             });
 
-            // Geordnete Liste – Nummerierung übernimmt <ol>
+            // === Liste als HTML aufbauen ===
             var listHtml = "<ol class='hsList' style='text-align:left; margin:0; padding-left:1.4em;'>";
+
             for (var i = 0; i < highScores.length; i++) {
                 var entry = highScores[i];
                 var name = entry && entry.name ? entry.name : "unknown";
                 var scoreVal = entry && typeof entry.score === "number" ? entry.score : 0;
-                listHtml += "<li>" + name + " — " + scoreVal + " Points</li>";
+
+                // Prüfen, ob dieser Eintrag der neue Highscore ist
+                var isHighlighted = false;
+                if (newEntry && entry.name === newEntry.name && entry.score === newEntry.score) {
+                    isHighlighted = true;
+                }
+
+                if (isHighlighted) {
+                    // Markiere Zeile für Blink-Effekt (CSS-Klasse)
+                    listHtml += "<li class='blinkHighlight'>" + name + " — " + scoreVal + " Points</li>";
+                } else {
+                    listHtml += "<li>" + name + " — " + scoreVal + " Points</li>";
+                }
             }
+
             listHtml += "</ol>";
             content.innerHTML = listHtml;
         }
@@ -86,7 +107,20 @@ function openHighscore() {
 
     // Overlay sichtbar machen
     overlay.style.display = "flex";
+
+    // === Blink-Effekt starten, falls neuer Eintrag existiert ===
+    var blinkEls = document.getElementsByClassName("blinkHighlight");
+    if (blinkEls.length > 0) {
+        var visible = true;
+        setInterval(function () {
+            for (var i = 0; i < blinkEls.length; i++) {
+                blinkEls[i].style.color = visible ? "red" : "white";
+            }
+            visible = !visible;
+        }, 500); // alle 0,5 Sekunden wechseln
+    }
 }
+
 
 function closeHighscore() {
     var overlay = document.getElementById("highscoreOverlay");

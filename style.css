@@ -243,6 +243,15 @@ button:hover {
     margin-top: 25px;
 }
 
+/* ============================================
+   Blink-Effekt für neuen Highscore im Hauptmenü
+   ============================================ */
+.blinkHighlight {
+    font-weight: bold;
+    color: red;
+}
+
+
 /* === CLOSE-BUTTON im Highscore-Overlay visuell hervorheben === */
 #closeHint {
     display: inline-block;
@@ -605,7 +614,8 @@ canvas {
     text-align: center;
     color: black;
     padding: 30px;
-    letter-spacing: 3px;   /* für Lesbarkeit bei der Schriftart */
+    letter-spacing: 3px;
+    /* für Lesbarkeit bei der Schriftart */
 }
 
 .info_content h2 {
