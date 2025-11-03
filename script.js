@@ -370,6 +370,9 @@ function closeHighscoreSaved() {
 let orientationResizeTimer = null;
 
 function checkOrientation() {
+    // Die Anpassung des Fensters für Rotation-Hinweis lässt sich für die
+    // DEV-Tools nicht anpassen, damit es bei ersten Auftauchen zentriert ist.
+    // Problem tritt bei echten mobilen Devises nicht auf!
     // --- Bei wiederholtem Resize den alten Timer löschen ---
     if (orientationResizeTimer) {
         clearTimeout(orientationResizeTimer);
