@@ -374,10 +374,8 @@ function checkOrientation() {
     if (orientationResizeTimer) {
         clearTimeout(orientationResizeTimer);
     }
-
     // --- Verzögerung, bis Browser die neue Größe stabilisiert hat ---
     orientationResizeTimer = setTimeout(function () {
-
         var overlay = document.getElementById("orientationOverlay");
         var rotateBtn = document.getElementById("rotateButton");
         var canvas = document.getElementById("canvas");
@@ -386,13 +384,10 @@ function checkOrientation() {
             "width:", window.innerWidth, "height:", window.innerHeight);
 
         if (!overlay || !canvas) {
-            console.warn("⚠️ Overlay or canvas element not found!");
             return;
         }
-
         // === Erkennung Portrait oder Landscape ===
         if (window.innerHeight > window.innerWidth) {
-            console.log("📱 Portrait mode detected → Showing rotation overlay...");
             overlay.style.display = "flex";
             canvas.style.display = "none";
 
@@ -400,26 +395,18 @@ function checkOrientation() {
             requestAnimationFrame(() => {
                 // minimale Layoutänderung zur Neuberechnung der Breite
                 overlay.style.transform = "translateZ(0)";
-                console.log("🧩 Chrome forced reflow triggered for correct centering.");
             });
-
-
             // Optional: Button sichtbar machen, wenn unterstützt
             if (typeof screen.orientation !== "undefined" &&
                 typeof screen.orientation.lock === "function") {
                 rotateBtn.style.display = "inline-block";
-                console.log("✅ JS rotation capability detected → Button shown.");
             } else {
                 rotateBtn.style.display = "none";
-                console.log("🚫 JS rotation not supported → Button hidden.");
             }
-
         } else {
-            console.log("💻 Landscape mode detected → Showing game canvas...");
             overlay.style.display = "none";
             canvas.style.display = "block";
         }
-
     }, 400); // 400 ms warten, bis Chrome neue Devicegröße stabil übernommen hat
 }
 
