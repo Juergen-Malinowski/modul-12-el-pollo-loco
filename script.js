@@ -358,46 +358,71 @@ function closeHighscoreSaved() {
 
 /**
  * ===========================================================
- *  ORIENTIERUNGSERKENNUNG (mit Debug-Logs)
+ *  ORIENTIERUNGSERKENNUNG (optimiert mit stabilisiertem Resize)
  *  -----------------------------------------------------------
- *  Prüft beim Start, bei Fensteränderung oder Geräte-Drehung,
- *  ob das Gerät im Hochformat oder Querformat ist.
- *  Zusätzlich werden in der Konsole Debug-Infos ausgegeben,
- *  um sicherzustellen, dass die Funktion korrekt reagiert.
+ *  Erkennt Hoch-/Querformat und zeigt das Overlay erst dann,
+ *  wenn der Browser die neue Viewportgröße vollständig berechnet hat.
+ *  Dadurch kein abgeschnittenes Overlay mehr in Chrome DevTools.
  * ===========================================================
- *  (C) Jürgen Malinowski – Letzte Bearbeitung: 02.11.2025 – 15:42 Uhr
+ *  (C) Jürgen Malinowski – Letzte Bearbeitung: 03.11.2025 – 16:00 Uhr
  * ===========================================================
  */
+let orientationResizeTimer = null;
+
 function checkOrientation() {
-    var overlay = document.getElementById("orientationOverlay");
-    var rotateBtn = document.getElementById("rotateButton");
-    var canvas = document.getElementById("canvas");
-
-    // === Debug-Ausgabe: Basisprüfung ===
-    console.log("window.innerWidth:", window.innerWidth, "window.innerHeight:", window.innerHeight);
-
-    if (!overlay || !canvas) {
-        return;
+    // --- Bei wiederholtem Resize den alten Timer löschen ---
+    if (orientationResizeTimer) {
+        clearTimeout(orientationResizeTimer);
     }
 
-    // === Erkennung Portrait oder Landscape ===
-    if (window.innerHeight > window.innerWidth) {
-        overlay.style.display = "flex";
-        canvas.style.display = "none";
+    // --- Verzögerung, bis Browser die neue Größe stabilisiert hat ---
+    orientationResizeTimer = setTimeout(function () {
 
-        // Optional: Button sichtbar machen, wenn unterstützt
-        if (typeof screen.orientation !== "undefined" &&
-            typeof screen.orientation.lock === "function") {
-            rotateBtn.style.display = "inline-block";
-        } else {
-            rotateBtn.style.display = "none";
+        var overlay = document.getElementById("orientationOverlay");
+        var rotateBtn = document.getElementById("rotateButton");
+        var canvas = document.getElementById("canvas");
+
+        console.log("🔍 checkOrientation() triggered (stabilized)...",
+            "width:", window.innerWidth, "height:", window.innerHeight);
+
+        if (!overlay || !canvas) {
+            console.warn("⚠️ Overlay or canvas element not found!");
+            return;
         }
 
-    } else {
-        overlay.style.display = "none";
-        canvas.style.display = "block";
-    }
+        // === Erkennung Portrait oder Landscape ===
+        if (window.innerHeight > window.innerWidth) {
+            console.log("📱 Portrait mode detected → Showing rotation overlay...");
+            overlay.style.display = "flex";
+            canvas.style.display = "none";
+
+            // === Chrome DevTools Fix: Erzwinge zweiten Render-Frame ===
+            requestAnimationFrame(() => {
+                // minimale Layoutänderung zur Neuberechnung der Breite
+                overlay.style.transform = "translateZ(0)";
+                console.log("🧩 Chrome forced reflow triggered for correct centering.");
+            });
+
+
+            // Optional: Button sichtbar machen, wenn unterstützt
+            if (typeof screen.orientation !== "undefined" &&
+                typeof screen.orientation.lock === "function") {
+                rotateBtn.style.display = "inline-block";
+                console.log("✅ JS rotation capability detected → Button shown.");
+            } else {
+                rotateBtn.style.display = "none";
+                console.log("🚫 JS rotation not supported → Button hidden.");
+            }
+
+        } else {
+            console.log("💻 Landscape mode detected → Showing game canvas...");
+            overlay.style.display = "none";
+            canvas.style.display = "block";
+        }
+
+    }, 400); // 400 ms warten, bis Chrome neue Devicegröße stabil übernommen hat
 }
+
 
 
 /**

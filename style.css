@@ -639,14 +639,18 @@ canvas {
    =========================================================== */
 
 #orientationOverlay {
-    display: none;                       /* bleibt standardmäßig unsichtbar */
-    position: fixed;                     /* deckt gesamte Fläche ab */
+    display: none;
+    /* bleibt standardmäßig unsichtbar */
+    position: fixed;
+    /* deckt gesamte Fläche ab */
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.85);   /* leicht transparentes Schwarz */
-    z-index: 9999;                       /* oberste Ebene */
+    background-color: rgba(0, 0, 0, 0.85);
+    /* leicht transparentes Schwarz */
+    z-index: 9999;
+    /* oberste Ebene */
     justify-content: center;
     align-items: center;
     text-align: center;
@@ -656,8 +660,10 @@ canvas {
 }
 
 #orientationBox {
-    background-color: rgba(255, 255, 255, 0.9);  /* heller Hintergrund */
-    border: 5px solid #ffcc00;                   /* gelber Rahmen wie Buttons */
+    background-color: rgba(255, 255, 255, 0.9);
+    /* heller Hintergrund */
+    border: 5px solid #ffcc00;
+    /* gelber Rahmen wie Buttons */
     border-radius: 20px;
     padding: 40px 60px;
     box-shadow: 0 0 25px rgba(255, 204, 0, 0.6);
@@ -714,5 +720,13 @@ canvas {
 
     h1 {
         display: none;
+    }
+
+    #orientationBox {
+        /* Boxbreite verringern bei Mobile" */
+        max-width: calc(100% - 100px);
+        /* 25 px Rand links + 25 px rechts */
+        margin: 0 auto;
+        /* zentriert halten */
     }
 }
