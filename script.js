@@ -374,17 +374,14 @@ function checkOrientation() {
     var canvas = document.getElementById("canvas");
 
     // === Debug-Ausgabe: Basisprüfung ===
-    console.log("🔍 checkOrientation() triggered...");
     console.log("window.innerWidth:", window.innerWidth, "window.innerHeight:", window.innerHeight);
 
     if (!overlay || !canvas) {
-        console.warn("⚠️ Overlay or canvas element not found!");
         return;
     }
 
     // === Erkennung Portrait oder Landscape ===
     if (window.innerHeight > window.innerWidth) {
-        console.log("📱 Portrait mode detected → Showing rotation overlay...");
         overlay.style.display = "flex";
         canvas.style.display = "none";
 
@@ -392,18 +389,67 @@ function checkOrientation() {
         if (typeof screen.orientation !== "undefined" &&
             typeof screen.orientation.lock === "function") {
             rotateBtn.style.display = "inline-block";
-            console.log("✅ JS rotation capability detected → Button shown.");
         } else {
             rotateBtn.style.display = "none";
-            console.log("🚫 JS rotation not supported → Button hidden.");
         }
 
     } else {
-        console.log("💻 Landscape mode detected → Showing game canvas...");
         overlay.style.display = "none";
         canvas.style.display = "block";
     }
 }
+
+
+/**
+ * ===========================================================
+ *  ROTATE SCREEN (Fullscreen + Landscape Lock)
+ *  -----------------------------------------------------------
+ *  Wird aufgerufen, wenn der User auf "Rotate Screen ↻" klickt.
+ *  Aktiviert zunächst den Vollbildmodus und versucht anschließend,
+ *  das Gerät in Querformat zu drehen. Wenn der Browser dies
+ *  blockiert, erscheint ein Hinweisdialog.
+ * ===========================================================
+ *  (C) Jürgen Malinowski – Letzte Bearbeitung: 03.11.2025 – 14:20 Uhr
+ * ===========================================================
+ */
+function rotateDevice() {
+    console.log("🔄 Rotate button clicked – attempting fullscreen + rotation...");
+
+    // Prüfen, ob Fullscreen unterstützt wird
+    var elem = document.documentElement;
+
+    if (elem.requestFullscreen) {
+        elem.requestFullscreen().then(function () {
+            console.log("🖥️ Fullscreen mode activated.");
+
+            // Jetzt prüfen, ob Orientation-API verfügbar ist
+            if (typeof screen.orientation !== "undefined" &&
+                typeof screen.orientation.lock === "function") {
+
+                screen.orientation.lock("landscape")
+                    .then(function () {
+                        console.log("✅ Device successfully rotated to landscape mode.");
+                    })
+                    .catch(function (error) {
+                        console.warn("⚠️ Rotation request was blocked:", error);
+                        alert("Your browser blocked automatic rotation.\nPlease rotate your device manually.");
+                    });
+
+            } else {
+                console.warn("🚫 screen.orientation.lock() not supported on this device/browser.");
+                alert("Automatic rotation not supported.\nPlease rotate your device manually.");
+            }
+        }).catch(function (error) {
+            console.warn("⚠️ Fullscreen request was blocked:", error);
+            alert("Fullscreen activation failed.\nPlease rotate your device manually.");
+        });
+
+    } else {
+        console.warn("🚫 requestFullscreen() not supported on this device/browser.");
+        alert("Your browser does not support fullscreen mode.\nPlease rotate manually.");
+    }
+}
+
 
 
 // === Events anhängen ===
