@@ -730,3 +730,151 @@ canvas {
         /* zentriert halten */
     }
 }
+
+
+/* ============================================
+   RESPONSIVE: STARTSCREEN / MAIN MENU
+   ============================================ */
+
+/* 1) sehr kleine Geräte: 320px bis ~379px */
+@media (max-width: 379px) {
+    #startScreen {
+        padding-top: 10px;
+        gap: 8px;
+    }
+
+    h1 {
+        font-size: 3.2em;
+        letter-spacing: 2px;
+    }
+
+    #startImage {
+        width: 100%;
+        height: auto;
+    }
+
+    #startMenu {
+        width: 100%;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .menuButton {
+        font-size: 1.3em;
+        padding: 4px 14px;
+    }
+
+    #batImage {
+        /* auf ganz kleinen Displays eher aus dem Weg */
+        width: 150px;
+        top: 15%;
+        left: 80%;
+    }
+
+    #copyright {
+        font-size: 1.3em;
+    }
+}
+
+/* 2) kleine Smartphones: 380px bis 479px */
+@media (min-width: 380px) and (max-width: 479px) {
+    h1 {
+        font-size: 3.8em;
+    }
+
+    #startImage {
+        width: 100%;
+        height: auto;
+    }
+
+    #startMenu {
+        width: 100%;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .menuButton {
+        font-size: 1.45em;
+        padding: 5px 18px;
+    }
+
+    #batImage {
+        width: 180px;
+        top: 18%;
+        left: 82%;
+    }
+
+    #copyright {
+        font-size: 1.5em;
+    }
+}
+
+/* 3) mittlere Smartphones: 480px bis 599px */
+@media (min-width: 480px) and (max-width: 599px) {
+    h1 {
+        font-size: 4.2em;
+    }
+
+    #startImage {
+        width: 90%;
+        height: auto;
+    }
+
+    #startMenu {
+        width: 95%;
+        flex-wrap: wrap;
+        gap: 14px;
+    }
+
+    .menuButton {
+        font-size: 1.5em;
+    }
+
+    #batImage {
+        width: 200px;
+        top: 20%;
+        left: 78%;
+    }
+}
+
+/* 4) Tablets / schmale Landscape: 600px bis 720px */
+@media (min-width: 600px) and (max-width: 720px) {
+    h1 {
+        font-size: 4.8em;
+    }
+
+    #startImage {
+        width: 720px;
+        max-width: 100%;
+        height: auto;
+    }
+
+    #startMenu {
+        width: 80%;
+        gap: 16px;
+    }
+
+    .menuButton {
+        font-size: 1.6em;
+    }
+
+    #batImage {
+        width: 210px;
+        top: calc(50% - 80px);
+        left: calc(50% + 180px);
+    }
+}
+
+
+
+
+/* ===========================================================
+   TABLET LANDSCAPE TRANSITION ZONE (721px–790px)
+   -----------------------------------------------------------
+   Zwischenbereich für Tablets im Querformat.
+   Hier können später spezifische Anpassungen folgen
+   (z. B. Menügrößen, Button-Abstände, Canvas-Anpassung usw.)
+   =========================================================== */
+@media only screen and (min-width: 721px) and (max-width: 790px) {
+    /* Tablet-Landscape-spezifische Styles kommen hier hinein ... */
+}
