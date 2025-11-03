@@ -339,4 +339,74 @@ function closeHighscoreSaved() {
     if (overlay) {
         overlay.style.display = 'none';
     }
+
+
+
+
+    /**
+     * Event-Listener: bei Drehung oder Größenänderung automatisch prüfen …
+     */
+    window.addEventListener("resize", checkOrientation);
+    window.addEventListener("orientationchange", checkOrientation);
+
+    /**
+     * Prüfung beim ersten Laden ausführen …
+     */
+    window.addEventListener("load", checkOrientation);
 }
+
+
+/**
+ * ===========================================================
+ *  ORIENTIERUNGSERKENNUNG (mit Debug-Logs)
+ *  -----------------------------------------------------------
+ *  Prüft beim Start, bei Fensteränderung oder Geräte-Drehung,
+ *  ob das Gerät im Hochformat oder Querformat ist.
+ *  Zusätzlich werden in der Konsole Debug-Infos ausgegeben,
+ *  um sicherzustellen, dass die Funktion korrekt reagiert.
+ * ===========================================================
+ *  (C) Jürgen Malinowski – Letzte Bearbeitung: 02.11.2025 – 15:42 Uhr
+ * ===========================================================
+ */
+function checkOrientation() {
+    var overlay = document.getElementById("orientationOverlay");
+    var rotateBtn = document.getElementById("rotateButton");
+    var canvas = document.getElementById("canvas");
+
+    // === Debug-Ausgabe: Basisprüfung ===
+    console.log("🔍 checkOrientation() triggered...");
+    console.log("window.innerWidth:", window.innerWidth, "window.innerHeight:", window.innerHeight);
+
+    if (!overlay || !canvas) {
+        console.warn("⚠️ Overlay or canvas element not found!");
+        return;
+    }
+
+    // === Erkennung Portrait oder Landscape ===
+    if (window.innerHeight > window.innerWidth) {
+        console.log("📱 Portrait mode detected → Showing rotation overlay...");
+        overlay.style.display = "flex";
+        canvas.style.display = "none";
+
+        // Optional: Button sichtbar machen, wenn unterstützt
+        if (typeof screen.orientation !== "undefined" &&
+            typeof screen.orientation.lock === "function") {
+            rotateBtn.style.display = "inline-block";
+            console.log("✅ JS rotation capability detected → Button shown.");
+        } else {
+            rotateBtn.style.display = "none";
+            console.log("🚫 JS rotation not supported → Button hidden.");
+        }
+
+    } else {
+        console.log("💻 Landscape mode detected → Showing game canvas...");
+        overlay.style.display = "none";
+        canvas.style.display = "block";
+    }
+}
+
+
+// === Events anhängen ===
+window.addEventListener("resize", checkOrientation);
+window.addEventListener("orientationchange", checkOrientation);
+window.addEventListener("load", checkOrientation);

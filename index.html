@@ -113,6 +113,24 @@
 
     <canvas id="canvas" width="720" height="480"></canvas>
 
+    <!-- ===========================================================
+     ORIENTIERUNGS-OVERLAY
+     ----------------------
+     Zeigt eine Meldung, wenn das Gerät im Hochformat ist.
+     (Canvas wird ausgeblendet, bis Landscape aktiv ist)
+     =========================================================== -->
+    <div id="orientationOverlay">
+        <div id="orientationBox">
+            <h2>Please rotate your device 🔄</h2>
+            <p>For the best gaming experience, use landscape mode.</p>
+            <!-- Der Button wird später (Schritt 2) nur angezeigt, 
+             wenn JavaScript die automatische Drehung unterstützt -->
+            <button id="rotateButton" style="display:none;">Rotate Screen ↻</button>
+        </div>
+    </div>
+
+
+
 </body>
 
 <script src="./js/models-classes/drawable-objects.class.js"></script>

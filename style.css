@@ -630,19 +630,89 @@ canvas {
     margin-top: 0;
 }
 
+
+/* ===========================================================
+   ORIENTIERUNGS-OVERLAY (für Hochformat)
+   -----------------------------------------------------------
+   Wird angezeigt, wenn das Gerät nicht im Querformat ist.
+   Canvas bleibt im Hintergrund, Overlay liegt zentriert darüber.
+   =========================================================== */
+
+#orientationOverlay {
+    display: none;                       /* bleibt standardmäßig unsichtbar */
+    position: fixed;                     /* deckt gesamte Fläche ab */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85);   /* leicht transparentes Schwarz */
+    z-index: 9999;                       /* oberste Ebene */
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    flex-direction: column;
+    font-family: 'Zabars', Arial, Helvetica, sans-serif;
+    color: white;
+}
+
+#orientationBox {
+    background-color: rgba(255, 255, 255, 0.9);  /* heller Hintergrund */
+    border: 5px solid #ffcc00;                   /* gelber Rahmen wie Buttons */
+    border-radius: 20px;
+    padding: 40px 60px;
+    box-shadow: 0 0 25px rgba(255, 204, 0, 0.6);
+    max-width: 80%;
+}
+
+#orientationBox h2 {
+    font-size: 2.6em;
+    color: black;
+    margin-bottom: 20px;
+}
+
+#orientationBox p {
+    font-size: 1.6em;
+    color: black;
+    margin-bottom: 25px;
+}
+
+/* Button-Stil identisch zu anderen gelben Buttons im Spiel ... */
+#rotateButton {
+    background-color: #ffcc00;
+    color: black;
+    border: 3px solid black;
+    border-radius: 10px;
+    padding: 10px 30px;
+    font-size: 1.5em;
+    font-family: 'Zabars', Arial, Helvetica, sans-serif;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
+}
+
+#rotateButton:hover {
+    background-color: #ffe85c;
+    transform: scale(1.1);
+}
+
+
+/* ############################### */
 /* === SMARTPHONE resposive === */
+/* ############################### */
+
+/* ===========================================================
+   SMARTPHONE / RESPONSIVE BASISANPASSUNG
+   -----------------------------------------------------------
+   1) Canvas passt sich Breite an, behält aber Seitenverhältnis.
+   2) Titel (h1) wird auf kleinen Displays ausgeblendet.
+   3) Höhe bleibt fix (kein Zerren oder Strecken).
+   =========================================================== */
 @media only screen and (max-width: 720px) {
     canvas {
         width: 100%;
+        height: auto;
     }
 
     h1 {
         display: none;
-    }
-}
-
-@media only screen and (max-height: 480px) {
-    canvas {
-        height: 100vh;
     }
 }
