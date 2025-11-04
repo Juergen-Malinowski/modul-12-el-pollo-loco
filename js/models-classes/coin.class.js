@@ -46,7 +46,7 @@ class Coin extends MovableObject {
     // Startet die „3D“-Drehsimulation um die eigene Mittelachse
     startSpin() {
         var self = this;
-        this.spinInterval = setInterval(function () {
+        this.spinInterval = soundHub.registerInterval(setInterval(function () {
             // Winkel erhöhen
             self.rotationAngle += self.rotationSpeed;
 
@@ -66,6 +66,6 @@ class Coin extends MovableObject {
             // kleines „Schweben“ (optional): +/- 2px um die vertikale Mitte
             var bob = Math.sin(self.rotationAngle * 2) * 2;
             self.y = self.centerY - self.heigth / 2 + bob;
-        }, 50);
+        }, 50));
     }
 }

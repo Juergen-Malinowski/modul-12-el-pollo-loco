@@ -5,7 +5,6 @@
 //  World, usw.) zentral zur Verfügung. Alle Sound-Aufrufe im Spiel
 //  nutzen diese eine gemeinsame Instanz.
 // ===========================================================
-var soundHub = new SoundHub();
 
 function startGame() {
     // Startbildschirm ausblenden

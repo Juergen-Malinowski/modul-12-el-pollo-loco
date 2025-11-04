@@ -22,6 +22,7 @@ class World {
     blinkActive = false;                   // steuert, ob die Score-Anzeige blinken soll
     blinkVisible = true;                   // aktueller Sichtbarkeitszustand für Blinkeffekt
 
+
     // Variablen für Sarg-Animation ...
     coffinRotation = 0;
     showCoffin = false;
@@ -81,10 +82,10 @@ class World {
 
 
     run() {
-        setInterval(() => {
+        soundHub.registerInterval(setInterval(() => {
             this.checkCollisions();
             this.checkThrowObjects();
-        }, 30);
+        }, 30));
     }
 
 
@@ -371,6 +372,7 @@ class World {
     // Zeigt das Game-Over-Bild und reagiert auf Klick ...
     showGameOverScreen() {
         this.showGameOver = true;
+        this.stopAllGameProcesses();
         this.silenceAllAudio();
 
         // Game-Over-Buttons anzeigen (Menu / Try again?) ...
@@ -485,6 +487,7 @@ class World {
 
     // Zeigt das "You Win"-Endbild ...
     showVictoryScreen() {
+        this.stopAllGameProcesses();
         soundHub.stopBackgroundMusic();
         this.silenceAllAudio();
         let bonusFlaschen = this.collectedBottles * 3;
@@ -1290,5 +1293,36 @@ class World {
         } catch (err) {
             console.warn("Fehler in freezeWorld():", err);
         }
+    }
+    /**
+ * ===========================================================
+ *  Zentrale Steuerung für globale Stop-, Pause- und Reset-
+ *  Ereignisse (Sound, Intervalle, Animationen, etc.)
+ * ===========================================================
+ */
+
+    stopAllGameProcesses() {
+        try {
+            if (typeof soundHub !== "undefined" && soundHub) {
+                soundHub.stopAllIntervals();
+                soundHub.stopAllAudio();
+            }
+        } catch (e) { console.warn("Fehler beim Stoppen aller Prozesse:", e); }
+    }
+
+    pauseAllGameProcesses() {
+        try {
+            if (typeof soundHub !== "undefined" && soundHub) {
+                soundHub.pauseAllAudio();
+            }
+        } catch (e) { console.warn("Fehler beim Pausieren:", e); }
+    }
+
+    resumeAllGameProcesses() {
+        try {
+            if (typeof soundHub !== "undefined" && soundHub) {
+                soundHub.resumeAllAudio();
+            }
+        } catch (e) { console.warn("Fehler beim Fortsetzen:", e); }
     }
 }

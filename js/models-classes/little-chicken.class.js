@@ -32,19 +32,19 @@ class LittleChicken extends MovableObject {
     }
 
     animate() {
-        setInterval(() => {
+        soundHub.registerInterval(setInterval(() => {
             // Hühner nach links bewegen / "speed" steuert Geschwindigkeit
             // (17ms = 0,017s bzw. 60 Frames pro Sek. bzw. 1000/60 = 17 ms / 60 Frames pro Sek. ist so das Maximum in Spielen)
             if (!this.isDeadChicken) {              // Nur bewegen, wenn Huhn lebt
                 this.moveLeft();
             }
-        }, 1000 / 60);
+        }, 1000 / 60));
 
-        setInterval(() => {                              // Intervall-Funktion, die die Animation steuert ...
+        soundHub.registerInterval(setInterval(() => {                              // Intervall-Funktion, die die Animation steuert ...
             if (!this.isDeadChicken) {                   // Nur animieren, wenn Huhn lebt
                 this.playAnimation(this.imagesWalking);  // Funktion generiert nun die Bilder
             }
-        }, 120);                                         // Intervall in ms (120 ms hier), in der die Animation neu gezeichnet wird
+        }, 120));                                         // Intervall in ms (120 ms hier), in der die Animation neu gezeichnet wird
     };
 
     die() {

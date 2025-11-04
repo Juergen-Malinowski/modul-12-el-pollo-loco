@@ -1,8 +1,10 @@
 
-let canvas;                     // Canvas-Element anlegen
-let world;                      // Variable für die Welt (World) anlegen
-let keyboard = new Keyboard();  // Variablen für Rückmeldung des "keydown" in "keyboard" anlegen
-let score = 0;                  // Globale SCORE-Zählvariable für Spielpunkte
+let canvas;                        // Canvas-Element anlegen
+let world;                         // Variable für die Welt (World) anlegen
+let keyboard = new Keyboard();     // Variablen für Rückmeldung des "keydown" in "keyboard" anlegen
+let score = 0;                     // Globale SCORE-Zählvariable für Spielpunkte
+const soundHub = new SoundHub();   // Soundhub einbinden
+
 
 
 function init() {

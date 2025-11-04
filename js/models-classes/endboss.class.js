@@ -97,7 +97,7 @@ class Endboss extends MovableObject {
     animate() {
         // Global stoppbarer Intervall für Bossbewegung ...
         if (this.animateInterval) clearInterval(this.animateInterval);
-        this.animateInterval = setInterval(() => {
+        this.animateInterval = soundHub.registerInterval(setInterval(() => {
             if (this.isDeadBoss || (this.world && this.world.gameOver)) {
                 clearInterval(this.animateInterval);
                 this.animateInterval = null;
@@ -132,7 +132,7 @@ class Endboss extends MovableObject {
                     this.otherDirection = false;
                 }
             }
-        }, 100);
+        }, 100));
     }
 
     triggerAlert() {
@@ -140,7 +140,7 @@ class Endboss extends MovableObject {
         this.isAlerted = true;
         // wiederkehrender Schrei alle 7 Sekunden ...
         var self = this;
-        this.screamInterval = setInterval(function () {
+        this.screamInterval = soundHub.registerInterval(setInterval(() => {
             // Neuer Sicherheits-Check ...
             if (
                 !self.isDeadBoss &&
@@ -151,13 +151,16 @@ class Endboss extends MovableObject {
                 soundHub.playEffect(soundHub.soundBossStart);
             } else {
                 // Intervall endgültig stoppen und Sound abwürgen ...
+                if (this.world && typeof this.world.stopAllGameProcesses === "function") {
+                    this.world.stopAllGameProcesses();
+                }
                 clearInterval(self.screamInterval);
                 self.screamInterval = null;
                 if (typeof soundHub !== "undefined" && soundHub.soundBossStart) {
                     soundHub.stopEffect(soundHub.soundBossStart);
                 }
             }
-        }, 7000);
+        }, 7000));
 
 
         // Erster Schrei sofort ...
@@ -176,30 +179,31 @@ class Endboss extends MovableObject {
 
     playAlertAnimation(onComplete) {
         let i = 0;
-        const interval = setInterval(() => {
+        const alertInterval = soundHub.registerInterval(setInterval(() => {
             if (i < this.imagesAlert.length) {
                 const path = this.imagesAlert[i];
                 this.img = this.imageCache[path];
                 i++;
             } else {
-                clearInterval(interval);
+                clearInterval(alertInterval);
                 if (onComplete) onComplete();
             }
-        }, 200);
+        }, 200));
     }
 
+
     startWalkingAnimation() {
-        setInterval(() => {
+        soundHub.registerInterval(setInterval(() => {
             if (this.isWalking && !this.isDeadBoss && !this.isCharging) {
                 this.playAnimation(this.imagesWalking);
             }
-        }, 200);
+        }, 200));
     }
 
     startChargeTimer() {
         if (this.chargeInterval) clearInterval(this.chargeInterval);
 
-        this.chargeInterval = setInterval(() => {
+        this.chargeInterval = soundHub.registerInterval(setInterval(() => {
             if (this.isDeadBoss) {
                 clearInterval(this.chargeInterval);
                 return;
@@ -207,7 +211,7 @@ class Endboss extends MovableObject {
             if (this.isAlerted && !this.isCharging) {
                 this.performChargeAttack();
             }
-        }, this.chargeCooldown);
+        }, this.chargeCooldown));
     }
 
     performChargeAttack() {
@@ -228,7 +232,7 @@ class Endboss extends MovableObject {
         // === ThunderRun-Animation starten ===
         this.playAnimation(this.imagesThunderRun);
 
-        const moveInterval = setInterval(() => {
+        const moveInterval = soundHub.registerInterval(setInterval(() => {
             if (this.isDeadBoss) {
                 clearInterval(moveInterval);
                 this.isCharging = false;
@@ -261,7 +265,7 @@ class Endboss extends MovableObject {
                 this.world.addScore(70);
                 this.x = startX;
             }
-        }, 40);
+        }, 40));
     }
 
     wasHit() {
@@ -290,6 +294,9 @@ class Endboss extends MovableObject {
 
     die() {
         if (this.isDeadBoss) return;
+        if (this.world && typeof this.world.stopAllGameProcesses === "function") {
+            this.world.stopAllGameProcesses();
+        }
         this.stopAllBossSounds();
         this.isDeadBoss = true;
         this.isWalking = false;
@@ -299,7 +306,7 @@ class Endboss extends MovableObject {
         if (this.chargeInterval) clearInterval(this.chargeInterval);
 
         let i = 0;
-        const deathInterval = setInterval(() => {
+        const deathInterval = soundHub.registerInterval(setInterval(() => {
             if (i < this.imagesDead.length) {
                 this.img = this.imageCache[this.imagesDead[i]];
                 i++;
@@ -325,7 +332,7 @@ class Endboss extends MovableObject {
                     setTimeout(() => this.world.gameOver = true, 1000);
                 }
             }
-        }, 250);
+        }, 250));
         this.stopThunderAttackSound();
     }
 
@@ -342,45 +349,53 @@ class Endboss extends MovableObject {
     * Stoppt alle Boss-bezogenen Sounds und Timer (Schrei-Loop, Thunder, Run-Animation).
     * Kann gefahrlos mehrfach aufgerufen werden.
     */
-    stopBossAudioAndTimers() {
-        // Intervalle / Timer sicher beenden ...
-        try {
-            if (this.screamInterval) {
-                clearInterval(this.screamInterval);
-                this.screamInterval = null;
-            }
-        } catch (e) { }
-        try {
-            if (this.thunderAttackTimer) {
-                clearInterval(this.thunderAttackTimer);
-                this.thunderAttackTimer = null;
-            }
-        } catch (e) { }
-        try {
-            if (this.thunderRunAnimInterval) {
-                clearInterval(this.thunderRunAnimInterval);
-                this.thunderRunAnimInterval = null;
-            }
-        } catch (e) { }
-        try {
-            if (this.walkAnimInterval) {
-                clearInterval(this.walkAnimInterval);
-                this.walkAnimInterval = null;
-            }
-        } catch (e) { }
+/**
+ * Stoppt alle Boss-bezogenen Sounds und Timer (Schrei-Loop, Thunder, Run-Animation).
+ * Kann gefahrlos mehrfach aufgerufen werden.
+ */
+stopBossAudioAndTimers() {
+    try {
+        // === Weltweite Stopp-Funktion auslösen (falls vorhanden) ===
+        if (this.world && typeof this.world.stopAllGameProcesses === "function") {
+            this.world.stopAllGameProcesses();
+        }
 
-        // Boss-bezogene Sounds stoppen ...
+        // === Lokale Intervalle sicher beenden ===
+        if (this.screamInterval) {
+            clearInterval(this.screamInterval);
+            this.screamInterval = null;
+        }
+        if (this.thunderAttackTimer) {
+            clearInterval(this.thunderAttackTimer);
+            this.thunderAttackTimer = null;
+        }
+        if (this.thunderRunAnimInterval) {
+            clearInterval(this.thunderRunAnimInterval);
+            this.thunderRunAnimInterval = null;
+        }
+        if (this.walkAnimInterval) {
+            clearInterval(this.walkAnimInterval);
+            this.walkAnimInterval = null;
+        }
+
+        // === Boss-bezogene Sounds stoppen ===
         if (typeof soundHub !== "undefined" && soundHub) {
-            // Start-Schrei / Alarm
             if (soundHub.soundBossStart) {
                 soundHub.stopEffect(soundHub.soundBossStart);
             }
-            // Thunder-Angriff
-            if (soundHub.soundThunderAttack) {
-                soundHub.stopEffect(soundHub.soundThunderAttack);
+            if (soundHub.soundBossCharge) {
+                soundHub.stopEffect(soundHub.soundBossCharge);
+            }
+            // Sicherheitshalber alles Audio stoppen
+            if (typeof soundHub.stopAllAudio === "function") {
+                soundHub.stopAllAudio();
             }
         }
+    } catch (e) {
+        console.warn("Fehler in stopBossAudioAndTimers():", e);
     }
+}
+
 
     stopAllBossSounds() {
         // Alle Boss-bezogenen Timer stoppen ...
@@ -431,6 +446,9 @@ class Endboss extends MovableObject {
             this.isCharging = false;
             this.isDeadBoss = true;
             // Alle Timer abbrechen ...
+            if (this.world && typeof this.world.stopAllGameProcesses === "function") {
+                this.world.stopAllGameProcesses();
+            }
             if (this.animateInterval) {
                 clearInterval(this.animateInterval);
                 this.animateInterval = null;

@@ -29,14 +29,14 @@ class MovableObject extends DrawableObjects {
     }
 
     applyGravity() {
-        setInterval(() => {
+        soundHub.registerInterval(setInterval(() => {
             if (this.isAboveGround() || this.speedY > 0) {
-                // nur solange der Charakter noch nicht den BODEN erreicht hat ...
-                this.y -= this.speedY;              // Fallgeschwindigkeit übergeben
-                this.speedY -= this.acceleration;   // Erhöhung Fallgeschwindigkeit
+                this.y -= this.speedY;
+                this.speedY -= this.acceleration;
             }
-        }, 30);
+        }, 30));
     }
+
 
     isColliding(movableObject) {
         // Fall 1: Wenn das Objekt eine Flasche (ThrowableObjects) ist ...

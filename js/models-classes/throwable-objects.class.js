@@ -26,8 +26,8 @@ class ThrowableObjects extends MovableObject {
         }
         this.speedY = 30;
         this.applyGravity();
-        setInterval(() => {
+        soundHub.registerInterval(setInterval(() => {
             this.x += 10 * this.direction; // nach links oder rechts werfen
-        }, 20);
+        }, 20));
     }
 }

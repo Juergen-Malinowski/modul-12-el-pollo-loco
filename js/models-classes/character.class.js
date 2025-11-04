@@ -1,24 +1,32 @@
+/**
+ * ===========================================================
+ *  CHARAKTER-KLASSE "PEPE"
+ *  ------------------------
+ *  Steuerung der Spielfigur, Animationen und Bewegungen
+ *  Soundeffekte (z. B. Schnarchen) werden zentral über SoundHub verwaltet
+ * ===========================================================
+ */
 
 class Character extends MovableObject {
 
-    heigth = 330;         // Höhe des Charakters
-    width = 150;          // Breite des Charakters
-    y = 0;                // Startposition des Charakters auf der Y-Achse (Höhenposition) = 130
-    x = 200;              // Startposition des Charakters auf der X-Achse (links/rechts)
-    speed = 20;           // Bewegungsweite 20px pro Zeitinvervall des Charakters
-    world;                // Übergabe der Bewegungsparameter aus der "world.class.js", welche sie von "game.js" erhalten hat
-    energie = 300;        // Lebens-ENERGIE (Gesundheit, Trefferpunkte)
-    holeEnergie = 300;    // Volle Trefferpunkte
-    isDeadAnimationPlaying = false;  // steuert die Länge der Dead-Animation
+    heigth = 330;         
+    width = 150;          
+    y = 0;                
+    x = 200;              
+    speed = 20;           
+    world;                
+    energie = 300;        
+    holeEnergie = 300;    
+    isDeadAnimationPlaying = false;  
 
-
-    offset = {            // Korrektur der Kollision auf den tatsächlichen Körper !
+    offset = {            
         top: 130,
         buttom: 10,
         left: 40,
         right: 40,
-    }
+    };
 
+    // === ANIMATIONS-BILDER ===
     imagesWalking = [
         './assets/img/2_charakter_pepe/2_walk/W-21.png',
         './assets/img/2_charakter_pepe/2_walk/W-22.png',
@@ -80,193 +88,143 @@ class Character extends MovableObject {
         './assets/img/2_charakter_pepe/2_walk/W-24.png',
         './assets/img/2_charakter_pepe/2_walk/W-25.png',
         './assets/img/2_charakter_pepe/2_walk/W-26.png',
-
     ];
 
-    lastActionTime = Date.now();  // Zeitstempel der letzten Spieleraktion
+    lastActionTime = Date.now();  
 
     constructor() {
         super().loadImage('./assets/img/2_charakter_pepe/2_walk/W-21.png');
-        this.loadImages(this.imagesWalking);       // Gehen-Animation laden
-        this.loadImages(this.imagesJumping);       // Springen-Animation laden
-        this.loadImages(this.imagesDead);          // Sterbe-Animation laden
-        this.loadImages(this.imagesHurt);          // Verletzungs-Animation laden
-        this.loadImages(this.imagesWating);        // Idle-Animation laden
-        this.loadImages(this.imagesLongWaiting);   // Long Idle-Animation laden
-        this.loadImages(this.imagesThrowing);      // Wurf-Animation laden
-        this.soundSnoring = new Audio('./assets/sound/snoring.mp3');
-        this.soundSnoring.loop = true;
-        this.soundSnoring.volume = 0.7;
-        this.soundSnoring.preload = 'auto';
+        this.loadImages(this.imagesWalking);
+        this.loadImages(this.imagesJumping);
+        this.loadImages(this.imagesDead);
+        this.loadImages(this.imagesHurt);
+        this.loadImages(this.imagesWating);
+        this.loadImages(this.imagesLongWaiting);
+        this.loadImages(this.imagesThrowing);
         this.applyGravity();
         this.animate();
     }
 
     animate() {
-        if (this.isThrowing) return;   // Keine Bewegung während Wurf-Animation !! (derzeit 0,4 Sek.) ...
+        if (this.isThrowing) return;
 
         // === BEWEGUNGS-STEUERUNG ===
-        setInterval(() => {
-            // Wenn Sterbeanimation läuft → keine Bewegung mehr zulassen ...
+        soundHub.registerInterval(setInterval(() => {
             if (this.isDeadAnimationPlaying) {
                 return;
             }
 
-            // WALKING-SPEED Charakter festlegen bzw. initialisieren ...
             if (this.world.keyboard.RIGHT && this.x < this.world.level.levelEndX) {
                 this.moveRight();
                 this.otherDirection = false;
-                this.lastActionTime = Date.now(); // Zeitstempel aktualisieren (Spieler aktiv) ...
+                this.lastActionTime = Date.now();
+                soundHub.stopSnoring(); // sicherheitshalber beenden, wenn Spieler wieder aktiv wird
             }
 
             if (this.world.keyboard.LEFT && this.x > 0) {
                 this.moveLeft();
                 this.otherDirection = true;
-                this.lastActionTime = Date.now(); // Zeitstempel aktualisieren (Spieler aktiv) ...
+                this.lastActionTime = Date.now();
+                soundHub.stopSnoring();
             }
 
             if (this.world.keyboard.SPACE && !this.isAboveGround()) {
-                soundHub.playEffect(soundHub.soundJumping);     // Sprung-Sound abspielen ...
+                soundHub.playEffect(soundHub.soundJumping);
                 this.speedY = 45;
-                this.lastActionTime = Date.now();               // Zeitstempel aktualisieren (Spieler aktiv) ...
+                this.lastActionTime = Date.now();
+                soundHub.stopSnoring();
             }
 
-            // Falls am oder unter dem Boden und nicht mehr aufwärts ... exakt einschnappen ...
             if (!this.isAboveGround() && this.speedY <= 0) {
                 this.snapToGround();
             }
 
-            // Hintergrund-Verschiebung (Variable "cameraX") auf Bewegung des Charakters anpassen ...
             this.world.cameraX = -this.x + 200;
-        }, 100);
+        }, 100));
 
         // === ANIMATIONS-STEUERUNG ===
-        setInterval(() => {
-            // 1) Sterben erkannt, aber Animation noch nicht gestartet → starten und SOFORT abbrechen ...
+        soundHub.registerInterval(setInterval(() => {
             if (this.isDead() && !this.isDeadAnimationPlaying) {
-                this.isDeadAnimationPlaying = true;   // KEIN wiederholtes Abspielen !!!
+                this.isDeadAnimationPlaying = true;
+                soundHub.stopSnoring();
                 this.playDeadAnimation();
-                return;                               // keine andere Animation in diesem Tick mehr ausführen ...
+                return;
             }
 
-            // 2) Sterbeanimation läuft bereits → nichts anderes abspielen ...
             if (this.isDeadAnimationPlaying) {
                 return;
             }
 
-            // 3) Charakter wurde verletzt ...
             if (this.isHurt()) {
-
-                // ... Schnarchen sofort stoppen, weil Pepe verletzt wurde ...
-                if (this.soundSnoring && !this.soundSnoring.paused) {
-                    try {
-                        this.soundSnoring.pause();
-                        this.soundSnoring.currentTime = 0;
-                    } catch (e) { }
-                }
-
-                // ... zusätzlich globales Stoppen über soundHub (falls aktiv) ...
-                if (typeof soundHub !== "undefined" && soundHub && typeof soundHub.stopSnoring === "function") {
-                    try {
-                        soundHub.stopSnoring();
-                    } catch (e) { }
-                }
-
-                // ... Idle-Timer zurücksetzen, damit kein sofortiges Re-Idle/Schnarchen anläuft ...
+                soundHub.stopSnoring();
                 this.lastActionTime = Date.now();
-
-                // ... Verletzungs-Animation anzeigen ...
                 this.playAnimation(this.imagesHurt);
-
-                return;    // ... abbrechen, damit keine Idle-/Long-Idle-Animation in diesem Tick ausgeführt wird ...
+                return;
             }
 
-
-            // 4) Normale Bewegungs-Animationen ...
             if (this.isAboveGround()) {
                 this.playAnimation(this.imagesJumping);
             } else if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
                 this.playAnimation(this.imagesWalking);
             } else {
                 // === IDLE-STEUERUNG ===
-                let idleTime = (Date.now() - this.lastActionTime) / 1000;  // Sekunden seit letzter Aktion ...
+                const idleTime = (Date.now() - this.lastActionTime) / 1000;
 
                 if (idleTime < 3) {
-                    // Spieler steht erst kurz still → Idle ...
                     this.playAnimation(this.imagesWating);
+                    soundHub.stopSnoring();
                 } else if (idleTime >= 5) {
-                    // Spieler steht sehr lange still → Long Idle ...
                     this.playAnimation(this.imagesLongWaiting);
 
-                    // ... Schnarch-Sound starten, falls noch nicht läuft ...
-                    if (this.soundSnoring && this.soundSnoring.paused && !soundHub.isMuted) {
-                        this.soundSnoring.currentTime = 0;
+                    // ✅ WICHTIG: nur starten, wenn noch nicht laufend
+                    if (!soundHub.snoringAudio || soundHub.snoringAudio.paused) {
                         soundHub.playSnoring();
                     }
-
                 } else {
-                    // ... Spieler bewegt sich oder ist normal idle → sicherstellen, dass Schnarchen stoppt ...
-                    if (this.soundSnoring && !this.soundSnoring.paused) {
-                        soundHub.stopSnoring();
-                        this.soundSnoring.currentTime = 0;
-                    }
+                    // 3–5 Sekunden: normal idle → kein Schnarchen
+                    soundHub.stopSnoring();
                 }
             }
-        }, 150);
+        }, 150));
     }
 
-
     playDeadAnimation() {
-        // Animation für das Sterben des Charakters einmalig abspielen ...
-        this.speedY = 0;          // Bewegung nach oben/unten stoppen
-        this.acceleration = 0;    // Keine Gravitation mehr
+        this.speedY = 0;
+        this.acceleration = 0;
 
-        let i = 0;                // Zähler für die Bilder der Sterbeanimation
-
-        const deathInterval = setInterval(() => {
-            // Prüfen, ob alle Bilder durchlaufen wurden ...
+        let i = 0;
+        const deathInterval = soundHub.registerInterval(setInterval(() => {
             if (i < this.imagesDead.length) {
-                let path = this.imagesDead[i];             // Pfad zum aktuellen Bild der Sterbeanimation
-                this.img = this.imageCache[path];          // Bild aus Cache übernehmen
+                const path = this.imagesDead[i];
+                this.img = this.imageCache[path];
                 i++;
             } else {
                 setTimeout(() => {
-                    clearInterval(deathInterval);          // Intervall stoppen, sobald letztes Bild erreicht
+                    clearInterval(deathInterval);
                     this.img = this.imageCache[this.imagesDead[this.imagesDead.length - 1]];
-                }, 200);                                   // etwas weicheres Ende
+                }, 200);
             }
-        }, 200);                                           // 200 ms = Geschwindigkeit des Sterbens (kann angepasst werden)
+        }, 200));
 
         setTimeout(() => {
-
-            // ###############################################################
-            // "Hier" SPÄTER RESTART GAME den Button oder Ähnliches intergrieren
-            // ############################################################### 
-
+            // später Restart-Button
         }, 2000);
 
-        // Zeige Sarg-Animation bei Tod des Charakters ...
         if (this.world) {
             setTimeout(() => {
                 this.world.startCoffinAnimation();
-            }, 1000); // 1 Sekunde nach dem Tod erscheinen
+            }, 1000);
         }
-
     }
 
     playThrowAnimation() {
-        // Falls gerade eine Idle-Animation aktiv ist → sofort beenden ...
-        this.lastActionTime = Date.now();                // Idle-Timer zurücksetzen
-
-        // kurze Bewegungssperre während Wurf-Animation ...
+        this.lastActionTime = Date.now();
         this.isThrowing = true;
-        setTimeout(() => this.isThrowing = false, 400);  // nach 0.4 Sekunden wieder aktiv
-
-        // Verhindert, dass gleichzeitig andere Animationen laufen ...
+        setTimeout(() => this.isThrowing = false, 400);
         if (this.isDeadAnimationPlaying) return;
 
         let i = 0;
-        const throwInterval = setInterval(() => {
+        const throwInterval = soundHub.registerInterval(setInterval(() => {
             if (i < this.imagesThrowing.length) {
                 const path = this.imagesThrowing[i];
                 this.img = this.imageCache[path];
@@ -274,27 +232,17 @@ class Character extends MovableObject {
             } else {
                 clearInterval(throwInterval);
             }
-        }, 20);  // Geschwindigkeit der Wurfanimation (80 ms pro Frame)
+        }, 20));
     }
 
-    // Exakt auf die Bodenhöhe einschnappen (nur wenn Bewegung beendet ist) ...
     snapToGround() {
-        // Nur korrigieren, wenn keine Aufwärts- oder Abwärtsbewegung mehr da ist ...
         if (this.speedY <= 0 && this.y > 130 && !this.isAboveGround()) {
-            this.y = 130;      // exakt auf Bodenhöhe bringen
-            this.speedY = 0;   // vertikale Bewegung stoppen
+            this.y = 130;
+            this.speedY = 0;
         }
     }
 
-    /**
- * Stoppt das Schnarchgeräusch sofort, wenn Pepe aktiv wird.
- */
     stopSnoringSound() {
-        try {
-            if (this.soundSnoring && !this.soundSnoring.paused) {
-                this.soundSnoring.pause();
-                this.soundSnoring.currentTime = 0;
-            }
-        } catch (e) { }
+        soundHub.stopSnoring();
     }
 }

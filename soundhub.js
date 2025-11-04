@@ -1,10 +1,16 @@
 /**
  * ===========================================================
- *  SOUNDHUB-KLASSE
- *  -----------------
- *  Verwaltet alle Audio-Sounds des Spiels (Musik & Effekte)
- *  ===========================================================
+ *  SOUND- & GAMEHUB-KLASSE
+ *  -----------------------
+ *  Zentrale Steuerung für:
+ *    - alle Audio-Sounds (Musik & Effekte)
+ *    - Intervalle und Timeouts
+ *    - globale Cleanup-Funktion (Spielende / Neustart)
+ * ===========================================================
+ *  (C) Jürgen Malinowski – Erweiterung am: 04.11.2025
+ * ===========================================================
  */
+
 class SoundHub {
 
     constructor() {
@@ -15,35 +21,38 @@ class SoundHub {
         this.backgroundMusic.preload = 'auto';
 
         // === SOUND-EFFEKTE ===
-        this.soundThrow = new Audio('./assets/sound/flying-bottle.mp3');          // Flasche geworfen
-        this.soundCoin = new Audio('./assets/sound/coin-pling.mp3');              // Münze eingesammelt
-        this.soundHit = new Audio('./assets/sound/pepe-cry.mp3');                 // Treffer durch Gegner
-        this.soundChickenMud = new Audio('./assets/sound/chicken-mud.mp3');       // Pepe springt auf Huhn und trifft
-        this.soundJumping = new Audio('./assets/sound/jumping.mp3');              // Pepe springt
-        this.soundChickenHit = new Audio('./assets/sound/chicken-clucking.mp3');  // Huhn getroffen
-        this.soundBottlePickup = new Audio('./assets/sound/plopp.mp3');           // Flasche eingesammelt
-        this.soundBossStart = new Audio('./assets/sound/great-Chicken-Cry.mp3');  // Endboss aktiviert
-        this.soundBossCharge = new Audio('./assets/sound/thunder-attack.mp3');    // Blitzangriff Endboss
+        this.soundThrow = new Audio('./assets/sound/flying-bottle.mp3');
+        this.soundCoin = new Audio('./assets/sound/coin-pling.mp3');
+        this.soundHit = new Audio('./assets/sound/pepe-cry.mp3');
+        this.soundChickenMud = new Audio('./assets/sound/chicken-mud.mp3');
+        this.soundJumping = new Audio('./assets/sound/jumping.mp3');
+        this.soundChickenHit = new Audio('./assets/sound/chicken-clucking.mp3');
+        this.soundBottlePickup = new Audio('./assets/sound/plopp.mp3');
+        this.soundBossStart = new Audio('./assets/sound/great-Chicken-Cry.mp3');
+        this.soundBossCharge = new Audio('./assets/sound/thunder-attack.mp3');
 
-        // === ALLGEMEINE VARIABLEN ===
-        this.lastHitSoundTime = 0;        // Zeitstempel des letzten Charakter-Treffer-Sounds
-        this.hitSoundCooldown = 2000;     // Mindestzeit in Millisekunden, bevor erneut Sound möglich
-        this.isMuted = false;             // globaler Mute-Schalter
+        // === SYSTEM-STATUS ===
+        this.lastHitSoundTime = 0;
+        this.hitSoundCooldown = 2000;
+        this.isMuted = false;
 
-        // === Audioeinstellungen aus localStorage laden / speichern background-volume ===
+        // === AUDIO-EINSTELLUNGEN LADEN ===
         this.loadSettings();
         this.musicVolume = this.backgroundMusic.volume;
+
+        // === NEU: INTERVALL-/TIMEOUT-VERWALTUNG ===
+        this.activeIntervals = [];     // alle aktiven Intervall-IDs
+        this.activeTimeouts = [];      // alle aktiven Timeout-IDs
     }
 
 
-
-    /**
-     * === HINTERGRUNDMUSIK sicher starten ===
+    /* ===========================================================
+     *  AUDIO-STEUERUNG
+     * ===========================================================
      */
+
     playBackgroundMusic() {
-        if (this.isMuted) {
-            return; // Wenn global stummgeschaltet, nichts tun
-        }
+        if (this.isMuted) return;
 
         if (!this.backgroundMusic.paused) {
             this.backgroundMusic.pause();
@@ -52,14 +61,12 @@ class SoundHub {
 
         this.backgroundMusic.volume = this.musicVolume != null ? this.musicVolume : this.backgroundMusic.volume;
         this.backgroundMusic.loop = true;
+
         this.backgroundMusic.play().catch(function (e) {
             console.warn("Musik konnte nicht automatisch gestartet werden:", e);
         });
     }
 
-    /**
-     * === HINTERGRUNDMUSIK stoppen ===
-     */
     stopBackgroundMusic() {
         if (this.backgroundMusic && !this.backgroundMusic.paused) {
             this.backgroundMusic.pause();
@@ -67,13 +74,10 @@ class SoundHub {
         }
     }
 
-    /**
-     * Einzelnen Sound-Effekt abspielen (wenn nicht stummgeschaltet) ...
-     */
     playEffect(audio) {
         if (!this.isMuted && audio) {
             try {
-                audio.currentTime = 0;               // Sound von Anfang abspielen
+                audio.currentTime = 0;
                 let playPromise = audio.play();
                 if (playPromise !== undefined) {
                     playPromise.catch(err => { });
@@ -82,11 +86,8 @@ class SoundHub {
         }
     }
 
-    /**
-     * === Alle Effekt-Sounds als Liste zurückgeben ===
-     */
     getAllEffects() {
-        return [
+        const list = [
             this.soundThrow,
             this.soundCoin,
             this.soundHit,
@@ -97,95 +98,73 @@ class SoundHub {
             this.soundBossStart,
             this.soundBossCharge,
         ];
+        // Schnarchen nur anhängen, wenn schon initialisiert
+        if (this.snoringAudio) {
+            list.push(this.snoringAudio);
+        }
+
+        return list;
     }
 
-    /**
-     * === Musiklautstärke 0..1 setzen ===
-     */
+
+
     setMusicVolume(value) {
         var v = parseFloat(value);
         if (isNaN(v)) return;
-        if (v < 0) v = 0;
-        if (v > 1) v = 1;
-
+        v = Math.min(Math.max(v, 0), 1);
         this.musicVolume = v;
         this.backgroundMusic.volume = v;
-        try {
-            localStorage.setItem('audio_music_volume', v.toString());
-        } catch (err) { }
+        try { localStorage.setItem('audio_music_volume', v.toString()); } catch (err) { }
     }
 
-    /**
-     * === Effektlautstärke 0..1 für alle Effekte setzen ===
-     */
     setEffectsVolume(value) {
         var v = parseFloat(value);
         if (isNaN(v)) return;
-        if (v < 0) v = 0;
-        if (v > 1) v = 1;
+        v = Math.min(Math.max(v, 0), 1);
 
         var effects = this.getAllEffects();
         for (var i = 0; i < effects.length; i++) {
             effects[i].volume = v;
         }
 
-        try {
-            localStorage.setItem('audio_effects_volume', v.toString());
-        } catch (err) { }
+        try { localStorage.setItem('audio_effects_volume', v.toString()); } catch (err) { }
     }
 
-    /**
-     * === Global stumm schalten / wieder aktivieren ===
-     */
-    setMuted(isMuted) {
-        this.isMuted = !!isMuted;
-
-        this.backgroundMusic.muted = this.isMuted;
-        if (this.isMuted && this.backgroundMusic && !this.backgroundMusic.paused) {
-            this.backgroundMusic.pause();
-        }
-
-        var effects = this.getAllEffects();
-        for (var i = 0; i < effects.length; i++) {
-            effects[i].muted = this.isMuted;
-        }
-
-        try {
-            localStorage.setItem('audio_muted', this.isMuted ? 'true' : 'false');
-        } catch (err) { }
-    }
-
-    /**
-     * === Umschalten (Mute / Unmute) ===
-     */
-    toggleMute() {
-        this.setMuted(!this.isMuted);
-    }
-
-    /**
-     * === Musiklautstärke abrufen ===
-     */
     getMusicVolume() {
         return this.backgroundMusic.volume;
     }
 
-    /**
-     * === Einzelnen Effekt-Sound sicher stoppen (pausieren & zurücksetzen) ===
-     */
+    getEffectsVolume() {
+        var effects = this.getAllEffects();
+        return effects.length > 0 ? effects[0].volume : 1.0;
+    }
+
+    setMuted(isMuted) {
+        this.isMuted = !!isMuted;
+        this.backgroundMusic.muted = this.isMuted;
+        if (this.isMuted && this.backgroundMusic && !this.backgroundMusic.paused) {
+            this.backgroundMusic.pause();
+        }
+        var effects = this.getAllEffects();
+        for (var i = 0; i < effects.length; i++) {
+            effects[i].muted = this.isMuted;
+        }
+        try { localStorage.setItem('audio_muted', this.isMuted ? 'true' : 'false'); } catch (err) { }
+    }
+
+    toggleMute() {
+        this.setMuted(!this.isMuted);
+    }
+
     stopEffect(audio) {
         try {
             if (audio) {
                 audio.pause();
                 audio.currentTime = 0;
             }
-        } catch (e) {
-            // leise Fehlerbehandlung
-        }
+        } catch (e) { }
     }
 
-    /**
-     * === Alle Effekt-Sounds stoppen (für Spielende / Szenenwechsel) ===
-     */
     stopAllEffects() {
         var effects = this.getAllEffects();
         for (var i = 0; i < effects.length; i++) {
@@ -193,20 +172,23 @@ class SoundHub {
         }
     }
 
-    /**
-     * === Effektlautstärke abrufen ===
-     */
-    getEffectsVolume() {
-        var effects = this.getAllEffects();
-        if (effects.length > 0) {
-            return effects[0].volume;
+    stopBossCharge() {
+        try {
+            if (this.soundBossCharge) {
+                this.soundBossCharge.pause();
+                this.soundBossCharge.currentTime = 0;
+                this.soundBossCharge.loop = false;
+            }
+            if (this.soundBossStart) {
+                this.soundBossStart.pause();
+                this.soundBossStart.currentTime = 0;
+                this.soundBossStart.loop = false;
+            }
+        } catch (e) {
+            console.warn("Fehler beim Stoppen der Boss-Sounds:", e);
         }
-        return 1.0;
     }
 
-    /**
-     * === Audioeinstellungen aus dem localStorage laden ===
-     */
     loadSettings() {
         try {
             var m = localStorage.getItem('audio_music_volume');
@@ -215,15 +197,11 @@ class SoundHub {
 
             if (m !== null) {
                 var mv = parseFloat(m);
-                if (!isNaN(mv)) {
-                    this.setMusicVolume(mv);
-                }
+                if (!isNaN(mv)) this.setMusicVolume(mv);
             }
             if (e !== null) {
                 var ev = parseFloat(e);
-                if (!isNaN(ev)) {
-                    this.setEffectsVolume(ev);
-                }
+                if (!isNaN(ev)) this.setEffectsVolume(ev);
             }
             if (mute !== null) {
                 this.setMuted(mute === 'true');
@@ -233,27 +211,119 @@ class SoundHub {
         }
     }
 
-    // =============================================================
-    // === HILFSFUNKTION: Boss-Schrei & Sturmangriff-Sound stoppen ===
-    // =============================================================
-    stopBossCharge() {
+
+    /* ===========================================================
+     *  NEU: INTERVALL- UND TIMEOUT-VERWALTUNG
+     * ===========================================================
+     */
+
+    registerInterval(intervalId) {
+        if (intervalId != null) {
+            this.activeIntervals.push(intervalId);
+        }
+        return intervalId;
+    }
+
+    registerTimeout(timeoutId) {
+        if (timeoutId != null) {
+            this.activeTimeouts.push(timeoutId);
+        }
+        return timeoutId;
+    }
+
+    stopAllIntervals() {
+        for (let i = 0; i < this.activeIntervals.length; i++) {
+            clearInterval(this.activeIntervals[i]);
+        }
+        this.activeIntervals = [];
+    }
+
+    stopAllTimeouts() {
+        for (let i = 0; i < this.activeTimeouts.length; i++) {
+            clearTimeout(this.activeTimeouts[i]);
+        }
+        this.activeTimeouts = [];
+    }
+
+
+    /* ===========================================================
+     *  NEU: GLOBALE CLEANUP-FUNKTION
+     * ===========================================================
+     */
+
+    /**
+     * Stoppt ALLE Audioquellen dieses Hubs (Musik, Effekte, Schnarchen, Boss).
+     * Kann gefahrlos mehrfach aufgerufen werden.
+     */
+    stopAllAudio() {
         try {
-            // === Boss-Sturmangriff stoppen ===
-            if (this.soundBossCharge) {
-                this.soundBossCharge.pause();
-                this.soundBossCharge.currentTime = 0;
-                this.soundBossCharge.loop = false;
-            }
+            this.stopBackgroundMusic();
+        } catch (e) { }
 
-            // === Boss-Start-Schrei stoppen ===
-            if (this.soundBossStart) {
-                this.soundBossStart.pause();
-                this.soundBossStart.currentTime = 0;
-                this.soundBossStart.loop = false;
-            }
+        try {
+            this.stopAllEffects();
+        } catch (e) { }
 
-        } catch (e) {
-            console.warn("Fehler beim Stoppen der Boss-Sounds:", e);
+        try {
+            this.stopBossCharge();
+        } catch (e) { }
+
+        try {
+            this.stopSnoring();
+        } catch (e) { }
+    }
+
+
+    stopAllGameActivities() {
+        try {
+            this.stopAllIntervals();
+            this.stopAllTimeouts();
+            this.stopAllEffects();
+            this.stopBackgroundMusic();
+            this.stopBossCharge();
+        } catch (err) {
+            console.warn("Fehler beim globalen Stoppen aller Aktivitäten:", err);
+        }
+    }
+    /**
+     * Stoppt und leert sämtliche Sound-, Video- und Intervall-Elemente
+     */
+    resetAllSystems() {
+        this.stopAllAudio();
+        this.stopAllIntervals();
+        this.activeIntervals = [];
+        this.activeTimeouts = [];
+    }
+    /**
+ * Spielt den Schnarchsound ab (sofern nicht stumm).
+ */
+    playSnoring() {
+        if (this.isMuted) return;
+
+        if (!this.snoringAudio) {
+            this.snoringAudio = new Audio('./assets/sound/snoring.mp3');
+            this.snoringAudio.loop = true;
+            this.snoringAudio.volume = this.getEffectsVolume(); // an Effekte anlehnen
+            this.snoringAudio.preload = 'auto';
+        } else {
+            // falls sich Effekte geändert haben
+            this.snoringAudio.volume = this.getEffectsVolume();
+        }
+
+        try {
+            this.snoringAudio.currentTime = 0;
+            this.snoringAudio.play().catch(err => console.warn('Snoring konnte nicht gestartet werden:', err));
+        } catch (e) { }
+    }
+
+
+    /**
+     * Stoppt das Schnarchen sofort.
+     */
+    stopSnoring() {
+        if (this.snoringAudio) {
+            this.snoringAudio.pause();
+            this.snoringAudio.currentTime = 0;
         }
     }
 
@@ -261,9 +331,9 @@ class SoundHub {
 
 /**
  * ===========================================================
- *  SOUNDHUB - DATEI-STATUS
+ *  SOUND- & GAMEHUB - DATEI-STATUS
  *  -----------------
  *  (C) Jürgen Malinowski – Letzte Bearbeitung:
- *  01.11.2025 – 18:42 Uhr
+ *  04.11.2025 – 14:00 Uhr
  * ===========================================================
  */
