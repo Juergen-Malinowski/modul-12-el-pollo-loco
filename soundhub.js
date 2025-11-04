@@ -326,8 +326,29 @@ class SoundHub {
             this.snoringAudio.currentTime = 0;
         }
     }
-
 }
+
+/**
+ * ===========================================================
+ *  Globale Initialisierung des SoundHub – sicher auch auf Servern
+ * ===========================================================
+ */
+(function () {
+    try {
+        // Prüfen, ob wir uns im Browser befinden
+        const globalObj = typeof window !== 'undefined' ? window : globalThis;
+        if (!globalObj.soundHub) {
+            globalObj.soundHub = new SoundHub();
+            console.log("✅ SoundHub global initialisiert (safe mode).");
+        } else {
+            console.log("ℹ️ SoundHub war bereits vorhanden.");
+        }
+    } catch (e) {
+        console.warn("⚠️ Konnte SoundHub nicht global registrieren:", e);
+    }
+})();
+
+
 
 /**
  * ===========================================================

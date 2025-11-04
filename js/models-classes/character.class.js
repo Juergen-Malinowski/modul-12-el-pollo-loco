@@ -1,3 +1,6 @@
+
+console.log("Character-Klasse geladen, SoundHub:", typeof soundHub);
+
 /**
  * ===========================================================
  *  CHARAKTER-KLASSE "PEPE"
@@ -9,17 +12,19 @@
 
 class Character extends MovableObject {
 
-    heigth = 330;         
-    width = 150;          
-    y = 0;                
-    x = 200;              
-    speed = 20;           
-    world;                
-    energie = 300;        
-    holeEnergie = 300;    
-    isDeadAnimationPlaying = false;  
 
-    offset = {            
+
+    heigth = 330;
+    width = 150;
+    y = 0;
+    x = 200;
+    speed = 20;
+    world;
+    energie = 300;
+    holeEnergie = 300;
+    isDeadAnimationPlaying = false;
+
+    offset = {
         top: 130,
         buttom: 10,
         left: 40,
@@ -90,7 +95,7 @@ class Character extends MovableObject {
         './assets/img/2_charakter_pepe/2_walk/W-26.png',
     ];
 
-    lastActionTime = Date.now();  
+    lastActionTime = Date.now();
 
     constructor() {
         super().loadImage('./assets/img/2_charakter_pepe/2_walk/W-21.png');
