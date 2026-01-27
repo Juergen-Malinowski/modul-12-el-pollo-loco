@@ -1332,8 +1332,6 @@ class World {
    *   - Wolken / Hintergrundbewegung
    *   - Alle periodischen Timer (soweit registriert)
    * ===========================================================
-   *  (C) Jürgen Malinowski – Letzte Bearbeitung: 01.11.2025 – 22:34 Uhr
-   * ===========================================================
    */
   freezeWorld() {
     try {
