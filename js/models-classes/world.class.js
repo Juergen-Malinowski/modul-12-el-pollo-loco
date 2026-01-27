@@ -911,8 +911,6 @@ class World {
    *  - fügt den Eintrag hinzu, sortiert absteigend
    *  - markiert den neuesten Eintrag für spätere Blink-Darstellung
    * ===========================================================
-   *  (C) Jürgen Malinowski – Letzte Bearbeitung: 02.11.2025 – 11:58 Uhr
-   * ===========================================================
    */
   saveHighScoreEntry() {
     var highScores = [];
@@ -936,13 +934,9 @@ class World {
       return;
     }
 
-    // Name abfragen …
-    var playerName = prompt(
-      "You won! Enter your name for the Highscore:",
-      "Player",
-    );
-    if (!playerName) {
-      return;
+    // Neuer Highscore ... Namen erfragen ... in script.js
+    if (typeof openHighscoreNameDialog === "function") {
+      openHighscoreNameDialog(this.score);
     }
 
     // Neuen Eintrag hinzufügen und sortieren …

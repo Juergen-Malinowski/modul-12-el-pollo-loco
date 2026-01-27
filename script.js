@@ -447,12 +447,10 @@ function checkOrientation() {
  * ===========================================================
  *  ROTATE SCREEN (Fullscreen + Landscape Lock)
  *  -----------------------------------------------------------
- *  Wird aufgerufen, wenn der User auf "Rotate Screen ↻" klickt.
+ *  Wird aufgerufen, wenn der User auf "Rotate Screen" klickt.
  *  Aktiviert zunächst den Vollbildmodus und versucht anschließend,
  *  das Gerät in Querformat zu drehen. Wenn der Browser dies
  *  blockiert, erscheint ein Hinweisdialog.
- * ===========================================================
- *  (C) Jürgen Malinowski – Letzte Bearbeitung: 03.11.2025 – 14:20 Uhr
  * ===========================================================
  */
 function rotateDevice() {
@@ -538,4 +536,127 @@ function bindGlobalCanvasSoundHandler() {
 
   // EventListener einbinden
   canvas.addEventListener("mousedown", window.__canvasSoundHandler);
+}
+
+// === Neuer Highscore ... Namen-Erfassen-dialog ===
+function openHighscoreNameDialog(score) {
+  // Sicherheitsprüfung
+  if (document.getElementById("highscoreNameOverlay")) return;
+
+  var overlay = document.createElement("div");
+  overlay.id = "highscoreNameOverlay";
+  overlay.style.position = "fixed";
+  overlay.style.top = "0";
+  overlay.style.left = "0";
+  overlay.style.width = "100%";
+  overlay.style.height = "100%";
+  overlay.style.backgroundColor = "rgba(0,0,0,0.8)";
+  overlay.style.display = "flex";
+  overlay.style.alignItems = "center";
+  overlay.style.justifyContent = "center";
+  overlay.style.zIndex = "50";
+
+  overlay.innerHTML = `
+    <div style="
+      background:white;
+      border:4px solid black;
+      border-radius:15px;
+      padding:30px 40px;
+      text-align:center;
+      font-family:'Zabars', Arial, Helvetica, sans-serif;
+      max-width:500px;
+      width:90%;
+    ">
+      <h2 style="font-size:2.4em; margin-bottom:20px;">🏆 New Highscore!</h2>
+
+      <p style="font-size:1.6em; margin-bottom:20px;">
+        Your score: <strong>${score}</strong>
+      </p>
+
+      <input id="highscoreNameInput"
+        type="text"
+        maxlength="16"
+        placeholder="Your name"
+        style="
+          width:80%;
+          padding:10px;
+          font-size:1.4em;
+          text-align:center;
+          border:3px solid black;
+          border-radius:10px;
+          margin-bottom:20px;
+        "
+      />
+
+      <div style="display:flex; justify-content:center; gap:20px;">
+        <button class="menuButton" onclick="submitHighscoreName(${score})">
+          Save
+        </button>
+        <button class="menuButton" onclick="closeHighscoreNameDialog()">
+          Cancel
+        </button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+
+  // Fokus direkt ins Input
+  setTimeout(() => {
+    var input = document.getElementById("highscoreNameInput");
+    if (input) input.focus();
+  }, 50);
+}
+
+// === Neuer Highscore ... Namen speichern ===
+function submitHighscoreName(score) {
+  var input = document.getElementById("highscoreNameInput");
+  if (!input) return;
+
+  var name = input.value.trim();
+  if (!name) {
+    input.focus();
+    return;
+  }
+
+  storeHighscore(name, score);
+  closeHighscoreNameDialog();
+}
+
+// === Neuer Highscore ... Highscore local speichern ===
+function storeHighscore(name, score) {
+  var list = [];
+  try {
+    list = JSON.parse(localStorage.getItem("highScoreTable") || "[]");
+  } catch (e) {
+    list = [];
+  }
+
+  list.push({ name: name, score: score });
+
+  list.sort(function (a, b) {
+    return b.score - a.score;
+  });
+
+  if (list.length > 10) {
+    list = list.slice(0, 10);
+  }
+
+  localStorage.setItem("highScoreTable", JSON.stringify(list));
+  localStorage.setItem(
+    "newHighscoreEntry",
+    JSON.stringify({ name: name, score: score }),
+  );
+
+  if (typeof showHighscoreSavedOverlay === "function") {
+    showHighscoreSavedOverlay();
+  }
+}
+
+// === Neuer Highscore ... Dialog schließen ===
+function closeHighscoreNameDialog() {
+  var overlay = document.getElementById("highscoreNameOverlay");
+  if (overlay) {
+    overlay.remove();
+  }
 }
