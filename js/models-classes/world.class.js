@@ -1306,6 +1306,17 @@ class World {
     this.showGameOver = false;
     this.gameOver = false;
     this.showCoffin = false;
+
+    // Score zurücksetzen ...
+    this.score = 0;
+    this.blinkActive = false;
+    this.blinkVisible = true;
+
+    // globale Score-Variable synchronisieren
+    if (typeof score !== "undefined") {
+      score = 0;
+    }
+
     // direkt neues Spiel starten (wie in script.js -> startGame)...
     if (typeof startGame === "function") {
       startGame();
