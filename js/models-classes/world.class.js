@@ -670,6 +670,9 @@ class World {
       this.ctx.fillText("Score: " + this.score, 570, 50);
     }
 
+    // Steuerungshinweise unter dem Score anzeigen ...
+    this.drawGameControlHints(this.ctx);
+
     this.ctx.translate(this.cameraX, 0);
     this.addObjectsToMap(this.level.bottles);
     this.addObjectsToMap(this.level.coins);
@@ -826,6 +829,25 @@ class World {
     requestAnimationFrame(function () {
       self.draw();
     });
+  }
+
+  drawGameControlHints(ctx) {
+    var startX = 590;
+    var startY = 70;
+    var lineHeight = 30;
+
+    ctx.save();
+    ctx.font = "bold 16px Zabars";
+    ctx.fillStyle = "black";
+    ctx.textAlign = "left";
+    ctx.textBaseline = "top";
+
+    ctx.fillText("⬅  Move left", startX, startY);
+    ctx.fillText("➡  Move right", startX, startY + lineHeight);
+    ctx.fillText("SHIFT  or  ⬆  Throw bottle", startX, startY + lineHeight * 2);
+    ctx.fillText("SPACE  Jump", startX, startY + lineHeight * 3);
+
+    ctx.restore();
   }
 
   handleSoundIconClick(x, y) {
