@@ -16,7 +16,16 @@ body {
   background-size: cover;
   background-position: center;
   min-height: 100vh;
+}
+
+/* Standard: Spielbetrieb ... kein Scroll */
+body.locked {
   overflow: hidden;
+}
+
+/* Overlay-Modus (z. B. Impressum) ... Scroll erlaubt */
+body.unlocked {
+  overflow-y: auto;
 }
 
 canvas {
@@ -287,6 +296,9 @@ button:hover {
   z-index: 25;
   align-items: center;
   justify-content: center;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 40px 0;
 }
 
 #impressumBox {
@@ -298,12 +310,14 @@ button:hover {
   width: 90%;
   text-align: center;
   position: relative;
+  max-height: calc(100vh - 80px);
+  overflow-y: auto;
 }
 
 #iframe,
 #impressumFrame {
   width: 100%;
-  height: 400px;
+  height: 70vh;
   border: none;
 }
 

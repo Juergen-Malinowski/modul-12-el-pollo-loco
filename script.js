@@ -149,10 +149,20 @@ function closeHighscore() {
 /* ============================================
    IMPRESSUM / THANKS – OVERLAY
    ============================================ */
+var __prevHtmlOverflow = "";
+var __prevBodyOverflow = "";
 
 function openImpressum() {
   var overlay = document.getElementById("impressumOverlay");
   var frame = document.getElementById("impressumFrame");
+
+  // Alte Werte merken ...
+  __prevHtmlOverflow = document.documentElement.style.overflow;
+  __prevBodyOverflow = document.body.style.overflow;
+
+  // Während Impressum offen ist: Scroll wieder erlauben ...
+  document.documentElement.style.overflow = "auto";
+  document.body.style.overflow = "auto";
 
   if (frame) {
     frame.src = "./info.html";
@@ -165,12 +175,17 @@ function openImpressum() {
 function closeImpressum() {
   var overlay = document.getElementById("impressumOverlay");
   var frame = document.getElementById("impressumFrame");
+
   if (overlay) {
     overlay.style.display = "none";
   }
   if (frame) {
     frame.src = "";
   }
+
+  // Alte Overflow-Werte wiederherstellen ...
+  document.documentElement.style.overflow = __prevHtmlOverflow;
+  document.body.style.overflow = __prevBodyOverflow;
 }
 
 /* ============================================
