@@ -1,117 +1,171 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" translate="no">
-
-<head>
+  <head>
     <!-- <base href="file:///C:/developer-akadmie/el_pollo_loco/"> -->
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>El Pollo Loco</title>
-    <link rel="icon" href="./assets/img/6_salsa_flasche/2_salsa_bottle_on_ground.png" type="image/png" sizes="16x16">
-    <link rel="stylesheet" href="./style.css">
-</head>
+    <link
+      rel="icon"
+      href="./assets/img/6_salsa_flasche/2_salsa_bottle_on_ground.png"
+      type="image/png"
+      sizes="16x16"
+    />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
 
-<!-- <body onload="init()"> -->
+  <!-- <body onload="init()"> -->
 
-<body>
+  <body>
     <!-- === STARTBILDSCHIRM (Intro) === -->
     <div id="startScreen">
+      <h1>EL POLLO LOCO</h1>
+      <!-- === bedeutet: Verrücktes Huhn === -->
 
-        <h1>EL POLLO LOCO</h1>
-        <!-- === bedeutet: Verrücktes Huhn === -->
+      <!-- === Menüleiste oben === -->
+      <nav id="startMenu">
+        <button class="menuButton" onclick="startGame()">START</button>
+        <button class="menuButton" onclick="openHighscore()">HIGHSCORE</button>
+        <button class="menuButton" onclick="openGameControl()">
+          GAME CONTROL
+        </button>
+        <button class="menuButton" onclick="openAudioSettings()">AUDIO</button>
+        <button class="menuButton" onclick="openImpressum()">
+          IMPRESSUM & THANKS
+        </button>
+      </nav>
 
-        <!-- === Menüleiste oben === -->
-        <nav id="startMenu">
-            <button class="menuButton" onclick="startGame()">START</button>
-            <button class="menuButton" onclick="openHighscore()">HIGHSCORE</button>
-            <button class="menuButton" onclick="openGameControl()">GAME CONTROL</button>
-            <button class="menuButton" onclick="openAudioSettings()">AUDIO</button>
-            <button class="menuButton" onclick="openImpressum()">IMPRESSUM & THANKS</button>
-        </nav>
+      <!-- === Startbild === -->
+      <img
+        src="./assets/img/9_intro_outro_bildschirm/start/startscreen_2.png"
+        alt="Startscreen"
+        id="startImage"
+      />
 
-        <!-- === Startbild === -->
-        <img src="./assets/img/9_intro_outro_bildschirm/start/startscreen_2.png" alt="Startscreen" id="startImage">
+      <!-- === ÜBERLAGERUNGS-BILDER === -->
+      <img
+        src="./assets/img/9_intro_outro_bildschirm/start/bat.png"
+        alt="Fledermaus"
+        class="overlayImage"
+        id="batImage"
+      />
 
-        <!-- === ÜBERLAGERUNGS-BILDER === -->
-        <img src="./assets/img/9_intro_outro_bildschirm/start/bat.png" alt="Fledermaus" class="overlayImage"
-            id="batImage">
-
-        <!-- === COPYRIGHT jetzt innerhalb des Startbildschirms === -->
-        <p id="copyright">(C) Jürgen Malinowski, Oktober 2025</p>
-
+      <!-- === COPYRIGHT jetzt innerhalb des Startbildschirms === -->
+      <p id="copyright">(C) Jürgen Malinowski, Oktober 2025</p>
     </div>
 
     <!-- === HIGHSCORE-OVERLAY (wird per Klick angezeigt) === -->
-    <div id="highscoreOverlay" onclick="closeHighscore()" style="display:none;">
-        <div id="highscoreBox">
-            <h2>🏆 H i g h s c o r e 🏆</h2>
-            <div id="highscoreContent"></div>
-            <p id="closeHint">Click to close</p>
-        </div>
+    <div id="highscoreOverlay" onclick="closeHighscore()" style="display: none">
+      <div id="highscoreBox">
+        <h2>🏆 H i g h s c o r e 🏆</h2>
+        <div id="highscoreContent"></div>
+        <p id="closeHint">Click to close</p>
+      </div>
     </div>
 
     <!-- === HIGHSCORE-SAVED OVERLAY (Bestätigung nach Speichern) === -->
-    <div id="highscoreSavedOverlay" onclick="closeHighscoreSaved()" style="display:none;">
-        <div id="highscoreSavedBox" onclick="event.stopPropagation()">
-            <h2>✅ Your Score was saved</h2>
-            <p>Your score has been added to the high score list.</p>
-            <button id="closeHighscoreSavedButton" onclick="closeHighscoreSaved()">OK</button>
-        </div>
+    <div
+      id="highscoreSavedOverlay"
+      onclick="closeHighscoreSaved()"
+      style="display: none"
+    >
+      <div id="highscoreSavedBox" onclick="event.stopPropagation()">
+        <h2>✅ Your Score was saved</h2>
+        <p>Your score has been added to the high score list.</p>
+        <button id="closeHighscoreSavedButton" onclick="closeHighscoreSaved()">
+          OK
+        </button>
+      </div>
     </div>
 
     <!-- === AUDIO-OVERLAY === -->
     <div id="audioOverlay" onclick="closeAudioSettings()">
-        <div id="audioBox" onclick="event.stopPropagation()">
-            <h2>🎧 Audio Settings</h2>
+      <div id="audioBox" onclick="event.stopPropagation()">
+        <h2>🎧 Audio Settings</h2>
 
-            <!-- Musik -->
-            <div class="audioControlRow">
-                <label for="musicVolume">Music Volume:</label>
-                <input type="range" id="musicVolume" min="0" max="1" step="0.05" value="0.3"
-                    oninput="updateMusicVolume(this.value)">
-            </div>
-
-            <!-- Effekte -->
-            <div class="audioControlRow">
-                <label for="effectVolume">Effects Volume:</label>
-                <input type="range" id="effectVolume" min="0" max="1" step="0.05" value="1"
-                    oninput="updateEffectVolume(this.value)">
-            </div>
-
-            <div class="audioControlRow">
-                <button id="toggleMuteButton" onclick="toggleMuteAll()">🔇 Sound on / off</button>
-            </div>
-
-            <p id="closeAudioHint" onclick="closeAudioSettings()">Click to close</p>
+        <!-- Musik -->
+        <div class="audioControlRow">
+          <label for="musicVolume">Music Volume:</label>
+          <input
+            type="range"
+            id="musicVolume"
+            min="0"
+            max="1"
+            step="0.05"
+            value="0.3"
+            oninput="updateMusicVolume(this.value)"
+          />
         </div>
+
+        <!-- Effekte -->
+        <div class="audioControlRow">
+          <label for="effectVolume">Effects Volume:</label>
+          <input
+            type="range"
+            id="effectVolume"
+            min="0"
+            max="1"
+            step="0.05"
+            value="1"
+            oninput="updateEffectVolume(this.value)"
+          />
+        </div>
+
+        <div class="audioControlRow">
+          <button id="toggleMuteButton" onclick="toggleMuteAll()">
+            🔇 Sound on / off
+          </button>
+        </div>
+
+        <p id="closeAudioHint" onclick="closeAudioSettings()">Click to close</p>
+      </div>
     </div>
 
     <!-- === IMPRESSUM & THANKS OVERLAY === -->
     <div id="impressumOverlay" onclick="closeImpressum()">
-        <div id="impressumBox" onclick="event.stopPropagation()">
-            <iframe id="impressumFrame" src="" title="Impressum & Thanks"></iframe>
-            <!-- Button/Hinweis bekommt jetzt eigenen Klick-Handler -->
-            <p id="closeImpressumHint" onclick="closeImpressum()">Click to close</p>
-        </div>
+      <div id="impressumBox" onclick="event.stopPropagation()">
+        <iframe id="impressumFrame" src="" title="Impressum & Thanks"></iframe>
+        <!-- Button/Hinweis bekommt jetzt eigenen Klick-Handler -->
+        <p id="closeImpressumHint" onclick="closeImpressum()">Click to close</p>
+      </div>
     </div>
 
     <!-- === GAME CONTROL OVERLAY === -->
     <div id="gameControlOverlay" onclick="closeGameControl()">
-        <div id="gameControlBox" onclick="event.stopPropagation()">
-            <h2>🎮 Game Control</h2>
+      <div id="gameControlBox" onclick="event.stopPropagation()">
+        <h2>🎮 Game Control</h2>
 
-            <p id="gameControlText">
-                ⬅️ Arrow Left ... Move Left<br>
-                ➡️ Arrow Right ... Move Right<br>
-                ⬆️ Arrow Up ... Throw Bottle<br>
-                SHIFT ... Throw Bottle<br>
-                SPACE ... Jump
-            </p>
+        <p id="gameControlText">
+          ⬅️ Arrow Left ... Move Left<br />
+          ➡️ Arrow Right ... Move Right<br />
+          ⬆️ Arrow Up ... Throw Bottle<br />
+          SHIFT ... Throw Bottle<br />
+          SPACE ... Jump
+        </p>
 
-            <p id="closeGameControlHint" onclick="closeGameControl()">Click to close</p>
-        </div>
+        <p id="closeGameControlHint" onclick="closeGameControl()">
+          Click to close
+        </p>
+      </div>
     </div>
 
     <canvas id="canvas" width="720" height="480"></canvas>
+
+    <!-- ===========================================================
+     MOBILE-BUTTONs ...
+     =========================================================== -->
+
+    <div id="mobileControls">
+      <div class="leftControls">
+        <button id="throwBtn">THROW</button>
+        <button id="leftBtn">⬅</button>
+      </div>
+
+      <div class="rightControls">
+        <button id="jumpBtn">JUMP</button>
+        <button id="rightBtn">➡</button>
+      </div>
+    </div>
 
     <!-- ===========================================================
      ORIENTIERUNGS-OVERLAY
@@ -120,41 +174,44 @@
      (Canvas wird ausgeblendet, bis Landscape aktiv ist)
      =========================================================== -->
     <div id="orientationOverlay">
-        <div id="orientationBox">
-            <h2>Please rotate your device 🔄</h2>
-            <p>For the best gaming experience, use landscape mode.</p>
-            <!-- Der Button wird später (Schritt 2) nur angezeigt, 
+      <div id="orientationBox">
+        <h2>Please rotate your device 🔄</h2>
+        <p>For the best gaming experience, use landscape mode.</p>
+        <!-- Der Button wird später (Schritt 2) nur angezeigt, 
              wenn JavaScript die automatische Drehung unterstützt -->
-            <button id="rotateButton" style="display:none;" onclick="rotateDevice()">Rotate Screen ↻</button>
-        </div>
+        <button
+          id="rotateButton"
+          style="display: none"
+          onclick="rotateDevice()"
+        >
+          Rotate Screen ↻
+        </button>
+      </div>
     </div>
+  </body>
 
+  <script src="./soundhub.js"></script>
+  <script src="./js/models-classes/drawable-objects.class.js"></script>
+  <script src="./js/models-classes/movable-objects.class.js"></script>
+  <script src="./js/models-classes/chicken.class.js"></script>
+  <script src="./js/models-classes/little-chicken.class.js"></script>
+  <script src="./js/models-classes/character.class.js"></script>
+  <script src="./js/models-classes/coin.class.js"></script>
+  <script src="./js/models-classes/cloud.class.js"></script>
+  <script src="./js/models-classes/background-object.class.js"></script>
+  <script src="./js/models-classes/status-bar.class.js"></script>
+  <script src="./js/models-classes/world.class.js"></script>
+  <script src="./js/models-classes/keyboard.class.js"></script>
+  <script src="./js/models-classes/level.class.js"></script>
+  <script src="./js/models-classes/throwable-objects.class.js"></script>
+  <script src="./js/models-classes/endboss.class.js"></script>
 
+  <script src="./levels/level1.js"></script>
 
-</body>
+  <script src="./js/game.js"></script>
+  <script src="./script.js"></script>
 
-<script src="./soundhub.js"></script>
-<script src="./js/models-classes/drawable-objects.class.js"></script>
-<script src="./js/models-classes/movable-objects.class.js"></script>
-<script src="./js/models-classes/chicken.class.js"></script>
-<script src="./js/models-classes/little-chicken.class.js"></script>
-<script src="./js/models-classes/character.class.js"></script>
-<script src="./js/models-classes/coin.class.js"></script>
-<script src="./js/models-classes/cloud.class.js"></script>
-<script src="./js/models-classes/background-object.class.js"></script>
-<script src="./js/models-classes/status-bar.class.js"></script>
-<script src="./js/models-classes/world.class.js"></script>
-<script src="./js/models-classes/keyboard.class.js"></script>
-<script src="./js/models-classes/level.class.js"></script>
-<script src="./js/models-classes/throwable-objects.class.js"></script>
-<script src="./js/models-classes/endboss.class.js"></script>
-
-<script src="./levels/level1.js"></script>
-
-<script src="./js/game.js"></script>
-<script src="./script.js"></script>
-
-<!-- Thanks für Sound and Grafiks 
+  <!-- Thanks für Sound and Grafiks 
 
 noch unbenutzt ...
 Image by <a href="https://pixabay.com/users/fajarbudi86-1126901/?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=2419495">fajarbudi86</a> from <a href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=2419495">Pixabay</a>
@@ -162,6 +219,4 @@ Image by <a href="https://pixabay.com/users/alexas_fotos-686414/?utm_source=link
 Image by <a href="https://pixabay.com/users/geralt-9301/?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=1536652">Gerd Altmann</a> from <a href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=1536652">Pixabay</a>
 Image by <a href="https://pixabay.com/users/aureliajhunter-18994837/?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=6754212">Aurelia J Hunter</a> from <a href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=6754212">Pixabay</a>
 Image by <a href="https://pixabay.com/users/fotocitizen-397314/?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=569514">Jorge Guillen</a> from <a href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=569514">Pixabay</a>
--->
-
-</html>
+--></html>
