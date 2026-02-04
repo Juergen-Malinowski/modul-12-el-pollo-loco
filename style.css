@@ -28,19 +28,33 @@ body.unlocked {
   overflow-y: auto;
 }
 
+#gameContainer {
+  position: relative;
+
+  width: 100vw;
+  height: 100dvh;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  overflow: hidden;
+}
+
 canvas {
   background-color: black;
   display: block;
 }
 
 /* Rahmen um das Canvas ... */
+/* Viewport-Anpassung für Mobile */
 #canvas {
   border: 6px solid #ffcc00;
-  /* Gelb wie die Button-Farbe */
   border-radius: 15px;
-  /* leicht abgerundet, harmonisch mit UI */
   box-shadow: 0 0 15px rgba(255, 204, 0, 0.5);
-  /* dezente gelbe Leuchtkante */
+  width: 100vw;
+  height: 100dvh;
+  object-fit: contain;
 }
 
 @font-face {
@@ -136,8 +150,12 @@ button:hover {
 }
 
 #startImage {
-  width: 720px;
-  height: 480px;
+  /* width: 720px;
+  height: 480px; */
+
+  width: min(90vw, 720px);
+  height: auto;
+
   object-fit: cover;
 }
 
@@ -776,7 +794,10 @@ canvas {
 
   #startMenu {
     width: 100%;
+    display: flex;
     flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
     gap: 10px;
   }
 

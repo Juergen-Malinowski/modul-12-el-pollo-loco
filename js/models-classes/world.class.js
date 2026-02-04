@@ -962,25 +962,25 @@ class World {
     }
 
     // Neuen Eintrag hinzufügen und sortieren …
-    var newEntry = { name: playerName, score: this.score };
-    highScores.push(newEntry);
-    highScores.sort(function (a, b) {
-      return b.score - a.score;
-    });
-    if (highScores.length > 10) {
-      highScores = highScores.slice(0, 10);
-    }
+    // var newEntry = { name: playerName, score: this.score };
+    // highScores.push(newEntry);
+    // highScores.sort(function (a, b) {
+    //   return b.score - a.score;
+    // });
+    // if (highScores.length > 10) {
+    //   highScores = highScores.slice(0, 10);
+    // }
 
-    // Im localStorage speichern + Marker für den neuen Eintrag setzen …
-    localStorage.setItem("highScoreTable", JSON.stringify(highScores));
-    localStorage.setItem("newHighscoreEntry", JSON.stringify(newEntry));
+    // // Im localStorage speichern + Marker für den neuen Eintrag setzen …
+    // localStorage.setItem("highScoreTable", JSON.stringify(highScores));
+    // localStorage.setItem("newHighscoreEntry", JSON.stringify(newEntry));
 
-    // Visuelle Bestätigung …
-    if (typeof showHighscoreSavedOverlay === "function") {
-      showHighscoreSavedOverlay();
-    } else {
-      this.showHighscoreMessage("🏆 Your high score has been saved !");
-    }
+    // // Visuelle Bestätigung …
+    // if (typeof showHighscoreSavedOverlay === "function") {
+    //   showHighscoreSavedOverlay();
+    // } else {
+    //   this.showHighscoreMessage("🏆 Your high score has been saved !");
+    // }
   }
 
   // Zeigt eine kurze Meldung zentriert über dem Canvas an ...
