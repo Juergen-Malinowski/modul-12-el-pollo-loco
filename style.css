@@ -12,9 +12,6 @@ body {
   align-items: center;
   justify-content: flex-start;
   background-color: black;
-  background-image: url(./assets/img/5_hintergrund/layers/background_picture/background_sunset.jpg);
-  background-size: cover;
-  background-position: center;
   min-height: 100vh;
 }
 
