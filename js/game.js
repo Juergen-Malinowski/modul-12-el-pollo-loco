@@ -18,6 +18,11 @@ console.log("SoundHub verfügbar?", typeof soundHub);
 function init() {
   // grundsätzliche Einbindung für canvas und Darstellungsart (2D/3D) ...
   canvas = document.getElementById("canvas");
+
+  if (world && typeof world.destroy === "function") {
+    world.destroy();
+  }
+
   initLevel(); // jetzt wird Welt erschaffen
   world = new World(canvas, keyboard); // Welt anlegen und Canvas (id canvas) und gedrückte Taste übergeben
   window.world = world; // Sicherstellen, dass nach einem "Restart" immer nur eine aktive Welt existiert.

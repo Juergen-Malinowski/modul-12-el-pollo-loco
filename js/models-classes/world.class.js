@@ -33,6 +33,9 @@ class World {
   victoryMenuButtonArea = null; // Klickbereich "Menu"
   victoryPlayAgainButtonArea = null; // Klickbereich "Play again?"
   victoryClickHandlerBound = null; // Referenz auf den Canvas-Listener für das Overlay...
+  animationFrameId = null;
+  isRunning = true;
+  canvasVictoryHandlerBound = null;
 
   constructor(canvas, keyboard) {
     this.ctx = canvas.getContext("2d");
@@ -49,17 +52,15 @@ class World {
     this.updateBottleBar();
 
     // Klick ins Canvas nach Sieg öffnet die Sieg-Optionen (Highscore + Buttons) ...
-    this.canvas.addEventListener(
-      "mousedown",
-      function () {
-        if (this.gameOver && !this.showGameOver) {
-          // Spieler hat GEWONNEN (showYouWin==true) → Sieg-Overlay mit Highscore + Buttons öffnen ...
-          if (this.showYouWin) {
-            this.showVictoryOptions(); // kein Reload mehr!
-          }
+    this.canvasVictoryHandlerBound = function () {
+      if (this.gameOver && !this.showGameOver) {
+        // Spieler hat GEWONNEN (showYouWin==true) → Sieg-Overlay mit Highscore + Buttons öffnen ...
+        if (this.showYouWin) {
+          this.showVictoryOptions(); // kein Reload mehr!
         }
-      }.bind(this),
-    );
+      }
+    }.bind(this);
+    this.canvas.addEventListener("mousedown", this.canvasVictoryHandlerBound);
 
     // Klick auf das Sound-Icon im Canvas ...
     // this.canvas.addEventListener('mousedown', (event) => {
@@ -76,6 +77,22 @@ class World {
     this.level.enemies.forEach((enemy) => {
       enemy.world = this;
     });
+  }
+
+  destroy() {
+    this.isRunning = false;
+
+    if (this.animationFrameId !== null) {
+      cancelAnimationFrame(this.animationFrameId);
+      this.animationFrameId = null;
+    }
+
+    if (this.canvas && this.canvasVictoryHandlerBound) {
+      this.canvas.removeEventListener("mousedown", this.canvasVictoryHandlerBound);
+      this.canvasVictoryHandlerBound = null;
+    }
+
+    this.detachVictoryClickHandler();
   }
 
   run() {
@@ -644,6 +661,10 @@ class World {
 
   // Zeichnung der Spielwelt ...
   draw() {
+    if (!this.isRunning) {
+      return;
+    }
+
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
     this.ctx.translate(this.cameraX, 0);
@@ -826,7 +847,7 @@ class World {
     this.ctx.restore();
 
     var self = this;
-    requestAnimationFrame(function () {
+    this.animationFrameId = requestAnimationFrame(function () {
       self.draw();
     });
   }
