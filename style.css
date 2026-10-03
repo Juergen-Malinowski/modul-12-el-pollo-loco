@@ -13,6 +13,7 @@ body {
   justify-content: flex-start;
   background-color: black;
   min-height: 100vh;
+  overflow: hidden;
 }
 
 /* Standard: Spielbetrieb ... kein Scroll */
@@ -738,9 +739,10 @@ canvas {
   border: 5px solid #ffcc00;
   /* gelber Rahmen wie Buttons */
   border-radius: 20px;
-  padding: 40px 60px;
+  padding: clamp(20px, 5vw, 40px) clamp(20px, 8vw, 60px);
   box-shadow: 0 0 25px rgba(255, 204, 0, 0.6);
   max-width: 80%;
+  box-sizing: border-box;
 }
 
 #orientationBox h2 {
