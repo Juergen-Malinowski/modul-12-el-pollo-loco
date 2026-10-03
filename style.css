@@ -401,15 +401,20 @@ footer .copyright {
 /* === CLOSE-BUTTON im Impressum visuell hervorheben === */
 #closeImpressumHint {
   display: inline-block;
+  align-self: center;
+  width: fit-content;
+  max-width: calc(100% - 20px);
+  box-sizing: border-box;
+  white-space: nowrap;
   background-color: var(--color-ui-primary);
-  color: black;
-  border: 3px solid black;
+  color: var(--color-text-dark);
+  border: 2px solid var(--color-text-dark);
   border-radius: 10px;
-  padding: 8px 25px;
-  margin-top: 15px;
+  padding: clamp(3px, 0.8vh, 5px) clamp(12px, 2vw, 18px);
+  margin-top: clamp(6px, 1.5vh, 10px);
   cursor: pointer;
   font-family: "Zabars", Arial, Helvetica, sans-serif;
-  font-size: 1.6em;
+  font-size: clamp(0.9rem, calc(0.65rem + 0.8vw), 1.2rem);
   transition:
     transform 0.2s ease-in-out,
     background-color 0.2s ease-in-out;
@@ -418,7 +423,7 @@ footer .copyright {
 /* Hover-Effekt (wie alle anderen Buttons) */
 #closeImpressumHint:hover {
   background-color: var(--color-ui-primary-hover);
-  transform: scale(1.2);
+  transform: scale(1.05);
 }
 
 /* === STYLES FÜR INFO.HTML === */
@@ -460,6 +465,7 @@ body.main_grafik .href_grafik:hover {
 .text_grafik {
   padding: 0;
   margin: 10px 0 0 0;
+  list-style: none;
 }
 
 .href_grafik {
