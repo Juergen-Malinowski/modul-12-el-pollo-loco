@@ -432,9 +432,9 @@ class World {
     // Klick-Handler hinzufügen ...
     const self = this;
     this.gameOverClickHandlerBound = function (event) {
-      const rect = canvas.getBoundingClientRect();
-      const clickX = event.clientX - rect.left;
-      const clickY = event.clientY - rect.top;
+      const coordinates = getCanvasCoordinates(event, canvas);
+      const clickX = coordinates.x;
+      const clickY = coordinates.y;
 
       // Klick auf "Try again?" ...
       if (
@@ -1123,9 +1123,9 @@ class World {
     // Klick-Handler nur für das Sieg-Overlay (Buttons + Klick außerhalb) ...
     var self = this;
     this.victoryClickHandlerBound = function (event) {
-      var rect = self.canvas.getBoundingClientRect();
-      var clickX = event.clientX - rect.left;
-      var clickY = event.clientY - rect.top;
+      var coordinates = getCanvasCoordinates(event, self.canvas);
+      var clickX = coordinates.x;
+      var clickY = coordinates.y;
 
       // 1) Klick auf "Play again?" → direkt neues Spiel ...
       if (self.isPointInArea(clickX, clickY, self.victoryPlayAgainButtonArea)) {

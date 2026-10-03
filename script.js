@@ -537,9 +537,9 @@ function bindGlobalCanvasSoundHandler() {
   window.__canvasSoundHandler = function (event) {
     if (!window.world) return;
 
-    var rect = canvas.getBoundingClientRect();
-    var x = event.clientX - rect.left;
-    var y = event.clientY - rect.top;
+    var coordinates = getCanvasCoordinates(event, canvas);
+    var x = coordinates.x;
+    var y = coordinates.y;
 
     if (typeof window.world.handleSoundIconClick === "function") {
       window.world.handleSoundIconClick(x, y);
