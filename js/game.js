@@ -15,6 +15,25 @@ if (
 }
 console.log("SoundHub verfügbar?", typeof soundHub);
 
+/**
+ * Converts pointer coordinates from the displayed canvas size
+ * to the canvas' internal coordinate system.
+ *
+ * @param {MouseEvent} event - Pointer event on the canvas.
+ * @param {HTMLCanvasElement} canvasElement - Canvas receiving the event.
+ * @returns {{x: number, y: number}} Internal canvas coordinates.
+ */
+function getCanvasCoordinates(event, canvasElement) {
+  const rect = canvasElement.getBoundingClientRect();
+  const scaleX = canvasElement.width / rect.width;
+  const scaleY = canvasElement.height / rect.height;
+
+  return {
+    x: (event.clientX - rect.left) * scaleX,
+    y: (event.clientY - rect.top) * scaleY,
+  };
+}
+
 function init() {
   // grundsätzliche Einbindung für canvas und Darstellungsart (2D/3D) ...
   canvas = document.getElementById("canvas");

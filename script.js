@@ -378,17 +378,6 @@ function closeHighscoreSaved() {
   if (overlay) {
     overlay.style.display = "none";
   }
-
-  /**
-   * Event-Listener: bei Drehung oder Größenänderung automatisch prüfen …
-   */
-  window.addEventListener("resize", checkOrientation);
-  window.addEventListener("orientationchange", checkOrientation);
-
-  /**
-   * Prüfung beim ersten Laden ausführen …
-   */
-  window.addEventListener("load", checkOrientation);
 }
 
 /**
@@ -416,7 +405,6 @@ function checkOrientation() {
   orientationResizeTimer = setTimeout(function () {
     var overlay = document.getElementById("orientationOverlay");
     var rotateBtn = document.getElementById("rotateButton");
-    var canvas = document.getElementById("canvas");
 
     console.log(
       "🔍 checkOrientation() triggered (stabilized)...",
@@ -426,13 +414,12 @@ function checkOrientation() {
       window.innerHeight,
     );
 
-    if (!overlay || !canvas) {
+    if (!overlay) {
       return;
     }
     // === Erkennung Portrait oder Landscape ===
     if (window.innerHeight > window.innerWidth) {
       overlay.style.display = "flex";
-      canvas.style.display = "none";
 
       // === Chrome DevTools Fix: Erzwinge zweiten Render-Frame ===
       requestAnimationFrame(() => {
@@ -441,16 +428,16 @@ function checkOrientation() {
       });
       // Optional: Button sichtbar machen, wenn unterstützt
       if (
+        rotateBtn &&
         typeof screen.orientation !== "undefined" &&
         typeof screen.orientation.lock === "function"
       ) {
         rotateBtn.style.display = "inline-block";
-      } else {
+      } else if (rotateBtn) {
         rotateBtn.style.display = "none";
       }
     } else {
       overlay.style.display = "none";
-      canvas.style.display = "block";
     }
   }, 400); // 400 ms warten, bis Chrome neue Devicegröße stabil übernommen hat
 }
@@ -537,9 +524,9 @@ function bindGlobalCanvasSoundHandler() {
   window.__canvasSoundHandler = function (event) {
     if (!window.world) return;
 
-    var rect = canvas.getBoundingClientRect();
-    var x = event.clientX - rect.left;
-    var y = event.clientY - rect.top;
+    var coordinates = getCanvasCoordinates(event, canvas);
+    var x = coordinates.x;
+    var y = coordinates.y;
 
     if (typeof window.world.handleSoundIconClick === "function") {
       window.world.handleSoundIconClick(x, y);
