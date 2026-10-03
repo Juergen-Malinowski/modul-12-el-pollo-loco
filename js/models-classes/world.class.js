@@ -36,6 +36,7 @@ class World {
   animationFrameId = null;
   isRunning = true;
   canvasVictoryHandlerBound = null;
+  gameOverClickHandlerBound = null;
 
   constructor(canvas, keyboard) {
     this.ctx = canvas.getContext("2d");
@@ -90,6 +91,11 @@ class World {
     if (this.canvas && this.canvasVictoryHandlerBound) {
       this.canvas.removeEventListener("mousedown", this.canvasVictoryHandlerBound);
       this.canvasVictoryHandlerBound = null;
+    }
+
+    if (this.canvas && this.gameOverClickHandlerBound) {
+      this.canvas.removeEventListener("mousedown", this.gameOverClickHandlerBound);
+      this.gameOverClickHandlerBound = null;
     }
 
     this.detachVictoryClickHandler();
@@ -418,7 +424,7 @@ class World {
 
     // Klick-Handler hinzufügen ...
     const self = this;
-    function canvasClickHandler(event) {
+    this.gameOverClickHandlerBound = function (event) {
       const rect = canvas.getBoundingClientRect();
       const clickX = event.clientX - rect.left;
       const clickY = event.clientY - rect.top;
@@ -430,7 +436,8 @@ class World {
         clickY >= self.tryAgainButtonArea.y &&
         clickY <= self.tryAgainButtonArea.y + self.tryAgainButtonArea.height
       ) {
-        canvas.removeEventListener("mousedown", canvasClickHandler);
+        canvas.removeEventListener("mousedown", self.gameOverClickHandlerBound);
+        self.gameOverClickHandlerBound = null;
         self.restartGame();
         return;
       }
@@ -442,7 +449,8 @@ class World {
         clickY >= self.menuButtonArea.y &&
         clickY <= self.menuButtonArea.y + self.menuButtonArea.height
       ) {
-        canvas.removeEventListener("mousedown", canvasClickHandler);
+        canvas.removeEventListener("mousedown", self.gameOverClickHandlerBound);
+        self.gameOverClickHandlerBound = null;
         setTimeout(function () {
           self.showGameOver = false;
           self.returnToMenu();
@@ -451,20 +459,22 @@ class World {
       }
 
       // Klick auf freie Fläche ...
-      canvas.removeEventListener("mousedown", canvasClickHandler);
+      canvas.removeEventListener("mousedown", self.gameOverClickHandlerBound);
+        self.gameOverClickHandlerBound = null;
       setTimeout(function () {
         self.showGameOver = false;
         self.returnToMenu();
       }, 500);
-    }
+    };
 
-    canvas.addEventListener("mousedown", canvasClickHandler);
+    canvas.addEventListener("mousedown", this.gameOverClickHandlerBound);
   }
 
   // Blendet alles aus und kehrt ins Hauptmenü zurück ...
   returnToMenu() {
     this.showCoffin = false;
     this.gameOver = true;
+    this.destroy();
 
     if (typeof soundHub !== "undefined" && soundHub) {
       if (typeof soundHub.stopBackgroundMusic === "function") {
@@ -1363,9 +1373,6 @@ class World {
     // direkt neues Spiel starten (wie in script.js -> startGame)...
     if (typeof startGame === "function") {
       startGame();
-    } else {
-      // Fallback: Seite neu laden, falls Funktion nicht gefunden...
-      location.reload();
     }
   }
 
