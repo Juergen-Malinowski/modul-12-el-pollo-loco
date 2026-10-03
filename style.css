@@ -48,13 +48,30 @@ canvas {
 
 /* Rahmen um das Canvas ... */
 /* Viewport-Anpassung für Mobile */
-#canvas {
-  border: 6px solid #ffcc00;
+#gameStage {
+  position: relative;
+  width: min(100vw, calc(100dvh * 1.5));
+  aspect-ratio: 3 / 2;
+  flex-shrink: 0;
   border-radius: 15px;
   box-shadow: 0 0 15px rgba(255, 204, 0, 0.5);
-  width: 100vw;
-  height: 100dvh;
-  object-fit: contain;
+  overflow: hidden;
+}
+
+#gameStage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 6px solid #ffcc00;
+  border-radius: 15px;
+  box-sizing: border-box;
+  pointer-events: none;
+}
+
+#canvas {
+  width: 100%;
+  height: 100%;
+  border-radius: 15px;
 }
 
 @font-face {
@@ -748,16 +765,11 @@ canvas {
 /* ===========================================================
    SMARTPHONE / RESPONSIVE BASISANPASSUNG
    -----------------------------------------------------------
-   1) Canvas passt sich Breite an, behält aber Seitenverhältnis.
+   1) Game-Stage passt sich proportional an Breite und Höhe an.
    2) Titel (h1) wird auf kleinen Displays ausgeblendet.
-   3) Höhe bleibt fix (kein Zerren oder Strecken).
+   3) Canvas behält das feste Seitenverhältnis 3:2.
    =========================================================== */
 @media only screen and (max-width: 720px) {
-  canvas {
-    width: 100%;
-    height: auto;
-  }
-
   h1 {
     display: none;
   }
