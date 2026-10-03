@@ -20,6 +20,7 @@ class World {
   showGameOver = false; // Steuerung, ob Game-Over-Bild angezeigt wird
   blinkActive = false; // steuert, ob die Score-Anzeige blinken soll
   blinkVisible = true; // aktueller Sichtbarkeitszustand für Blinkeffekt
+  scoreBlinkInterval = null;
 
   // Variablen für Sarg-Animation ...
   coffinRotation = 0;
@@ -97,6 +98,12 @@ class World {
       this.canvas.removeEventListener("mousedown", this.gameOverClickHandlerBound);
       this.gameOverClickHandlerBound = null;
     }
+
+    if (this.scoreBlinkInterval !== null) {
+      clearInterval(this.scoreBlinkInterval);
+      this.scoreBlinkInterval = null;
+    }
+    this.blinkActive = false;
 
     this.detachVictoryClickHandler();
   }
@@ -949,8 +956,10 @@ class World {
     this.blinkActive = true;
     this.blinkVisible = true;
 
+    if (this.scoreBlinkInterval !== null) return;
+
     let self = this;
-    setInterval(function () {
+    this.scoreBlinkInterval = setInterval(function () {
       if (!self.blinkActive) return;
       self.blinkVisible = !self.blinkVisible;
     }, 500); // alle 0,5 Sekunden wechseln
