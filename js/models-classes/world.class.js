@@ -20,6 +20,7 @@ class World {
   showGameOver = false; // Steuerung, ob Game-Over-Bild angezeigt wird
   blinkActive = false; // steuert, ob die Score-Anzeige blinken soll
   blinkVisible = true; // aktueller Sichtbarkeitszustand für Blinkeffekt
+  scoreBlinkInterval = null;
 
   // Variablen für Sarg-Animation ...
   coffinRotation = 0;
@@ -33,6 +34,10 @@ class World {
   victoryMenuButtonArea = null; // Klickbereich "Menu"
   victoryPlayAgainButtonArea = null; // Klickbereich "Play again?"
   victoryClickHandlerBound = null; // Referenz auf den Canvas-Listener für das Overlay...
+  animationFrameId = null;
+  isRunning = true;
+  canvasVictoryHandlerBound = null;
+  gameOverClickHandlerBound = null;
 
   constructor(canvas, keyboard) {
     this.ctx = canvas.getContext("2d");
@@ -49,17 +54,15 @@ class World {
     this.updateBottleBar();
 
     // Klick ins Canvas nach Sieg öffnet die Sieg-Optionen (Highscore + Buttons) ...
-    this.canvas.addEventListener(
-      "mousedown",
-      function () {
-        if (this.gameOver && !this.showGameOver) {
-          // Spieler hat GEWONNEN (showYouWin==true) → Sieg-Overlay mit Highscore + Buttons öffnen ...
-          if (this.showYouWin) {
-            this.showVictoryOptions(); // kein Reload mehr!
-          }
+    this.canvasVictoryHandlerBound = function () {
+      if (this.gameOver && !this.showGameOver) {
+        // Spieler hat GEWONNEN (showYouWin==true) → Sieg-Overlay mit Highscore + Buttons öffnen ...
+        if (this.showYouWin) {
+          this.showVictoryOptions(); // kein Reload mehr!
         }
-      }.bind(this),
-    );
+      }
+    }.bind(this);
+    this.canvas.addEventListener("mousedown", this.canvasVictoryHandlerBound);
 
     // Klick auf das Sound-Icon im Canvas ...
     // this.canvas.addEventListener('mousedown', (event) => {
@@ -76,6 +79,33 @@ class World {
     this.level.enemies.forEach((enemy) => {
       enemy.world = this;
     });
+  }
+
+  destroy() {
+    this.isRunning = false;
+
+    if (this.animationFrameId !== null) {
+      cancelAnimationFrame(this.animationFrameId);
+      this.animationFrameId = null;
+    }
+
+    if (this.canvas && this.canvasVictoryHandlerBound) {
+      this.canvas.removeEventListener("mousedown", this.canvasVictoryHandlerBound);
+      this.canvasVictoryHandlerBound = null;
+    }
+
+    if (this.canvas && this.gameOverClickHandlerBound) {
+      this.canvas.removeEventListener("mousedown", this.gameOverClickHandlerBound);
+      this.gameOverClickHandlerBound = null;
+    }
+
+    if (this.scoreBlinkInterval !== null) {
+      clearInterval(this.scoreBlinkInterval);
+      this.scoreBlinkInterval = null;
+    }
+    this.blinkActive = false;
+
+    this.detachVictoryClickHandler();
   }
 
   run() {
@@ -401,7 +431,7 @@ class World {
 
     // Klick-Handler hinzufügen ...
     const self = this;
-    function canvasClickHandler(event) {
+    this.gameOverClickHandlerBound = function (event) {
       const rect = canvas.getBoundingClientRect();
       const clickX = event.clientX - rect.left;
       const clickY = event.clientY - rect.top;
@@ -413,7 +443,8 @@ class World {
         clickY >= self.tryAgainButtonArea.y &&
         clickY <= self.tryAgainButtonArea.y + self.tryAgainButtonArea.height
       ) {
-        canvas.removeEventListener("mousedown", canvasClickHandler);
+        canvas.removeEventListener("mousedown", self.gameOverClickHandlerBound);
+        self.gameOverClickHandlerBound = null;
         self.restartGame();
         return;
       }
@@ -425,7 +456,8 @@ class World {
         clickY >= self.menuButtonArea.y &&
         clickY <= self.menuButtonArea.y + self.menuButtonArea.height
       ) {
-        canvas.removeEventListener("mousedown", canvasClickHandler);
+        canvas.removeEventListener("mousedown", self.gameOverClickHandlerBound);
+        self.gameOverClickHandlerBound = null;
         setTimeout(function () {
           self.showGameOver = false;
           self.returnToMenu();
@@ -434,20 +466,22 @@ class World {
       }
 
       // Klick auf freie Fläche ...
-      canvas.removeEventListener("mousedown", canvasClickHandler);
+      canvas.removeEventListener("mousedown", self.gameOverClickHandlerBound);
+        self.gameOverClickHandlerBound = null;
       setTimeout(function () {
         self.showGameOver = false;
         self.returnToMenu();
       }, 500);
-    }
+    };
 
-    canvas.addEventListener("mousedown", canvasClickHandler);
+    canvas.addEventListener("mousedown", this.gameOverClickHandlerBound);
   }
 
   // Blendet alles aus und kehrt ins Hauptmenü zurück ...
   returnToMenu() {
     this.showCoffin = false;
     this.gameOver = true;
+    this.destroy();
 
     if (typeof soundHub !== "undefined" && soundHub) {
       if (typeof soundHub.stopBackgroundMusic === "function") {
@@ -644,6 +678,10 @@ class World {
 
   // Zeichnung der Spielwelt ...
   draw() {
+    if (!this.isRunning) {
+      return;
+    }
+
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
     this.ctx.translate(this.cameraX, 0);
@@ -826,7 +864,7 @@ class World {
     this.ctx.restore();
 
     var self = this;
-    requestAnimationFrame(function () {
+    this.animationFrameId = requestAnimationFrame(function () {
       self.draw();
     });
   }
@@ -918,8 +956,10 @@ class World {
     this.blinkActive = true;
     this.blinkVisible = true;
 
+    if (this.scoreBlinkInterval !== null) return;
+
     let self = this;
-    setInterval(function () {
+    this.scoreBlinkInterval = setInterval(function () {
       if (!self.blinkActive) return;
       self.blinkVisible = !self.blinkVisible;
     }, 500); // alle 0,5 Sekunden wechseln
@@ -1342,9 +1382,6 @@ class World {
     // direkt neues Spiel starten (wie in script.js -> startGame)...
     if (typeof startGame === "function") {
       startGame();
-    } else {
-      // Fallback: Seite neu laden, falls Funktion nicht gefunden...
-      location.reload();
     }
   }
 

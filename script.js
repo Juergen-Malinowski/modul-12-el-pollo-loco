@@ -21,9 +21,6 @@ function startGame() {
 
   // === SPIEL STARTEN ===
   // Level-Daten laden und Welt aufbauen
-  if (typeof initLevel === "function") {
-    initLevel();
-  }
   if (typeof init === "function") {
     init();
   }
