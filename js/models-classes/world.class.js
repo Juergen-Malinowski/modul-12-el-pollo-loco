@@ -1033,7 +1033,7 @@ class World {
     ctx.save();
     ctx.font = "bold " + fontSize + "px Zabars";
     ctx.fillStyle = "black";
-    ctx.textAlign = mobileControlsActive ? "right" : "left";
+    ctx.textAlign = "right";
     ctx.textBaseline = "top";
 
     ctx.fillText("⬅  Move left", position.x, position.y);
@@ -1058,15 +1058,23 @@ class World {
     );
   }
 
+  /**
+   * Resolves the control-hint anchor for the current HUD layout.
+   *
+   * @param {boolean} mobileOverlayHud - Whether touch controls overlap the stage.
+   * @returns {{x: number, y: number}} Canvas coordinates for right-aligned hints.
+   */
   getGameControlHintsPosition(mobileOverlayHud) {
     if (mobileOverlayHud) return this.getOverlayGameControlHintsPosition();
-    if (this.isMobileControlsActive()) {
-      return this.getOutsideGameControlHintsPosition();
-    }
-    return { x: 590, y: 70 };
+    return this.getRightAlignedGameControlHintsPosition();
   }
 
-  getOutsideGameControlHintsPosition() {
+  /**
+   * Keeps desktop and outside-stage control hints 20 CSS pixels from the stage edge.
+   *
+   * @returns {{x: number, y: number}} Canvas coordinates for the hint anchor.
+   */
+  getRightAlignedGameControlHintsPosition() {
     var stage = document.getElementById("gameStage");
     if (!stage) return { x: this.canvas.width - 20, y: 70 };
 
