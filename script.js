@@ -19,13 +19,13 @@ function startGame() {
     cvs.style.display = "block";
   }
 
-  showMobileControls();
-
   // === SPIEL STARTEN ===
   // Level-Daten laden und Welt aufbauen
   if (typeof init === "function") {
     init();
   }
+
+  showMobileControls();
 
   // Hintergrundmusik sicher starten (läuft in Schleife)
   if (
@@ -415,17 +415,44 @@ function updateMobileControlLayout() {
   var rightSpace = window.innerWidth - stageRect.right;
   var controlsFitOutside = leftSpace >= buttonWidth + 8 && rightSpace >= buttonWidth + 8;
 
-  setMobileControlMode(controls, controlsFitOutside, leftSpace, rightSpace, buttonWidth);
+  setMobileControlMode(
+    controls,
+    controlsFitOutside,
+    leftSpace,
+    rightSpace,
+    buttonWidth,
+    stageRect,
+  );
 }
 
-function setMobileControlMode(controls, fitOutside, leftSpace, rightSpace, buttonWidth) {
+function setMobileControlMode(controls, fitOutside, leftSpace, rightSpace, buttonWidth, stageRect) {
   controls.classList.toggle("controlsOutsideStage", fitOutside);
   controls.classList.toggle("controlsOverlayStage", !fitOutside);
 
-  if (!fitOutside) return;
+  if (fitOutside) {
+    setMobileOutsideOffsets(controls, leftSpace, rightSpace, buttonWidth);
+  } else {
+    setMobileOverlayOffset(controls, stageRect);
+  }
+}
 
+function setMobileOutsideOffsets(controls, leftSpace, rightSpace, buttonWidth) {
   controls.style.setProperty("--left-control-offset", Math.max(8, (leftSpace - buttonWidth) / 2) + "px");
   controls.style.setProperty("--right-control-offset", Math.max(8, (rightSpace - buttonWidth) / 2) + "px");
+}
+
+function setMobileOverlayOffset(controls, stageRect) {
+  var hudBottom = getMobileHudBottom();
+  var canvasHeight = window.world && window.world.canvas ? window.world.canvas.height : 480;
+  var hudBottomCss = stageRect.top + (hudBottom / canvasHeight) * stageRect.height;
+  controls.style.setProperty("--overlay-control-top", hudBottomCss + 12 + "px");
+}
+
+function getMobileHudBottom() {
+  if (window.world && typeof window.world.getMobileHudLayout === "function") {
+    return window.world.getMobileHudLayout().bottom;
+  }
+  return 60;
 }
 
 let orientationResizeTimer = null;

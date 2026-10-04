@@ -104,7 +104,7 @@ canvas {
 
 #mobileControls.controlsOverlayStage .leftControls,
 #mobileControls.controlsOverlayStage .rightControls {
-  top: clamp(64px, 21vh, 82px);
+  top: var(--overlay-control-top, 64px);
 }
 
 #mobileControls.controlsOverlayStage .leftControls {

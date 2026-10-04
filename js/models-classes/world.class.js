@@ -857,16 +857,46 @@ class World {
     this.drawStatusValues(mobileOverlayHud);
   }
 
+  getMobileHudLayout() {
+    var edge = 10;
+    var barWidth = 140;
+    var barHeight = 46;
+    var rowTop = 6;
+    var rowHeight = 54;
+    return {
+      edge: edge,
+      barWidth: barWidth,
+      barHeight: barHeight,
+      barY: rowTop + (rowHeight - barHeight) / 2,
+      bottom: rowTop + rowHeight,
+    };
+  }
+
   setStatusBarLayout(mobileOverlayHud) {
     var bars = [this.statusBar, this.bottleBar, this.coinBar, this.bossBar];
-    var xPositions = mobileOverlayHud ? [8, 183, 358, 533] : [10, 10, 10, 10];
-    var yPositions = mobileOverlayHud ? [8, 8, 8, 8] : [10, 70, 130, 190];
+    if (!mobileOverlayHud) {
+      this.setDesktopStatusBarLayout(bars);
+      return;
+    }
+
+    var layout = this.getMobileHudLayout();
+    var gap = (this.canvas.width - layout.edge * 2 - layout.barWidth * bars.length) / (bars.length - 1);
 
     for (var i = 0; i < bars.length; i++) {
-      bars[i].x = xPositions[i];
+      bars[i].x = layout.edge + i * (layout.barWidth + gap);
+      bars[i].y = layout.barY;
+      bars[i].width = layout.barWidth;
+      bars[i].heigth = layout.barHeight;
+    }
+  }
+
+  setDesktopStatusBarLayout(bars) {
+    var yPositions = [10, 70, 130, 190];
+    for (var i = 0; i < bars.length; i++) {
+      bars[i].x = 10;
       bars[i].y = yPositions[i];
-      bars[i].width = mobileOverlayHud ? 140 : 150;
-      bars[i].heigth = mobileOverlayHud ? 46 : 50;
+      bars[i].width = 150;
+      bars[i].heigth = 50;
     }
   }
 
@@ -875,11 +905,27 @@ class World {
     this.ctx.font = mobileOverlayHud ? "bold 28px Zabars" : "bold 36px Zabars";
     this.ctx.fillStyle = "white";
     this.ctx.textAlign = "left";
-    var bottlePosition = mobileOverlayHud ? { x: 328, y: 42 } : { x: 175, y: 117 };
-    var coinPosition = mobileOverlayHud ? { x: 503, y: 42 } : { x: 175, y: 175 };
+    var bottlePosition = this.getBottleValuePosition(mobileOverlayHud);
+    var coinPosition = this.getCoinValuePosition(mobileOverlayHud);
     this.ctx.fillText(this.collectedBottles + "", bottlePosition.x, bottlePosition.y);
     this.ctx.fillText(this.collectedCoins + "", coinPosition.x, coinPosition.y);
     this.ctx.restore();
+  }
+
+  getBottleValuePosition(mobileOverlayHud) {
+    if (!mobileOverlayHud) return { x: 175, y: 117 };
+    return {
+      x: this.bottleBar.x + this.bottleBar.width + 5,
+      y: this.bottleBar.y + this.bottleBar.heigth * 0.75,
+    };
+  }
+
+  getCoinValuePosition(mobileOverlayHud) {
+    if (!mobileOverlayHud) return { x: 175, y: 175 };
+    return {
+      x: this.coinBar.x + this.coinBar.width + 5,
+      y: this.coinBar.y + this.coinBar.heigth * 0.75,
+    };
   }
 
   drawScoreHud(mobileOverlayHud) {
@@ -916,31 +962,57 @@ class World {
   }
 
   drawSoundIcon(mobileOverlayHud) {
+    var area = this.getSoundIconArea(mobileOverlayHud);
     this.ctx.save();
-    var yPos = mobileOverlayHud ? 342 : 60;
     this.ctx.font = "70px Zabars";
     this.ctx.textAlign = "center";
     this.ctx.textBaseline = "middle";
     this.ctx.fillStyle = "white";
-    this.ctx.fillText(soundHub.isMuted ? "🔇" : "🔊", this.canvas.width / 2, yPos);
+    this.ctx.fillText(
+      soundHub.isMuted ? "🔇" : "🔊",
+      area.x + area.size / 2,
+      area.y + area.size / 2,
+    );
     this.ctx.restore();
   }
 
-  getSoundIconY() {
-    return this.isMobileOverlayHud() ? 302 : 20;
+  getSoundIconArea(mobileOverlayHud = this.isMobileOverlayHud()) {
+    var iconSize = 80;
+    if (!mobileOverlayHud) {
+      return { x: (this.canvas.width - iconSize) / 2, y: 20, size: iconSize };
+    }
+    return this.getMobileSoundIconArea(iconSize);
+  }
+
+  getMobileSoundIconArea(iconSize) {
+    var stage = document.getElementById("gameStage");
+    var leftControls = document.querySelector("#mobileControls .leftControls");
+    var layout = this.getMobileHudLayout();
+    if (!stage || !leftControls) return { x: 90, y: layout.bottom + 18, size: iconSize };
+
+    var stageRect = stage.getBoundingClientRect();
+    var controlRect = leftControls.getBoundingClientRect();
+    var scaleX = this.canvas.width / stageRect.width;
+    var scaleY = this.canvas.height / stageRect.height;
+    var x = (controlRect.right + 20 - stageRect.left) * scaleX;
+    var y = layout.bottom + 12 * scaleY;
+
+    return {
+      x: Math.max(8, Math.min(x, this.canvas.width - iconSize - 8)),
+      y: y,
+      size: iconSize,
+    };
   }
 
   handleSoundIconClick(x, y) {
-    const iconSize = 80;
-    const iconX = (this.canvas.width - iconSize) / 2;
-    const iconY = this.getSoundIconY();
+    const area = this.getSoundIconArea();
 
     // Prüfen, ob Klick im Bereich des Symbols liegt
     if (
-      x >= iconX &&
-      x <= iconX + iconSize &&
-      y >= iconY &&
-      y <= iconY + iconSize
+      x >= area.x &&
+      x <= area.x + area.size &&
+      y >= area.y &&
+      y <= area.y + area.size
     ) {
       if (
         typeof soundHub !== "undefined" &&
