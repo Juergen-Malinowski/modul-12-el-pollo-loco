@@ -689,27 +689,9 @@ class World {
     this.addObjectsToMap(this.level.clouds);
 
     this.ctx.translate(-this.cameraX, 0);
-    this.addToMap(this.statusBar);
-    this.addToMap(this.bottleBar);
-    this.addToMap(this.coinBar);
-    this.addToMap(this.bossBar);
-
-    this.ctx.save();
-    this.ctx.font = "bold 36px Zabars";
-    this.ctx.fillStyle = "white";
-    this.ctx.textAlign = "left";
-    this.ctx.fillText(this.collectedBottles + "", 175, 117);
-    this.ctx.fillText(this.collectedCoins + "", 175, 175);
-    this.ctx.restore();
-
-    if (!this.blinkActive || (this.blinkActive && this.blinkVisible)) {
-      this.ctx.font = "bold 40px Zabars";
-      this.ctx.fillStyle = "#ffcc00";
-      this.ctx.fillText("Score: " + this.score, 570, 50);
-    }
-
-    // Steuerungshinweise unter dem Score anzeigen ...
-    this.drawGameControlHints(this.ctx);
+    var mobileOverlayHud = this.isMobileOverlayHud();
+    this.drawStatusHud(mobileOverlayHud);
+    this.drawScoreHud(mobileOverlayHud);
 
     this.ctx.translate(this.cameraX, 0);
     this.addObjectsToMap(this.level.bottles);
@@ -849,19 +831,7 @@ class World {
     }
 
     // Sound-Symbol anzeigen (Ton an/aus) ...
-    this.ctx.save();
-    var iconSize = 80;
-    var yPos = 60;
-    this.ctx.font = "70px Zabars";
-    this.ctx.textAlign = "center";
-    this.ctx.textBaseline = "middle";
-    this.ctx.fillStyle = "white";
-    if (soundHub.isMuted) {
-      this.ctx.fillText("🔇", this.canvas.width / 2, yPos);
-    } else {
-      this.ctx.fillText("🔊", this.canvas.width / 2, yPos);
-    }
-    this.ctx.restore();
+    this.drawSoundIcon(mobileOverlayHud);
 
     var self = this;
     this.animationFrameId = requestAnimationFrame(function () {
@@ -869,15 +839,72 @@ class World {
     });
   }
 
-  drawGameControlHints(ctx) {
-    var startX = 590;
-    var startY = 70;
-    var lineHeight = 30;
+  isMobileOverlayHud() {
+    var controls = document.getElementById("mobileControls");
+    return (
+      controls &&
+      controls.classList.contains("isActive") &&
+      controls.classList.contains("controlsOverlayStage")
+    );
+  }
+
+  drawStatusHud(mobileOverlayHud) {
+    this.setStatusBarLayout(mobileOverlayHud);
+    this.addToMap(this.statusBar);
+    this.addToMap(this.bottleBar);
+    this.addToMap(this.coinBar);
+    this.addToMap(this.bossBar);
+    this.drawStatusValues(mobileOverlayHud);
+  }
+
+  setStatusBarLayout(mobileOverlayHud) {
+    var bars = [this.statusBar, this.bottleBar, this.coinBar, this.bossBar];
+    var xPositions = mobileOverlayHud ? [8, 183, 358, 533] : [10, 10, 10, 10];
+    var yPositions = mobileOverlayHud ? [8, 8, 8, 8] : [10, 70, 130, 190];
+
+    for (var i = 0; i < bars.length; i++) {
+      bars[i].x = xPositions[i];
+      bars[i].y = yPositions[i];
+      bars[i].width = mobileOverlayHud ? 140 : 150;
+      bars[i].heigth = mobileOverlayHud ? 46 : 50;
+    }
+  }
+
+  drawStatusValues(mobileOverlayHud) {
+    this.ctx.save();
+    this.ctx.font = mobileOverlayHud ? "bold 28px Zabars" : "bold 36px Zabars";
+    this.ctx.fillStyle = "white";
+    this.ctx.textAlign = "left";
+    var bottlePosition = mobileOverlayHud ? { x: 328, y: 42 } : { x: 175, y: 117 };
+    var coinPosition = mobileOverlayHud ? { x: 503, y: 42 } : { x: 175, y: 175 };
+    this.ctx.fillText(this.collectedBottles + "", bottlePosition.x, bottlePosition.y);
+    this.ctx.fillText(this.collectedCoins + "", coinPosition.x, coinPosition.y);
+    this.ctx.restore();
+  }
+
+  drawScoreHud(mobileOverlayHud) {
+    if (!this.blinkActive || (this.blinkActive && this.blinkVisible)) {
+      this.ctx.font = mobileOverlayHud ? "bold 32px Zabars" : "bold 40px Zabars";
+      this.ctx.fillStyle = "#ffcc00";
+      this.ctx.textAlign = "left";
+      this.ctx.fillText(
+        "Score: " + this.score,
+        mobileOverlayHud ? 20 : 570,
+        mobileOverlayHud ? 452 : 50,
+      );
+    }
+    this.drawGameControlHints(this.ctx, mobileOverlayHud);
+  }
+
+  drawGameControlHints(ctx, mobileOverlayHud = false) {
+    var startX = mobileOverlayHud ? 700 : 590;
+    var startY = mobileOverlayHud ? 375 : 70;
+    var lineHeight = mobileOverlayHud ? 21 : 30;
 
     ctx.save();
     ctx.font = "bold 16px Zabars";
     ctx.fillStyle = "black";
-    ctx.textAlign = "left";
+    ctx.textAlign = mobileOverlayHud ? "right" : "left";
     ctx.textBaseline = "top";
 
     ctx.fillText("⬅  Move left", startX, startY);
@@ -888,10 +915,25 @@ class World {
     ctx.restore();
   }
 
+  drawSoundIcon(mobileOverlayHud) {
+    this.ctx.save();
+    var yPos = mobileOverlayHud ? 342 : 60;
+    this.ctx.font = "70px Zabars";
+    this.ctx.textAlign = "center";
+    this.ctx.textBaseline = "middle";
+    this.ctx.fillStyle = "white";
+    this.ctx.fillText(soundHub.isMuted ? "🔇" : "🔊", this.canvas.width / 2, yPos);
+    this.ctx.restore();
+  }
+
+  getSoundIconY() {
+    return this.isMobileOverlayHud() ? 302 : 20;
+  }
+
   handleSoundIconClick(x, y) {
     const iconSize = 80;
     const iconX = (this.canvas.width - iconSize) / 2;
-    const iconY = 20; // obere Position (muss zur draw()-Position passen!)
+    const iconY = this.getSoundIconY();
 
     // Prüfen, ob Klick im Bereich des Symbols liegt
     if (
