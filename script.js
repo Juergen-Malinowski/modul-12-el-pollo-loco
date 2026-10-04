@@ -580,50 +580,19 @@ function openHighscoreNameDialog(score) {
 
   var overlay = document.createElement("div");
   overlay.id = "highscoreNameOverlay";
-  overlay.style.position = "fixed";
-  overlay.style.top = "0";
-  overlay.style.left = "0";
-  overlay.style.width = "100%";
-  overlay.style.height = "100%";
-  overlay.style.backgroundColor = "rgba(0,0,0,0.8)";
-  overlay.style.display = "flex";
-  overlay.style.alignItems = "center";
-  overlay.style.justifyContent = "center";
-  overlay.style.zIndex = "50";
-
   overlay.innerHTML = `
-    <div style="
-      background:white;
-      border:4px solid black;
-      border-radius:15px;
-      padding:30px 40px;
-      text-align:center;
-      font-family:'Zabars', Arial, Helvetica, sans-serif;
-      max-width:500px;
-      width:90%;
-    ">
-      <h2 style="font-size:2.4em; margin-bottom:20px;">🏆 New Highscore!</h2>
+    <div id="highscoreNameBox">
+      <h2>🏆 New Highscore!</h2>
+      <p>Your score: <strong>${score}</strong></p>
 
-      <p style="font-size:1.6em; margin-bottom:20px;">
-        Your score: <strong>${score}</strong>
-      </p>
-
-      <input id="highscoreNameInput"
+      <input
+        id="highscoreNameInput"
         type="text"
         maxlength="16"
         placeholder="Your name"
-        style="
-          width:80%;
-          padding:10px;
-          font-size:1.4em;
-          text-align:center;
-          border:3px solid black;
-          border-radius:10px;
-          margin-bottom:20px;
-        "
       />
 
-      <div style="display:flex; justify-content:center; gap:20px;">
+      <div id="highscoreNameActions">
         <button class="menuButton" onclick="submitHighscoreName(${score})">
           Save
         </button>
