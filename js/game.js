@@ -104,3 +104,87 @@ window.addEventListener("keyup", (e) => {
       break;
   }
 });
+
+const mobileControlBindings = [
+  { id: "leftBtn", key: "LEFT" },
+  { id: "rightBtn", key: "RIGHT" },
+  { id: "jumpBtn", key: "SPACE" },
+  { id: "throwBtn", key: "SHIFT" },
+];
+
+/**
+ * Connects the mobile controls to the existing keyboard state.
+ */
+function bindMobileControls() {
+  mobileControlBindings.forEach((binding) => {
+    bindMobileControlButton(binding.id, binding.key);
+  });
+  window.addEventListener("blur", resetMobileControlStates);
+  document.addEventListener("visibilitychange", resetHiddenMobileControls);
+}
+
+/**
+ * Binds pointer events for one mobile control button.
+ *
+ * @param {string} buttonId - Button element id.
+ * @param {string} keyboardKey - Keyboard state property.
+ */
+function bindMobileControlButton(buttonId, keyboardKey) {
+  var button = document.getElementById(buttonId);
+  if (!button) return;
+
+  button.addEventListener("pointerdown", (event) => {
+    activateMobileControl(event, keyboardKey);
+  });
+  ["pointerup", "pointercancel", "lostpointercapture"].forEach((eventName) => {
+    button.addEventListener(eventName, (event) => {
+      releaseMobileControl(event, keyboardKey);
+    });
+  });
+}
+
+/**
+ * Activates one gameplay input and captures its pointer.
+ *
+ * @param {PointerEvent} event - Pointer event from the control.
+ * @param {string} keyboardKey - Keyboard state property.
+ */
+function activateMobileControl(event, keyboardKey) {
+  event.preventDefault();
+  keyboard[keyboardKey] = true;
+  if (event.currentTarget.setPointerCapture) {
+    event.currentTarget.setPointerCapture(event.pointerId);
+  }
+}
+
+/**
+ * Releases one gameplay input.
+ *
+ * @param {PointerEvent} event - Pointer event from the control.
+ * @param {string} keyboardKey - Keyboard state property.
+ */
+function releaseMobileControl(event, keyboardKey) {
+  event.preventDefault();
+  keyboard[keyboardKey] = false;
+}
+
+/**
+ * Resets all mobile gameplay input states.
+ */
+function resetMobileControlStates() {
+  keyboard.LEFT = false;
+  keyboard.RIGHT = false;
+  keyboard.SPACE = false;
+  keyboard.SHIFT = false;
+}
+
+/**
+ * Resets mobile input when the page becomes hidden.
+ */
+function resetHiddenMobileControls() {
+  if (document.hidden) {
+    resetMobileControlStates();
+  }
+}
+
+bindMobileControls();
