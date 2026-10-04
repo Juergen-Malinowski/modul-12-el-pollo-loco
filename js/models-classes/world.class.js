@@ -37,6 +37,7 @@ class World {
   canvasVictoryHandlerBound = null;
   gameOverClickHandlerBound = null;
   managedTimeouts = new Set();
+  managedIntervals = new Set();
 
   constructor(canvas, keyboard) {
     this.ctx = canvas.getContext("2d");
@@ -97,11 +98,45 @@ class World {
   }
 
   /**
-   * Stops rendering, removes World listeners, and cancels delayed callbacks.
+   * Starts a recurring callback owned by this World instance.
+   *
+   * @param {Function} callback - Callback executed on every interval tick.
+   * @param {number} delay - Interval delay in milliseconds.
+   * @returns {number} Browser interval identifier.
+   */
+  setManagedInterval(callback, delay) {
+    const intervalId = setInterval(callback, delay);
+    this.managedIntervals.add(intervalId);
+    return intervalId;
+  }
+
+  /**
+   * Stops one World-owned interval and removes it from lifecycle tracking.
+   *
+   * @param {number|null} intervalId - Browser interval identifier.
+   */
+  clearManagedInterval(intervalId) {
+    if (intervalId === null || intervalId === undefined) return;
+    clearInterval(intervalId);
+    this.managedIntervals.delete(intervalId);
+  }
+
+  /**
+   * Stops every recurring callback owned by this World instance.
+   */
+  clearManagedIntervals() {
+    this.managedIntervals.forEach((intervalId) => clearInterval(intervalId));
+    this.managedIntervals.clear();
+  }
+
+  /**
+   * Stops rendering, global gameplay processes, listeners, and World-owned timers.
    */
   destroy() {
     this.isRunning = false;
+    this.stopAllGameProcesses();
     this.clearManagedTimeouts();
+    this.clearManagedIntervals();
 
     if (this.animationFrameId !== null) {
       cancelAnimationFrame(this.animationFrameId);
@@ -118,10 +153,7 @@ class World {
       this.gameOverClickHandlerBound = null;
     }
 
-    if (this.scoreBlinkInterval !== null) {
-      clearInterval(this.scoreBlinkInterval);
-      this.scoreBlinkInterval = null;
-    }
+    this.scoreBlinkInterval = null;
     this.blinkActive = false;
 
     this.detachVictoryClickHandler();
@@ -318,14 +350,14 @@ class World {
     const ctx = this.ctx;
     let opacity = 1;
     const step = 50;
-    const interval = setInterval(() => {
+    const interval = this.setManagedInterval(() => {
       ctx.save();
       ctx.font = "bold 30px Zabars";
       ctx.fillStyle = `rgba(255,255,0,${opacity})`;
       ctx.fillText("+1", x - this.cameraX, y);
       ctx.restore();
       opacity -= 0.2;
-      if (opacity <= 0) clearInterval(interval);
+      if (opacity <= 0) this.clearManagedInterval(interval);
     }, step);
   }
 
@@ -337,14 +369,14 @@ class World {
     const y = this.character.y - 80;
     let opacity = 1;
     const step = 50;
-    const interval = setInterval(() => {
+    const interval = this.setManagedInterval(() => {
       ctx.save();
       ctx.font = "bold 25px Zabars";
       ctx.fillStyle = `rgba(255,255,255,${opacity})`;
       ctx.fillText(`+${points} Pts`, x - this.cameraX, y);
       ctx.restore();
       opacity -= 0.2;
-      if (opacity <= 0) clearInterval(interval);
+      if (opacity <= 0) this.clearManagedInterval(interval);
     }, step);
   }
 
@@ -384,7 +416,7 @@ class World {
     var spins = 0;
     var self = this;
 
-    this.coffinSpin = setInterval(function () {
+    this.coffinSpin = this.setManagedInterval(function () {
       self.coffinRotation += rotationSpeed;
       if (self.coffinRotation >= 360) {
         self.coffinRotation = 0;
@@ -395,7 +427,7 @@ class World {
         if (rotationSpeed <= 0) {
           rotationSpeed = 0;
           self.coffinRotation = 0;
-          clearInterval(self.coffinSpin);
+          self.clearManagedInterval(self.coffinSpin);
           self.coffinSpin = null;
           self.waitAndReturnToMenu();
         }
@@ -1154,7 +1186,7 @@ class World {
     if (this.scoreBlinkInterval !== null) return;
 
     let self = this;
-    this.scoreBlinkInterval = setInterval(function () {
+    this.scoreBlinkInterval = this.setManagedInterval(function () {
       if (!self.blinkActive) return;
       self.blinkVisible = !self.blinkVisible;
     }, 500);
@@ -1566,9 +1598,8 @@ class World {
         }
       }
 
-      console.log("🌍 freezeWorld(): Bewegung vollständig gestoppt.");
     } catch (err) {
-      console.warn("Fehler in freezeWorld():", err);
+      console.warn("Failed to freeze the game world:", err);
     }
   }
 
@@ -1579,27 +1610,8 @@ class World {
         soundHub.stopAllAudio();
       }
     } catch (e) {
-      console.warn("Fehler beim Stoppen aller Prozesse:", e);
+      console.warn("Failed to stop game processes:", e);
     }
   }
 
-  pauseAllGameProcesses() {
-    try {
-      if (typeof soundHub !== "undefined" && soundHub) {
-        soundHub.pauseAllAudio();
-      }
-    } catch (e) {
-      console.warn("Fehler beim Pausieren:", e);
-    }
-  }
-
-  resumeAllGameProcesses() {
-    try {
-      if (typeof soundHub !== "undefined" && soundHub) {
-        soundHub.resumeAllAudio();
-      }
-    } catch (e) {
-      console.warn("Fehler beim Fortsetzen:", e);
-    }
-  }
 }
