@@ -84,17 +84,34 @@ canvas {
 .leftControls,
 .rightControls {
   position: absolute;
-  top: clamp(56px, 18vh, 74px);
   display: flex;
   flex-direction: column;
   gap: clamp(10px, 3vh, 14px);
 }
 
-.leftControls {
+#mobileControls.controlsOutsideStage .leftControls,
+#mobileControls.controlsOutsideStage .rightControls {
+  top: clamp(8px, 2.5vh, 12px);
+}
+
+#mobileControls.controlsOutsideStage .leftControls {
+  left: var(--left-control-offset);
+}
+
+#mobileControls.controlsOutsideStage .rightControls {
+  right: var(--right-control-offset);
+}
+
+#mobileControls.controlsOverlayStage .leftControls,
+#mobileControls.controlsOverlayStage .rightControls {
+  top: clamp(64px, 21vh, 82px);
+}
+
+#mobileControls.controlsOverlayStage .leftControls {
   left: clamp(10px, 2vw, 18px);
 }
 
-.rightControls {
+#mobileControls.controlsOverlayStage .rightControls {
   right: clamp(10px, 2vw, 18px);
 }
 
@@ -896,7 +913,7 @@ canvas {
 
 
 @media (max-height: 600px) and (orientation: landscape) {
-  #mobileControls {
+  #mobileControls.isActive {
     display: block;
   }
 

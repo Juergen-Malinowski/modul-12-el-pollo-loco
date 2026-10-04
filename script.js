@@ -19,6 +19,8 @@ function startGame() {
     cvs.style.display = "block";
   }
 
+  showMobileControls();
+
   // === SPIEL STARTEN ===
   // Level-Daten laden und Welt aufbauen
   if (typeof init === "function") {
@@ -391,6 +393,41 @@ function closeHighscoreSaved() {
  *  (C) Jürgen Malinowski – Letzte Bearbeitung: 03.11.2025 – 16:00 Uhr
  * ===========================================================
  */
+function showMobileControls() {
+  var controls = document.getElementById("mobileControls");
+  if (!controls) return;
+
+  controls.classList.add("isActive");
+  updateMobileControlLayout();
+}
+
+function updateMobileControlLayout() {
+  var controls = document.getElementById("mobileControls");
+  var stage = document.getElementById("gameStage");
+  var button = document.getElementById("leftBtn");
+
+  if (!controls || !stage || !button || !controls.classList.contains("isActive")) return;
+  if (!window.matchMedia("(max-height: 600px) and (orientation: landscape)").matches) return;
+
+  var stageRect = stage.getBoundingClientRect();
+  var buttonWidth = button.getBoundingClientRect().width;
+  var leftSpace = stageRect.left;
+  var rightSpace = window.innerWidth - stageRect.right;
+  var controlsFitOutside = leftSpace >= buttonWidth + 8 && rightSpace >= buttonWidth + 8;
+
+  setMobileControlMode(controls, controlsFitOutside, leftSpace, rightSpace, buttonWidth);
+}
+
+function setMobileControlMode(controls, fitOutside, leftSpace, rightSpace, buttonWidth) {
+  controls.classList.toggle("controlsOutsideStage", fitOutside);
+  controls.classList.toggle("controlsOverlayStage", !fitOutside);
+
+  if (!fitOutside) return;
+
+  controls.style.setProperty("--left-control-offset", Math.max(8, (leftSpace - buttonWidth) / 2) + "px");
+  controls.style.setProperty("--right-control-offset", Math.max(8, (rightSpace - buttonWidth) / 2) + "px");
+}
+
 let orientationResizeTimer = null;
 
 function checkOrientation() {
@@ -507,7 +544,9 @@ function rotateDevice() {
 
 // === Events anhängen ===
 window.addEventListener("resize", checkOrientation);
+window.addEventListener("resize", updateMobileControlLayout);
 window.addEventListener("orientationchange", checkOrientation);
+window.addEventListener("orientationchange", updateMobileControlLayout);
 window.addEventListener("load", checkOrientation);
 
 function bindGlobalCanvasSoundHandler() {
