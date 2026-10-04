@@ -1030,13 +1030,27 @@ class World {
 
     var stageRect = stage.getBoundingClientRect();
     var controlRect = rightControls.getBoundingClientRect();
+    var touchExtension = this.getMobileTouchInwardExtension();
     var scaleX = this.canvas.width / stageRect.width;
     var scaleY = this.canvas.height / stageRect.height;
 
     return {
-      x: Math.max(120, (controlRect.left - 20 - stageRect.left) * scaleX),
+      x: Math.max(
+        120,
+        (controlRect.left - touchExtension - 20 - stageRect.left) * scaleX,
+      ),
       y: layout.bottom + 12 * scaleY,
     };
+  }
+
+  getMobileTouchInwardExtension() {
+    var controls = document.getElementById("mobileControls");
+    if (!controls) return 0;
+
+    var value = getComputedStyle(controls).getPropertyValue(
+      "--touch-inward-extension",
+    );
+    return parseFloat(value) || 0;
   }
 
   getGameControlHintsLeftEdge(rightEdge) {
@@ -1087,9 +1101,11 @@ class World {
 
     var stageRect = stage.getBoundingClientRect();
     var controlRect = leftControls.getBoundingClientRect();
+    var touchExtension = this.getMobileTouchInwardExtension();
     var scaleX = this.canvas.width / stageRect.width;
     var scaleY = this.canvas.height / stageRect.height;
-    var x = (controlRect.right + 20 - stageRect.left) * scaleX;
+    var x =
+      (controlRect.right + touchExtension + 20 - stageRect.left) * scaleX;
     var y = layout.bottom + 12 * scaleY;
 
     return {

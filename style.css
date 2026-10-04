@@ -74,6 +74,9 @@ canvas {
 
 /* === MOBILE GAME CONTROLS === */
 #mobileControls {
+  --touch-inward-extension: 20px;
+  --touch-vertical-extension: 18px;
+
   display: none;
   position: absolute;
   inset: 0;
@@ -116,6 +119,7 @@ canvas {
 }
 
 #mobileControls button {
+  position: relative;
   width: clamp(58px, 10vw, 72px);
   height: clamp(46px, 13vh, 56px);
   padding: 0 6px;
@@ -129,6 +133,30 @@ canvas {
   pointer-events: auto;
   touch-action: none;
   user-select: none;
+}
+
+#mobileControls button::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+#mobileControls .leftControls button::before {
+  right: calc(-1 * var(--touch-inward-extension));
+}
+
+#mobileControls .rightControls button::before {
+  left: calc(-1 * var(--touch-inward-extension));
+}
+
+#mobileControls .leftControls button:first-child::before,
+#mobileControls .rightControls button:first-child::before {
+  top: calc(-1 * var(--touch-vertical-extension));
+}
+
+#mobileControls .leftControls button:last-child::before,
+#mobileControls .rightControls button:last-child::before {
+  bottom: calc(-1 * var(--touch-vertical-extension));
 }
 
 @font-face {
