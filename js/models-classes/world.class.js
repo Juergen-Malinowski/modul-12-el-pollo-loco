@@ -973,13 +973,15 @@ class World {
   }
 
   drawGameControlHints(ctx, mobileOverlayHud = false) {
+    var mobileControlsActive = this.isMobileControlsActive();
     var position = this.getGameControlHintsPosition(mobileOverlayHud);
-    var lineHeight = mobileOverlayHud ? 21 : 30;
+    var fontSize = mobileControlsActive ? 24 : 16;
+    var lineHeight = mobileControlsActive ? 30 : 30;
 
     ctx.save();
-    ctx.font = "bold 16px Zabars";
+    ctx.font = "bold " + fontSize + "px Zabars";
     ctx.fillStyle = "black";
-    ctx.textAlign = mobileOverlayHud ? "right" : "left";
+    ctx.textAlign = mobileControlsActive ? "right" : "left";
     ctx.textBaseline = "top";
 
     ctx.fillText("⬅  Move left", position.x, position.y);
@@ -994,9 +996,20 @@ class World {
     ctx.restore();
   }
 
-  getGameControlHintsPosition(mobileOverlayHud) {
-    if (!mobileOverlayHud) return { x: 590, y: 70 };
+  isMobileControlsActive() {
+    var controls = document.getElementById("mobileControls");
+    return controls && controls.classList.contains("isActive");
+  }
 
+  getGameControlHintsPosition(mobileOverlayHud) {
+    if (mobileOverlayHud) return this.getOverlayGameControlHintsPosition();
+    if (this.isMobileControlsActive()) {
+      return { x: this.canvas.width - 8, y: 70 };
+    }
+    return { x: 590, y: 70 };
+  }
+
+  getOverlayGameControlHintsPosition() {
     var stage = document.getElementById("gameStage");
     var rightControls = document.querySelector("#mobileControls .rightControls");
     var layout = this.getMobileHudLayout();
@@ -1020,9 +1033,10 @@ class World {
       "SHIFT  or  ⬆  Throw bottle",
       "SPACE  Jump",
     ];
+    var fontSize = this.isMobileControlsActive() ? 24 : 16;
 
     this.ctx.save();
-    this.ctx.font = "bold 16px Zabars";
+    this.ctx.font = "bold " + fontSize + "px Zabars";
     var maxWidth = Math.max(...lines.map((line) => this.ctx.measureText(line).width));
     this.ctx.restore();
 
