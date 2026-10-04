@@ -930,21 +930,50 @@ class World {
 
   drawScoreHud(mobileOverlayHud) {
     if (!this.blinkActive || (this.blinkActive && this.blinkVisible)) {
-      this.ctx.font = mobileOverlayHud ? "bold 32px Zabars" : "bold 40px Zabars";
+      var layout = this.getScoreLayout(mobileOverlayHud);
+      this.ctx.save();
+      this.ctx.font = "bold " + layout.fontSize + "px Zabars";
       this.ctx.fillStyle = "#ffcc00";
-      this.ctx.textAlign = "left";
-      this.ctx.fillText(
-        "Score: " + this.score,
-        mobileOverlayHud ? 20 : 570,
-        mobileOverlayHud ? 452 : 50,
-      );
+      this.ctx.textAlign = layout.textAlign;
+      this.ctx.textBaseline = "top";
+      this.ctx.fillText("Score: " + this.score, layout.x, layout.y);
+      this.ctx.restore();
     }
     this.drawGameControlHints(this.ctx, mobileOverlayHud);
   }
 
+  getScoreLayout(mobileOverlayHud) {
+    if (!mobileOverlayHud) {
+      return { x: 570, y: 22, fontSize: 40, textAlign: "left" };
+    }
+
+    var hintPosition = this.getGameControlHintsPosition(true);
+    var hintLeft = this.getGameControlHintsLeftEdge(hintPosition.x);
+    var centerX = this.canvas.width / 2;
+    var maxWidth = Math.max(100, (hintLeft - centerX - 12) * 2);
+    var fontSize = this.getScoreFontSize("Score: " + this.score, maxWidth);
+
+    return {
+      x: centerX,
+      y: hintPosition.y,
+      fontSize: fontSize,
+      textAlign: "center",
+    };
+  }
+
+  getScoreFontSize(text, maxWidth) {
+    var fontSize = 32;
+    this.ctx.save();
+    this.ctx.font = "bold " + fontSize + "px Zabars";
+    var textWidth = this.ctx.measureText(text).width;
+    this.ctx.restore();
+
+    if (textWidth <= maxWidth) return fontSize;
+    return Math.max(22, Math.floor(fontSize * (maxWidth / textWidth)));
+  }
+
   drawGameControlHints(ctx, mobileOverlayHud = false) {
-    var startX = mobileOverlayHud ? 700 : 590;
-    var startY = mobileOverlayHud ? 375 : 70;
+    var position = this.getGameControlHintsPosition(mobileOverlayHud);
     var lineHeight = mobileOverlayHud ? 21 : 30;
 
     ctx.save();
@@ -953,12 +982,51 @@ class World {
     ctx.textAlign = mobileOverlayHud ? "right" : "left";
     ctx.textBaseline = "top";
 
-    ctx.fillText("⬅  Move left", startX, startY);
-    ctx.fillText("➡  Move right", startX, startY + lineHeight);
-    ctx.fillText("SHIFT  or  ⬆  Throw bottle", startX, startY + lineHeight * 2);
-    ctx.fillText("SPACE  Jump", startX, startY + lineHeight * 3);
+    ctx.fillText("⬅  Move left", position.x, position.y);
+    ctx.fillText("➡  Move right", position.x, position.y + lineHeight);
+    ctx.fillText(
+      "SHIFT  or  ⬆  Throw bottle",
+      position.x,
+      position.y + lineHeight * 2,
+    );
+    ctx.fillText("SPACE  Jump", position.x, position.y + lineHeight * 3);
 
     ctx.restore();
+  }
+
+  getGameControlHintsPosition(mobileOverlayHud) {
+    if (!mobileOverlayHud) return { x: 590, y: 70 };
+
+    var stage = document.getElementById("gameStage");
+    var rightControls = document.querySelector("#mobileControls .rightControls");
+    var layout = this.getMobileHudLayout();
+    if (!stage || !rightControls) return { x: 620, y: layout.bottom + 18 };
+
+    var stageRect = stage.getBoundingClientRect();
+    var controlRect = rightControls.getBoundingClientRect();
+    var scaleX = this.canvas.width / stageRect.width;
+    var scaleY = this.canvas.height / stageRect.height;
+
+    return {
+      x: Math.max(120, (controlRect.left - 20 - stageRect.left) * scaleX),
+      y: layout.bottom + 12 * scaleY,
+    };
+  }
+
+  getGameControlHintsLeftEdge(rightEdge) {
+    var lines = [
+      "⬅  Move left",
+      "➡  Move right",
+      "SHIFT  or  ⬆  Throw bottle",
+      "SPACE  Jump",
+    ];
+
+    this.ctx.save();
+    this.ctx.font = "bold 16px Zabars";
+    var maxWidth = Math.max(...lines.map((line) => this.ctx.measureText(line).width));
+    this.ctx.restore();
+
+    return rightEdge - maxWidth;
   }
 
   drawSoundIcon(mobileOverlayHud) {
