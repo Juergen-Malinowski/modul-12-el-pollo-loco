@@ -509,51 +509,95 @@ class World {
   }
 
   /**
-   * Stops the current World and restores the start screen.
+   * Stops the current World and restores a clean start-menu state.
    */
   returnToMenu() {
     this.showCoffin = false;
     this.gameOver = true;
     this.destroy();
+    this.stopBossProcesses();
+    this.resetMenuInputState();
+    this.resetMenuUiState();
+  }
 
+  /**
+   * Stops boss-specific processes that may outlive normal gameplay intervals.
+   */
+  stopBossProcesses() {
     if (typeof soundHub !== "undefined" && soundHub) {
-      if (typeof soundHub.stopBackgroundMusic === "function") {
-        soundHub.stopBackgroundMusic();
-        this.silenceAllAudio();
-      }
-      if (typeof soundHub.stopAllEffects === "function") {
-        soundHub.stopAllEffects();
-        this.silenceAllAudio();
-      }
-    }
-
-    if (
-      typeof soundHub !== "undefined" &&
-      typeof soundHub.stopBossCharge === "function"
-    ) {
       soundHub.stopBossCharge();
-
-      if (this.level && this.level.enemies) {
-        for (var i = 0; i < this.level.enemies.length; i++) {
-          var enemy = this.level.enemies[i];
-          if (
-            enemy instanceof Endboss &&
-            typeof enemy.forceStopBossAudio === "function"
-          ) {
-            enemy.forceStopBossAudio();
-          }
-        }
-      }
+      soundHub.stopAllEffects();
+      soundHub.stopBackgroundMusic();
     }
 
-    var cvs = document.getElementById("canvas");
-    var start = document.getElementById("startScreen");
-    if (cvs) cvs.style.display = "none";
-    if (start) start.style.display = "flex";
+    if (!this.level || !this.level.enemies) return;
 
-    setTimeout(function () {
-      location.reload();
-    }, 1000);
+    this.level.enemies.forEach((enemy) => {
+      if (
+        enemy instanceof Endboss &&
+        typeof enemy.forceStopBossAudio === "function"
+      ) {
+        enemy.forceStopBossAudio();
+      }
+    });
+  }
+
+  /**
+   * Clears keyboard and touch-control state before returning to the menu.
+   */
+  resetMenuInputState() {
+    if (typeof resetMobileControlStates === "function") {
+      resetMobileControlStates();
+    }
+
+    if (typeof keyboard === "undefined") return;
+
+    keyboard.LEFT = false;
+    keyboard.RIGHT = false;
+    keyboard.UP = false;
+    keyboard.DOWN = false;
+    keyboard.SPACE = false;
+    keyboard.SHIFT = false;
+    keyboard.ENTER = false;
+  }
+
+  /**
+   * Restores menu visibility and removes gameplay-only UI state.
+   */
+  resetMenuUiState() {
+    var canvas = document.getElementById("canvas");
+    var start = document.getElementById("startScreen");
+    var controls = document.getElementById("mobileControls");
+
+    if (canvas) {
+      canvas.style.display = "none";
+      this.detachGlobalCanvasSoundHandler(canvas);
+    }
+    if (start) start.style.display = "flex";
+    if (controls) {
+      controls.classList.remove(
+        "isActive",
+        "touchControlsEnabled",
+        "controlsOutsideStage",
+        "controlsOverlayStage",
+      );
+      controls.style.removeProperty("--left-control-offset");
+      controls.style.removeProperty("--right-control-offset");
+      controls.style.removeProperty("--overlay-control-top");
+    }
+    window.world = null;
+  }
+
+  /**
+   * Removes the shared canvas sound handler when gameplay ends.
+   *
+   * @param {HTMLCanvasElement} canvas - Game canvas that owns the listener.
+   */
+  detachGlobalCanvasSoundHandler(canvas) {
+    if (!window.__canvasSoundHandler) return;
+
+    canvas.removeEventListener("mousedown", window.__canvasSoundHandler);
+    window.__canvasSoundHandler = null;
   }
 
   /**
