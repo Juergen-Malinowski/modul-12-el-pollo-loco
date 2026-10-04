@@ -173,14 +173,14 @@ h1 {
 }
 
 h1 {
-  font-size: clamp(3em, 7vw, 6em);
+  font-size: clamp(3rem, calc(var(--stage-width) * 0.07), 8rem);
   margin: 0;
   margin-top: 2px;
   /* minimaler Abstand nach oben ... */
   margin-bottom: 2px;
   /* Abstand nach unten zu den Menü-Buttons ... */
   font-style: italic;
-  letter-spacing: 5px;
+  letter-spacing: clamp(2px, calc(var(--stage-width) * 0.0035), 8px);
   text-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
   position: relative;
   z-index: 16;
@@ -193,27 +193,29 @@ h1 {
 
 /* === MENÜLEISTE AUF DEM STARTBILDSCHIRM === */
 #startMenu {
-  width: 95%;
+  width: 96%;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: clamp(6px, 1.4vw, 20px);
+  gap: clamp(6px, calc(var(--stage-width) * 0.012), 28px);
   margin-bottom: 0;
   flex: 0 0 auto;
 }
 
 .menuButton {
   font-family: "Zabars", Arial, Helvetica, sans-serif;
-  font-size: clamp(1.1em, 2.6vw, 1.8em);
+  font-size: clamp(1.15rem, calc(var(--stage-width) * 0.022), 2.6rem);
   color: var(--color-text-light);
   background-color: var(--color-ui-primary);
   border: 3px solid black;
-  border-radius: 15px;
-  padding: clamp(3px, 0.7vh, 5px) clamp(10px, 1.8vw, 25px);
+  border-radius: clamp(10px, calc(var(--stage-width) * 0.009), 20px);
+  padding:
+    clamp(4px, calc(var(--stage-height) * 0.008), 12px)
+    clamp(12px, calc(var(--stage-width) * 0.018), 42px);
   cursor: pointer;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
   transition: all 0.2s ease-in-out;
-  margin-top: 5px;
+  margin-top: clamp(0px, calc(var(--stage-height) * 0.004), 6px);
 }
 
 .menuButton:hover {
@@ -237,15 +239,18 @@ button:hover {
 
 /* === STARTBILDSCHIRM === */
 #startScreen {
+  --stage-width: min(100vw, calc(100dvh * 1.5));
+  --stage-height: min(100dvh, calc(100vw * 0.666667));
+
   position: absolute;
   top: 50%;
   left: 50%;
-  width: min(100vw, calc(100dvh * 1.5));
+  width: var(--stage-width);
   aspect-ratio: 3 / 2;
   transform: translate(-50%, -50%);
   box-sizing: border-box;
-  padding: clamp(4px, 1.2vh, 12px);
-  gap: clamp(4px, 1vh, 10px);
+  padding: clamp(4px, calc(var(--stage-height) * 0.015), 24px);
+  gap: clamp(4px, calc(var(--stage-height) * 0.012), 18px);
   overflow: hidden;
   background-image: url(./assets/img/5_hintergrund/layers/background_picture/background_sunset.jpg);
   background-size: cover;
@@ -272,10 +277,10 @@ button:hover {
   /* width: 720px;
   height: 480px; */
 
-  max-width: 100%;
-  max-height: 100%;
-  width: auto;
-  height: auto;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
 
   object-fit: contain;
 }
@@ -300,7 +305,7 @@ button:hover {
 
 #batImage {
   position: absolute;
-  width: clamp(90px, 28%, 230px);
+  width: clamp(90px, calc(var(--stage-width) * 0.225), 230px);
   height: auto;
   top: 18%;
   /* vertikale Fixierung bezogen auf Bildmitte ... */
@@ -342,7 +347,7 @@ button:hover {
   margin: 0;
   text-align: center;
   font-family: "Zabars", Arial, Helvetica, sans-serif;
-  font-size: clamp(1em, 2.5vw, 2em);
+  font-size: clamp(1rem, calc(var(--stage-width) * 0.022), 2.5rem);
   color: black;
   z-index: 5;
   flex: 0 0 auto;
@@ -969,7 +974,7 @@ canvas {
   }
 
   #batImage {
-    width: clamp(80px, 24%, 150px);
+    width: clamp(80px, calc(var(--stage-width) * 0.225), 150px);
     top: 18%;
     left: 72%;
   }
@@ -1019,10 +1024,6 @@ canvas {
    3) Canvas behält das feste Seitenverhältnis 3:2.
    =========================================================== */
 @media only screen and (max-width: 720px) {
-  h1 {
-    display: none;
-  }
-
   #orientationBox {
     /* Boxbreite verringern bei Mobile" */
     max-width: calc(100% - 100px);
@@ -1032,149 +1033,4 @@ canvas {
   }
 }
 
-/* ============================================
-   RESPONSIVE: STARTSCREEN / MAIN MENU
-   ============================================ */
 
-/* 1) sehr kleine Geräte: 320px bis ~379px */
-@media (max-width: 379px) {
-  #startScreen {
-    padding-top: 10px;
-    gap: 8px;
-  }
-
-  h1 {
-    font-size: 3.2em;
-    letter-spacing: 2px;
-  }
-
-  #startImage {
-    width: 100%;
-    height: auto;
-  }
-
-  #startMenu {
-    width: 100%;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .menuButton {
-    font-size: 1.3em;
-    padding: 4px 14px;
-  }
-
-  #batImage {
-    /* auf ganz kleinen Displays eher aus dem Weg */
-    width: 150px;
-    top: 15%;
-    left: 80%;
-  }
-
-  #copyright {
-    font-size: 1.3em;
-  }
-}
-
-/* 2) kleine Smartphones: 380px bis 479px */
-@media (min-width: 380px) and (max-width: 479px) {
-  h1 {
-    font-size: 3.8em;
-  }
-
-  #startImage {
-    width: 100%;
-    height: auto;
-  }
-
-  #startMenu {
-    width: 100%;
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-
-  .menuButton {
-    font-size: 1.45em;
-    padding: 5px 18px;
-  }
-
-  #batImage {
-    width: 180px;
-    top: 18%;
-    left: 82%;
-  }
-
-  #copyright {
-    font-size: 1.5em;
-  }
-}
-
-/* 3) mittlere Smartphones: 480px bis 599px */
-@media (min-width: 480px) and (max-width: 599px) {
-  h1 {
-    font-size: 4.2em;
-  }
-
-  #startImage {
-    width: 90%;
-    height: auto;
-  }
-
-  #startMenu {
-    width: 95%;
-    flex-wrap: wrap;
-    gap: 14px;
-  }
-
-  .menuButton {
-    font-size: 1.5em;
-  }
-
-  #batImage {
-    width: 200px;
-    top: 20%;
-    left: 78%;
-  }
-}
-
-/* 4) Tablets / schmale Landscape: 600px bis 720px */
-@media (min-width: 600px) and (max-width: 720px) {
-  h1 {
-    font-size: 4.8em;
-  }
-
-  #startImage {
-    width: 720px;
-    max-width: 100%;
-    height: auto;
-  }
-
-  #startMenu {
-    width: 80%;
-    gap: 16px;
-  }
-
-  .menuButton {
-    font-size: 1.6em;
-  }
-
-  #batImage {
-    width: 210px;
-    top: calc(50% - 80px);
-    left: calc(50% + 180px);
-  }
-}
-
-/* ===========================================================
-   TABLET LANDSCAPE TRANSITION ZONE (721px–790px)
-   -----------------------------------------------------------
-   Zwischenbereich für Tablets im Querformat.
-   Hier können später spezifische Anpassungen folgen
-   (z. B. Menügrößen, Button-Abstände, Canvas-Anpassung usw.)
-   =========================================================== */
-@media only screen and (min-width: 721px) and (max-width: 790px) {
-  /* Tablet-Landscape-spezifische Styles kommen hier hinein ... */
-}
