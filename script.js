@@ -25,6 +25,8 @@ function startGame() {
     init();
   }
 
+  showMobileControls();
+
   // Hintergrundmusik sicher starten (läuft in Schleife)
   if (
     typeof soundHub !== "undefined" &&
@@ -391,6 +393,86 @@ function closeHighscoreSaved() {
  *  (C) Jürgen Malinowski – Letzte Bearbeitung: 03.11.2025 – 16:00 Uhr
  * ===========================================================
  */
+function showMobileControls() {
+  var controls = document.getElementById("mobileControls");
+  if (!controls) return;
+
+  controls.classList.add("isActive");
+  updateMobileControlLayout();
+}
+
+function updateMobileControlLayout() {
+  var controls = document.getElementById("mobileControls");
+  var stage = document.getElementById("gameStage");
+  var button = document.getElementById("leftBtn");
+
+  if (!controls || !stage || !button || !controls.classList.contains("isActive")) return;
+
+  var touchControlsEnabled = supportsTouchControls();
+  controls.classList.toggle("touchControlsEnabled", touchControlsEnabled);
+
+  if (!touchControlsEnabled || !isLandscapeViewport()) {
+    controls.classList.remove("controlsOutsideStage", "controlsOverlayStage");
+    return;
+  }
+
+  var stageRect = stage.getBoundingClientRect();
+  var buttonWidth = button.getBoundingClientRect().width;
+  var leftSpace = stageRect.left;
+  var rightSpace = window.innerWidth - stageRect.right;
+  var controlsFitOutside = leftSpace >= buttonWidth + 8 && rightSpace >= buttonWidth + 8;
+
+  setMobileControlMode(
+    controls,
+    controlsFitOutside,
+    leftSpace,
+    rightSpace,
+    buttonWidth,
+    stageRect,
+  );
+}
+
+function supportsTouchControls() {
+  return (
+    window.matchMedia("(any-pointer: coarse)").matches ||
+    navigator.maxTouchPoints > 0
+  );
+}
+
+function isLandscapeViewport() {
+  return window.matchMedia("(orientation: landscape)").matches;
+}
+
+function setMobileControlMode(controls, fitOutside, leftSpace, rightSpace, buttonWidth, stageRect) {
+  controls.classList.toggle("controlsOutsideStage", fitOutside);
+  controls.classList.toggle("controlsOverlayStage", !fitOutside);
+
+  if (fitOutside) {
+    setMobileOutsideOffsets(controls, leftSpace, rightSpace, buttonWidth);
+  } else {
+    setMobileOverlayOffset(controls, stageRect);
+  }
+}
+
+function setMobileOutsideOffsets(controls, leftSpace, rightSpace, buttonWidth) {
+  controls.style.setProperty("--left-control-offset", Math.max(8, (leftSpace - buttonWidth) / 2) + "px");
+  controls.style.setProperty("--right-control-offset", Math.max(8, (rightSpace - buttonWidth) / 2) + "px");
+}
+
+function setMobileOverlayOffset(controls, stageRect) {
+  var hudBottom = getMobileHudBottom();
+  var canvasHeight = window.world && window.world.canvas ? window.world.canvas.height : 480;
+  var hudBottomCss = stageRect.top + (hudBottom / canvasHeight) * stageRect.height;
+  controls.style.setProperty("--overlay-control-top", hudBottomCss + 12 + "px");
+}
+
+function getMobileHudBottom() {
+  if (window.world && typeof window.world.getMobileHudLayout === "function") {
+    return window.world.getMobileHudLayout().bottom;
+  }
+  return 60;
+}
+
 let orientationResizeTimer = null;
 
 function checkOrientation() {
@@ -507,7 +589,9 @@ function rotateDevice() {
 
 // === Events anhängen ===
 window.addEventListener("resize", checkOrientation);
+window.addEventListener("resize", updateMobileControlLayout);
 window.addEventListener("orientationchange", checkOrientation);
+window.addEventListener("orientationchange", updateMobileControlLayout);
 window.addEventListener("load", checkOrientation);
 
 function bindGlobalCanvasSoundHandler() {
