@@ -1,7 +1,12 @@
+var highscoreHandledForCurrentGame = false;
+
 /**
  * Starts a fresh game world and activates the gameplay UI.
  */
 function startGame() {
+  score = 0;
+  highscoreHandledForCurrentGame = false;
+
   var start = document.getElementById("startScreen");
   if (start) {
     start.style.display = "none";
@@ -562,8 +567,14 @@ function bindGlobalCanvasSoundHandler() {
  * @param {number} score - Score to store after confirmation.
  */
 function openHighscoreNameDialog(score) {
-  if (document.getElementById("highscoreNameOverlay")) return;
+  if (
+    highscoreHandledForCurrentGame ||
+    document.getElementById("highscoreNameOverlay")
+  ) {
+    return;
+  }
 
+  highscoreHandledForCurrentGame = true;
   var overlay = document.createElement("div");
   overlay.id = "highscoreNameOverlay";
   overlay.innerHTML = `
@@ -602,8 +613,9 @@ function openHighscoreNameDialog(score) {
  * @param {number} score - Score associated with the entered name.
  */
 function submitHighscoreName(score) {
+  var overlay = document.getElementById("highscoreNameOverlay");
   var input = document.getElementById("highscoreNameInput");
-  if (!input) return;
+  if (!overlay || !input || overlay.dataset.submitted === "true") return;
 
   var name = input.value.trim();
   if (!name) {
@@ -611,6 +623,7 @@ function submitHighscoreName(score) {
     return;
   }
 
+  overlay.dataset.submitted = "true";
   storeHighscore(name, score);
   closeHighscoreNameDialog();
 }
