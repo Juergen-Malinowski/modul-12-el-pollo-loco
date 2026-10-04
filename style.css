@@ -412,7 +412,7 @@ button:hover {
 }
 
 #highscoreContent {
-  font-size: clamp(0.9rem, calc(0.55rem + 1.55vh), 2.3rem);
+  font-size: clamp(0.95rem, calc(0.45rem + 2.6vh), 3rem);
   line-height: 1.35;
   color: var(--color-text-dark);
   overflow-y: auto;
@@ -568,13 +568,15 @@ body.main_grafik {
   box-sizing: border-box;
 }
 
-body.main_grafik header {
-  text-align: center;
-}
-
 body.main_grafik h1 {
-  font-size: clamp(2.2rem, 7vw, 5rem);
-  letter-spacing: clamp(2px, 0.6vw, 6px);
+  display: block;
+  position: static;
+  z-index: auto;
+  margin: 0 0 clamp(8px, 1.8vw, 24px);
+  font-size: clamp(1.65rem, calc(0.9rem + 2.7vw), 4rem);
+  font-style: normal;
+  letter-spacing: clamp(1px, 0.25vw, 4px);
+  text-shadow: none;
 }
 
 body.main_grafik .href_grafik {
@@ -674,7 +676,7 @@ canvas {
   font-family: "Zabars", Arial, Helvetica, sans-serif;
   width: min(
     92vw,
-    clamp(500px, calc(var(--overlay-stage-width) * 0.56), 1000px)
+    clamp(500px, calc(var(--overlay-stage-width) * 0.62), 1150px)
   );
   height: calc(
     100dvh - var(--overlay-edge-gap) - var(--overlay-edge-gap)
@@ -684,11 +686,11 @@ canvas {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-evenly;
 }
 
 #audioBox h2 {
-  font-size: clamp(1.3rem, calc(0.8rem + 2.6vh), 3.4rem);
+  font-size: clamp(1.4rem, calc(0.75rem + 3.1vh), 4rem);
   margin: 0 0 clamp(6px, 1.8vh, 30px);
 }
 
@@ -720,7 +722,7 @@ canvas {
   font-family: "Zabars", Arial, Helvetica, sans-serif;
   width: min(
     92vw,
-    clamp(600px, calc(var(--overlay-stage-width) * 0.64), 1200px)
+    clamp(600px, calc(var(--overlay-stage-width) * 0.7), 1350px)
   );
   height: calc(
     100dvh - var(--overlay-edge-gap) - var(--overlay-edge-gap)
@@ -730,16 +732,16 @@ canvas {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-evenly;
 }
 
 #gameControlBox h2 {
-  font-size: clamp(1.3rem, calc(0.8rem + 2.6vh), 3.4rem);
+  font-size: clamp(1.4rem, calc(0.75rem + 3.1vh), 4rem);
   margin: 0 0 clamp(6px, 1.8vh, 30px);
 }
 
 #gameControlText {
-  font-size: clamp(0.95rem, calc(0.6rem + 1.45vh), 2.2rem);
+  font-size: clamp(1rem, calc(0.55rem + 2.15vh), 2.8rem);
   color: var(--color-text-dark);
   margin: 0 0 clamp(6px, 1.5vh, 25px);
   text-align: center;
@@ -772,7 +774,7 @@ canvas {
 
 .audioControlRow {
   margin: clamp(4px, 1.5vh, 24px) 0;
-  font-size: clamp(0.95rem, calc(0.6rem + 1.45vh), 2.1rem);
+  font-size: clamp(1rem, calc(0.55rem + 2.15vh), 2.8rem);
   color: var(--color-text-dark);
 }
 
@@ -783,8 +785,8 @@ canvas {
 
 #audioBox input[type="range"] {
   width: min(
-    82%,
-    clamp(320px, calc(var(--overlay-stage-width) * 0.36), 620px)
+    86%,
+    clamp(320px, calc(var(--overlay-stage-width) * 0.44), 780px)
   );
   accent-color: var(--color-ui-primary);
   cursor: pointer;
@@ -903,12 +905,6 @@ canvas {
   padding: clamp(10px, 3vw, 48px);
   letter-spacing: clamp(1px, 0.25vw, 4px);
   /* für Lesbarkeit bei der Schriftart */
-}
-
-.info_content h2 {
-  font-size: clamp(1.65rem, calc(0.9rem + 2.7vw), 4rem);
-  margin-bottom: clamp(8px, 1.8vw, 24px);
-  margin-top: 0;
 }
 
 .info_content h3 {
