@@ -130,6 +130,7 @@ canvas {
   line-height: 1;
   pointer-events: auto;
   touch-action: none;
+  -webkit-user-select: none;
   user-select: none;
 }
 
@@ -405,7 +406,6 @@ button:hover {
   min-height: 0;
   flex: 1 1 auto;
   padding-right: 6px;
-  scrollbar-gutter: stable;
 }
 
 #closeHint {
@@ -456,7 +456,6 @@ button:hover {
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  -webkit-overflow-scrolling: touch;
   padding: var(--overlay-edge-gap);
   box-sizing: border-box;
 }
