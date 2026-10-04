@@ -1,4 +1,5 @@
-/* === GLOBALE Class === */
+
+/* Global page layout */
 html,
 body {
   width: 100%;
@@ -16,16 +17,15 @@ body {
   overflow: hidden;
 }
 
-/* Standard: Spielbetrieb ... kein Scroll */
 body.locked {
   overflow: hidden;
 }
 
-/* Overlay-Modus (z. B. Impressum) ... Scroll erlaubt */
 body.unlocked {
   overflow-y: auto;
 }
 
+/* Responsive game stage */
 #gameContainer {
   position: relative;
 
@@ -44,8 +44,6 @@ canvas {
   display: block;
 }
 
-/* Rahmen um das Canvas ... */
-/* Viewport-Anpassung für Mobile */
 #gameStage {
   position: relative;
   width: min(100vw, calc(100dvh * 1.5));
@@ -72,7 +70,7 @@ canvas {
   border-radius: 15px;
 }
 
-/* === MOBILE GAME CONTROLS === */
+/* Mobile touch controls */
 #mobileControls {
   --touch-inward-extension: 20px;
   --touch-vertical-extension: 18px;
@@ -159,6 +157,7 @@ canvas {
   bottom: calc(-1 * var(--touch-vertical-extension));
 }
 
+/* Typography */
 @font-face {
   font-family: "Zabars";
   src: url("./assets/fonts/zabars.ttf") format("truetype");
@@ -176,22 +175,22 @@ h1 {
   font-size: clamp(3rem, calc(var(--stage-width) * 0.07), 8rem);
   margin: 0;
   margin-top: 2px;
-  /* minimaler Abstand nach oben ... */
+
   margin-bottom: 2px;
-  /* Abstand nach unten zu den Menü-Buttons ... */
+
   font-style: italic;
   letter-spacing: clamp(2px, calc(var(--stage-width) * 0.0035), 8px);
   text-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
   position: relative;
   z-index: 16;
-  /* über dem StartScreen (10) und über der Fledermaus (12) ... */
+
 }
 
+/* Start screen navigation */
 #startMenu {
   margin-top: 2px;
 }
 
-/* === MENÜLEISTE AUF DEM STARTBILDSCHIRM === */
 #startMenu {
   width: 96%;
   display: flex;
@@ -224,20 +223,19 @@ h1 {
   transform: scale(1.05);
 }
 
-/* === GLOBALE BUTTON-HOVER-EFFEKTE === */
 button {
   cursor: pointer;
-  /* Mauszeiger (Handsymbol) */
+
   transition: transform 0.2s ease-in-out;
-  /* sanfte Skalierung */
+
 }
 
 button:hover {
   transform: scale(1.2);
-  /* leicht vergrößern */
+
 }
 
-/* === STARTBILDSCHIRM === */
+/* Responsive start screen */
 #startScreen {
   --stage-width: min(100vw, calc(100dvh * 1.5));
   --stage-height: min(100dvh, calc(100vw * 0.666667));
@@ -274,8 +272,6 @@ button:hover {
 }
 
 #startImage {
-  /* width: 720px;
-  height: 480px; */
 
   width: 100%;
   height: 100%;
@@ -285,45 +281,35 @@ button:hover {
   object-fit: contain;
 }
 
-/* === ÜBERLAGERUNGS-BILDER auf dem Startbild === */
 .overlayImage {
   position: absolute;
   z-index: 15;
-  /* über dem Startbild, aber unter Menüleiste */
+
   width: 250px;
-  /* Grundgröße (kannst du später anpassen) */
+
   height: auto;
 }
-
-/* === Fledermaus fixiert am Startbild, unabhängig vom Browserzoom ... */
-/* =========================================================== */
-/* Fledermaus (batImage) wird fix an das Startbild gebunden.   */
-/* Statt position: relative oder absolute-Bezug zum Fenster    */
-/* wird hier mit calc() + translate() gearbeitet, damit die    */
-/* Fledermaus beim Browserzoom stabil an Ort und Stelle bleibt */
-/* =========================================================== */
 
 #batImage {
   position: absolute;
   width: clamp(90px, calc(var(--stage-width) * 0.225), 230px);
   height: auto;
   top: 18%;
-  /* vertikale Fixierung bezogen auf Bildmitte ... */
+
   left: 72%;
-  /* horizontale Fixierung rechts vom Mittelpunkt ... */
+
   transform: translate(-50%, -50%);
   z-index: 12;
-  /* unter Menü, über Hintergrund ... */
+
   pointer-events: none;
-  /* blockiert keine Klicks ... */
+
 }
 
-/* Kleiner Teufel */
 #devilImage {
   top: 18%;
-  /* Höhenposition */
+
   left: 20%;
-  /* wie weit nach rechts verschoben */
+
 }
 
 #startButton {
@@ -342,7 +328,6 @@ button:hover {
   background-color: var(--color-ui-primary-hover);
 }
 
-/* === COPYRIGHT unterhalb des Startbildschirms === */
 #copyright {
   margin: 0;
   text-align: center;
@@ -353,7 +338,7 @@ button:hover {
   flex: 0 0 auto;
 }
 
-/* === HIGHSCORE OVERLAY === */
+/* Shared overlay scaling */
 #highscoreOverlay,
 #audioOverlay,
 #gameControlOverlay,
@@ -362,9 +347,10 @@ button:hover {
   --overlay-stage-width: min(100vw, calc(100dvh * 1.5));
 }
 
+/* Highscore overlay */
 #highscoreOverlay {
   display: none;
-  /* bleibt initial unsichtbar */
+
   position: fixed;
   top: 0;
   left: 0;
@@ -373,7 +359,7 @@ button:hover {
   background-color: var(--color-overlay-dark);
   z-index: 20;
   align-items: center;
-  /* wird genutzt, sobald JS display:flex setzt */
+
   justify-content: center;
   padding: var(--overlay-edge-gap);
   box-sizing: border-box;
@@ -429,15 +415,11 @@ button:hover {
   flex: 0 0 auto;
 }
 
-/* ============================================
-   Blink-Effekt für neuen Highscore im Hauptmenü
-   ============================================ */
 .blinkHighlight {
   font-weight: bold;
   color: red;
 }
 
-/* === CLOSE-BUTTON im Highscore-Overlay visuell hervorheben === */
 #closeHint {
   display: inline-block;
   align-self: center;
@@ -456,13 +438,12 @@ button:hover {
     background-color 0.2s ease-in-out;
 }
 
-/* Hover-Effekt wie bei allen Buttons */
 #closeHint:hover {
   background-color: var(--color-ui-primary-hover);
   transform: scale(1.2);
 }
 
-/* === IMPRESSUM OVERLAY === */
+/* Impressum overlay */
 #impressumOverlay {
   display: none;
   position: fixed;
@@ -522,13 +503,12 @@ button:hover {
 footer .copyright {
   font-family: "Zabars", Arial, Helvetica, sans-serif;
   font-size: clamp(1.65rem, calc(0.9rem + 2.7vw), 4rem);
-  /* gleiche Größe wie die Impressum-Überschrift */
+
   color: var(--color-text-dark);
   text-align: center;
   margin-top: clamp(8px, 1.5vw, 20px);
 }
 
-/* === CLOSE-BUTTON im Impressum visuell hervorheben === */
 #closeImpressumHint {
   display: inline-block;
   align-self: center;
@@ -550,14 +530,12 @@ footer .copyright {
     background-color 0.2s ease-in-out;
 }
 
-/* Hover-Effekt (wie alle anderen Buttons) */
 #closeImpressumHint:hover {
   background-color: var(--color-ui-primary-hover);
   transform: scale(1.2);
 }
 
-/* === STYLES FÜR INFO.HTML === */
-
+/* Impressum document */
 body.main_grafik {
   display: block;
   height: auto;
@@ -598,7 +576,6 @@ body.main_grafik .href_grafik:hover {
   padding: 30px;
 }
 
-/* === Zusätzliche Klassen für info.html === */
 .text_grafik {
   padding: 0;
   margin: 10px 0 0 0;
@@ -614,27 +591,23 @@ body.main_grafik .href_grafik:hover {
   color: #ffcc00;
 }
 
-/* Überschriften (h2) größer darstellen */
 .infoContent h2 {
   font-size: 3em;
   margin-bottom: 15px;
 }
 
-/* Normaler Fließtext */
 .infoContent li {
   font-size: 1.6em;
   line-height: 1.6;
   margin-top: 0;
 }
 
-/* Listen ohne Aufzählungspunkte */
 .textList {
   list-style-type: none;
   padding: 0;
   margin: 10px 0 0 0;
 }
 
-/* Gestaltung High-Score-Tabelle */
 .hsList {
   counter-reset: item;
 }
@@ -643,12 +616,12 @@ body.main_grafik .href_grafik:hover {
   margin: 6px 0;
 }
 
-/* Canvas anfangs ausblenden */
+/* Canvas initial state */
 canvas {
   display: none;
 }
 
-/* === AUDIO-OVERLAY === */
+/* Audio settings overlay */
 #audioOverlay {
   display: none;
   position: fixed;
@@ -694,7 +667,7 @@ canvas {
   margin: 0 0 clamp(8px, 2.2vh, 36px);
 }
 
-/* === GAME CONTROL OVERLAY === */
+/* Game control overlay */
 #gameControlOverlay {
   display: none;
   position: fixed;
@@ -748,7 +721,6 @@ canvas {
   line-height: 1.4;
 }
 
-/* Button zum Schließen */
 #closeGameControlHint {
   display: inline-block;
   align-self: center;
@@ -848,7 +820,7 @@ canvas {
   font-size: clamp(0.95rem, calc(0.55rem + 1.6vh), 2.5rem);
 }
 
-/* === HIGHSCORE-SAVED OVERLAY === */
+/* Highscore confirmation overlay */
 #highscoreSavedOverlay {
   display: none;
   position: fixed;
@@ -857,7 +829,7 @@ canvas {
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.6);
-  /* halbtransparent dunkel */
+
   z-index: 30;
   align-items: center;
   justify-content: center;
@@ -865,7 +837,7 @@ canvas {
 
 #highscoreSavedBox {
   background-color: white;
-  /* Weiße Leinwand für bessere Lesbarkeit */
+
   border: 4px solid black;
   border-radius: 15px;
   padding: 30px 50px;
@@ -887,7 +859,6 @@ canvas {
   margin-bottom: 25px;
 }
 
-/* OK-Button im selben Stil wie andere Buttons */
 #closeHighscoreSavedButton {
   background-color: var(--color-ui-primary);
   color: black;
@@ -907,7 +878,7 @@ canvas {
   transform: scale(1.2);
 }
 
-/* Alias für info.html */
+/* Responsive Impressum content */
 .info_content {
   font-family: "Zabars", Arial, Helvetica, sans-serif;
   font-size: clamp(0.9rem, calc(0.6rem + 1.5vw), 2.2rem);
@@ -918,7 +889,7 @@ canvas {
   background-color: var(--color-surface-light);
   padding: clamp(10px, 3vw, 48px);
   letter-spacing: clamp(1px, 0.25vw, 4px);
-  /* für Lesbarkeit bei der Schriftart */
+
 }
 
 .info_content h3 {
@@ -933,26 +904,20 @@ canvas {
   margin-top: 0;
 }
 
-/* ===========================================================
-   ORIENTIERUNGS-OVERLAY (für Hochformat)
-   -----------------------------------------------------------
-   Wird angezeigt, wenn das Gerät nicht im Querformat ist.
-   Canvas bleibt im Hintergrund, Overlay liegt zentriert darüber.
-   =========================================================== */
-
+/* Portrait orientation overlay */
 #orientationOverlay {
   display: none;
-  /* bleibt standardmäßig unsichtbar */
+
   position: fixed;
-  /* deckt gesamte Fläche ab */
+
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.85);
-  /* leicht transparentes Schwarz */
+
   z-index: 9999;
-  /* oberste Ebene */
+
   justify-content: center;
   align-items: center;
   text-align: center;
@@ -963,9 +928,9 @@ canvas {
 
 #orientationBox {
   background-color: rgba(255, 255, 255, 0.9);
-  /* heller Hintergrund */
+
   border: 5px solid #ffcc00;
-  /* gelber Rahmen wie Buttons */
+
   border-radius: 20px;
   padding: clamp(20px, 5vw, 40px) clamp(20px, 8vw, 60px);
   box-shadow: 0 0 25px rgba(255, 204, 0, 0.6);
@@ -985,7 +950,6 @@ canvas {
   margin-bottom: 25px;
 }
 
-/* Button-Stil identisch zu anderen gelben Buttons im Spiel ... */
 #rotateButton {
   background-color: var(--color-ui-primary);
   color: black;
@@ -1005,15 +969,16 @@ canvas {
   transform: scale(1.1);
 }
 
-
+/* Shows active touch controls only while the viewport is in landscape orientation. */
 @media (orientation: landscape) {
   #mobileControls.isActive.touchControlsEnabled {
     display: block;
   }
 }
 
+/* Compacts the start screen and caps overlay typography on low-height landscape viewports. */
 @media (max-height: 600px) and (orientation: landscape) {
-  h1 {
+  #startScreen h1 {
     display: none;
   }
 
@@ -1044,20 +1009,6 @@ canvas {
     font-size: clamp(0.9em, 3.5vh, 1.3em);
   }
 
-  #audioBox,
-  #gameControlBox,
-  #highscoreBox {
-    height: calc(100dvh - 40px);
-    max-height: none;
-  }
-
-  #audioBox,
-  #gameControlBox {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
-
   #audioBox h2,
   #gameControlBox h2 {
     font-size: clamp(1.35rem, calc(0.65rem + 3.6vh), 2rem);
@@ -1073,25 +1024,11 @@ canvas {
   }
 }
 
-/* ############################### */
-/* === SMARTPHONE resposive === */
-/* ############################### */
-
-/* ===========================================================
-   SMARTPHONE / RESPONSIVE BASISANPASSUNG
-   -----------------------------------------------------------
-   1) Game-Stage passt sich proportional an Breite und Höhe an.
-   2) Titel (h1) wird auf kleinen Displays ausgeblendet.
-   3) Canvas behält das feste Seitenverhältnis 3:2.
-   =========================================================== */
-@media only screen and (max-width: 720px) {
+/* Narrows the rotation message box on phone-sized viewports. */
+@media (max-width: 720px) {
   #orientationBox {
-    /* Boxbreite verringern bei Mobile" */
     max-width: calc(100% - 100px);
-    /* 25 px Rand links + 25 px rechts */
     margin: 0 auto;
-    /* zentriert halten */
   }
 }
-
 
