@@ -1004,9 +1004,18 @@ class World {
   getGameControlHintsPosition(mobileOverlayHud) {
     if (mobileOverlayHud) return this.getOverlayGameControlHintsPosition();
     if (this.isMobileControlsActive()) {
-      return { x: this.canvas.width - 8, y: 70 };
+      return this.getOutsideGameControlHintsPosition();
     }
     return { x: 590, y: 70 };
+  }
+
+  getOutsideGameControlHintsPosition() {
+    var stage = document.getElementById("gameStage");
+    if (!stage) return { x: this.canvas.width - 20, y: 70 };
+
+    var stageRect = stage.getBoundingClientRect();
+    var scaleX = this.canvas.width / stageRect.width;
+    return { x: this.canvas.width - 20 * scaleX, y: 70 };
   }
 
   getOverlayGameControlHintsPosition() {
