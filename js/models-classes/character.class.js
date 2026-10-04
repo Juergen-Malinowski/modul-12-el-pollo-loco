@@ -1,18 +1,7 @@
-
-console.log("Character-Klasse geladen, SoundHub:", typeof soundHub);
-
 /**
- * ===========================================================
- *  CHARAKTER-KLASSE "PEPE"
- *  ------------------------
- *  Steuerung der Spielfigur, Animationen und Bewegungen
- *  Soundeffekte (z. B. Schnarchen) werden zentral über SoundHub verwaltet
- * ===========================================================
+ * Controls Pepe's movement, animation states, and character-specific audio behavior.
  */
-
 class Character extends MovableObject {
-
-
 
     heigth = 330;
     width = 150;
@@ -31,7 +20,6 @@ class Character extends MovableObject {
         right: 40,
     };
 
-    // === ANIMATIONS-BILDER ===
     imagesWalking = [
         './assets/img/2_charakter_pepe/2_walk/W-21.png',
         './assets/img/2_charakter_pepe/2_walk/W-22.png',
@@ -113,7 +101,6 @@ class Character extends MovableObject {
     animate() {
         if (this.isThrowing) return;
 
-        // === BEWEGUNGS-STEUERUNG ===
         soundHub.registerInterval(setInterval(() => {
             if (this.isDeadAnimationPlaying) {
                 return;
@@ -123,7 +110,7 @@ class Character extends MovableObject {
                 this.moveRight();
                 this.otherDirection = false;
                 this.lastActionTime = Date.now();
-                soundHub.stopSnoring(); // sicherheitshalber beenden, wenn Spieler wieder aktiv wird
+                soundHub.stopSnoring();
             }
 
             if (this.world.keyboard.LEFT && this.x > 0) {
@@ -147,7 +134,6 @@ class Character extends MovableObject {
             this.world.cameraX = -this.x + 200;
         }, 100));
 
-        // === ANIMATIONS-STEUERUNG ===
         soundHub.registerInterval(setInterval(() => {
             if (this.isDead() && !this.isDeadAnimationPlaying) {
                 this.isDeadAnimationPlaying = true;
@@ -172,7 +158,7 @@ class Character extends MovableObject {
             } else if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
                 this.playAnimation(this.imagesWalking);
             } else {
-                // === IDLE-STEUERUNG ===
+
                 const idleTime = (Date.now() - this.lastActionTime) / 1000;
 
                 if (idleTime < 3) {
@@ -181,18 +167,20 @@ class Character extends MovableObject {
                 } else if (idleTime >= 5) {
                     this.playAnimation(this.imagesLongWaiting);
 
-                    // ✅ WICHTIG: nur starten, wenn noch nicht laufend
                     if (!soundHub.snoringAudio || soundHub.snoringAudio.paused) {
                         soundHub.playSnoring();
                     }
                 } else {
-                    // 3–5 Sekunden: normal idle → kein Schnarchen
+
                     soundHub.stopSnoring();
                 }
             }
         }, 150));
     }
 
+    /**
+     * Plays the death sequence and schedules the coffin transition on the owning World.
+     */
     playDeadAnimation() {
         this.speedY = 0;
         this.acceleration = 0;
@@ -204,28 +192,27 @@ class Character extends MovableObject {
                 this.img = this.imageCache[path];
                 i++;
             } else {
-                setTimeout(() => {
-                    clearInterval(deathInterval);
+                clearInterval(deathInterval);
+                this.world.setManagedTimeout(() => {
                     this.img = this.imageCache[this.imagesDead[this.imagesDead.length - 1]];
                 }, 200);
             }
         }, 200));
 
-        setTimeout(() => {
-            // später Restart-Button
-        }, 2000);
-
         if (this.world) {
-            setTimeout(() => {
+            this.world.setManagedTimeout(() => {
                 this.world.startCoffinAnimation();
             }, 1000);
         }
     }
 
+    /**
+     * Plays the throw animation and resets its state within the World lifecycle.
+     */
     playThrowAnimation() {
         this.lastActionTime = Date.now();
         this.isThrowing = true;
-        setTimeout(() => this.isThrowing = false, 400);
+        this.world.setManagedTimeout(() => this.isThrowing = false, 400);
         if (this.isDeadAnimationPlaying) return;
 
         let i = 0;
