@@ -111,7 +111,7 @@ const MOBILE_ACTION_TO_RUN_DELAY = 150;
 const mobileControlSides = {
   left: {
     movementKey: "LEFT",
-    actionKey: "SHIFT",
+    actionKey: "SPACE",
     oppositeSide: "right",
     movementPressed: false,
     actionPressed: false,
@@ -122,7 +122,7 @@ const mobileControlSides = {
   },
   right: {
     movementKey: "RIGHT",
-    actionKey: "SPACE",
+    actionKey: "SHIFT",
     oppositeSide: "left",
     movementPressed: false,
     actionPressed: false,
@@ -135,9 +135,9 @@ const mobileControlSides = {
 
 const mobileControlBindings = [
   { id: "leftBtn", side: "left", role: "movement", pointerId: null },
-  { id: "throwBtn", side: "left", role: "action", pointerId: null },
+  { id: "jumpBtn", side: "left", role: "action", pointerId: null },
   { id: "rightBtn", side: "right", role: "movement", pointerId: null },
-  { id: "jumpBtn", side: "right", role: "action", pointerId: null },
+  { id: "throwBtn", side: "right", role: "action", pointerId: null },
 ];
 
 /**
