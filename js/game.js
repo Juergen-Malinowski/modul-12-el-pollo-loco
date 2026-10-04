@@ -1,19 +1,7 @@
-let canvas; // Canvas-Element anlegen
-let world; // Variable für die Welt (World) anlegen
-let keyboard = new Keyboard(); // Variablen für Rückmeldung des "keydown" in "keyboard" anlegen
-let score = 0; // Globale SCORE-Zählvariable für Spielpunkte
-
-// ##################################
-// Nur für TEST, später löschen
-// ##################################
-if (
-  typeof soundHub === "undefined" &&
-  typeof window !== "undefined" &&
-  window.soundHub
-) {
-  var soundHub = window.soundHub;
-}
-console.log("SoundHub verfügbar?", typeof soundHub);
+let canvas;
+let world;
+let keyboard = new Keyboard();
+let score = 0;
 
 /**
  * Converts pointer coordinates from the displayed canvas size
@@ -34,42 +22,42 @@ function getCanvasCoordinates(event, canvasElement) {
   };
 }
 
+/**
+ * Replaces any existing World with a freshly initialized game instance.
+ */
 function init() {
-  // grundsätzliche Einbindung für canvas und Darstellungsart (2D/3D) ...
   canvas = document.getElementById("canvas");
 
   if (world && typeof world.destroy === "function") {
     world.destroy();
   }
 
-  initLevel(); // jetzt wird Welt erschaffen
-  world = new World(canvas, keyboard); // Welt anlegen und Canvas (id canvas) und gedrückte Taste übergeben
-  window.world = world; // Sicherstellen, dass nach einem "Restart" immer nur eine aktive Welt existiert.
+  initLevel();
+  world = new World(canvas, keyboard);
+  window.world = world;
 }
 
 window.addEventListener("keydown", (e) => {
-  // ACHTUNG:  "keypress" ist veraltet und wird nicht zu 100 % unterstützt (und analysiert nicht alle Tasten !). Deshalb "keydown" !!!
   switch (e.key) {
-    // EVENT "keydown" auslesen und in einer der Variablen "keyboard" speichern (TRUE) ...
-    case "ArrowLeft": // KEY = linker Pfeil / KEYCODE = 37
+    case "ArrowLeft":
       keyboard.LEFT = true;
       break;
-    case "ArrowRight": // KEY = rechter Pfeil / KEYCODE = 39
+    case "ArrowRight":
       keyboard.RIGHT = true;
       break;
-    case "ArrowUp": // KEY = linker Pfeil / KEYCODE = 38
+    case "ArrowUp":
       keyboard.UP = true;
       break;
-    case "ArrowDown": // KEY = linker Pfeil / KEYCODE = 40
+    case "ArrowDown":
       keyboard.DOWN = true;
       break;
-    case " ": // KEY = linker Pfeil / KEYCODE = 32
+    case " ":
       keyboard.SPACE = true;
       break;
-    case "Shift": // KEY = linker Pfeil / KEYCODE = 16
+    case "Shift":
       keyboard.SHIFT = true;
       break;
-    case "Enter": // KEY = linker Pfeil / KEYCODE = 13
+    case "Enter":
       keyboard.ENTER = true;
       break;
     default:
@@ -78,7 +66,6 @@ window.addEventListener("keydown", (e) => {
 });
 
 window.addEventListener("keyup", (e) => {
-  // SOBALD eine Taste wieder losgelassen wird, wird die entsprechende Variable von "keyboard" wieder auf FALSE gesetzt ...
   switch (e.code) {
     case "ArrowLeft":
       keyboard.LEFT = false;

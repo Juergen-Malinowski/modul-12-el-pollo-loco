@@ -1,4 +1,3 @@
-
 /**
  * Starts a fresh game world and activates the gameplay UI.
  */
@@ -451,14 +450,6 @@ function checkOrientation() {
     var overlay = document.getElementById("orientationOverlay");
     var rotateBtn = document.getElementById("rotateButton");
 
-    console.log(
-      "🔍 checkOrientation() triggered (stabilized)...",
-      "width:",
-      window.innerWidth,
-      "height:",
-      window.innerHeight,
-    );
-
     if (!overlay) {
       return;
     }
@@ -488,16 +479,12 @@ function checkOrientation() {
  * Requests fullscreen mode and landscape orientation when supported.
  */
 function rotateDevice() {
-  console.log("🔄 Rotate button clicked – attempting fullscreen + rotation...");
-
   var elem = document.documentElement;
 
   if (elem.requestFullscreen) {
     elem
       .requestFullscreen()
       .then(function () {
-        console.log("🖥️ Fullscreen mode activated.");
-
         if (
           typeof screen.orientation !== "undefined" &&
           typeof screen.orientation.lock === "function"
@@ -505,7 +492,6 @@ function rotateDevice() {
           screen.orientation
             .lock("landscape")
             .then(function () {
-              console.log("✅ Device successfully rotated to landscape mode.");
             })
             .catch(function (error) {
               console.warn("⚠️ Rotation request was blocked:", error);

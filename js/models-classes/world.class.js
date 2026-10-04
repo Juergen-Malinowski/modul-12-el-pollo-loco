@@ -137,6 +137,9 @@ class World {
     this.stopAllGameProcesses();
     this.clearManagedTimeouts();
     this.clearManagedIntervals();
+    document
+      .querySelectorAll(".highscoreMessageOverlay")
+      .forEach((overlay) => overlay.remove());
 
     if (this.animationFrameId !== null) {
       cancelAnimationFrame(this.animationFrameId);
@@ -1270,6 +1273,7 @@ class World {
    */
   showHighscoreMessage(text) {
     let overlay = document.createElement("div");
+    overlay.className = "highscoreMessageOverlay";
     overlay.textContent = text;
     overlay.style.position = "fixed";
     overlay.style.top = "50%";
@@ -1287,7 +1291,7 @@ class World {
     overlay.style.boxShadow = "0 0 15px rgba(0,0,0,0.5)";
     document.body.appendChild(overlay);
 
-    setTimeout(function () {
+    this.setManagedTimeout(function () {
       overlay.remove();
     }, 3000);
   }
