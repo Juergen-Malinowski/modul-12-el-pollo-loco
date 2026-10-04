@@ -1,15 +1,22 @@
+/**
+ * Displays image-based status values for health, bottles, coins, and the end boss.
+ */
 class StatusBar extends DrawableObjects {
 
-    percentage = 100;    // generische Prozentanzeige
-    images = [];         // Bildliste (wird dynamisch befüllt)
+    percentage = 100;
+    images = [];
 
+    /**
+     * Creates a status bar for the requested game resource.
+     *
+     * @param {'health'|'bottle'|'coins'|'endboss'} type - Status bar type.
+     */
     constructor(type = 'health') {
         super();
 
-        var defaultPercentage = 100; // Startwert (kann je nach Typ überschrieben werden)
+        var defaultPercentage = 100;
 
         if (type === 'health') {
-            // === STATUSBAR LEBENSENERGIE ===
             this.images = [
                 './assets/img/7_statusbars/1_statusbar/2_statusbar_health/green/100.png',
                 './assets/img/7_statusbars/1_statusbar/2_statusbar_health/green/80.png',
@@ -24,7 +31,6 @@ class StatusBar extends DrawableObjects {
         }
 
         if (type === 'bottle') {
-            // === STATUSBAR FLASCHEN ===
             this.images = [
                 './assets/img/7_statusbars/1_statusbar/3_statusbar_bottle/blue/100.png',
                 './assets/img/7_statusbars/1_statusbar/3_statusbar_bottle/blue/80.png',
@@ -35,12 +41,10 @@ class StatusBar extends DrawableObjects {
             ];
             this.x = 10;
             this.y = 70;
-            defaultPercentage = 0; // Flaschen beginnen leer
+            defaultPercentage = 0;
         }
 
         if (type === 'coins') {
-            // === STATUSBAR MÜNZEN ===
-            // Reihenfolge jetzt korrekt: 100 → 0 Prozent
             this.images = [
                 './assets/img/7_statusbars/1_statusbar/1_statusbar_coin/orange/100.png',
                 './assets/img/7_statusbars/1_statusbar/1_statusbar_coin/orange/80.png',
@@ -50,12 +54,11 @@ class StatusBar extends DrawableObjects {
                 './assets/img/7_statusbars/1_statusbar/1_statusbar_coin/orange/0.png'
             ];
             this.x = 10;
-            this.y = 130;    // unter Flaschen-Bar
-            defaultPercentage = 0; // Münzen starten leer
+            this.y = 130;
+            defaultPercentage = 0;
         }
 
         if (type === 'endboss') {
-            // === STATUSBAR ENDBOSS ===
             this.images = [
                 './assets/img/7_statusbars/2_statusbar_endboss/green/green100.png',
                 './assets/img/7_statusbars/2_statusbar_endboss/green/green80.png',
@@ -73,15 +76,25 @@ class StatusBar extends DrawableObjects {
         this.heigth = 50;
 
         this.loadImages(this.images);
-        this.setPercentage(defaultPercentage); // jetzt korrekt initialisiert
+        this.setPercentage(defaultPercentage);
     }
 
+    /**
+     * Updates the status value and switches to the corresponding image.
+     *
+     * @param {number} percentage - Current status percentage.
+     */
     setPercentage(percentage) {
         this.percentage = percentage;
         var path = this.images[this.getImageIndex()];
         this.img = this.imageCache[path];
     }
 
+    /**
+     * Maps the current percentage to its status image index.
+     *
+     * @returns {number} Image index for the current percentage range.
+     */
     getImageIndex() {
         if (this.percentage >= 100) return 0;
         else if (this.percentage >= 80) return 1;

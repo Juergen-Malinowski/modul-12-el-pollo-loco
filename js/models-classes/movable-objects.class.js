@@ -1,33 +1,38 @@
+/**
+ * Adds movement, gravity, collision, damage, and animation behavior to drawable objects.
+ */
 class MovableObject extends DrawableObjects {
 
+    speed = 0.1;
+    otherDirection = false;
+    speedY = 0;
+    acceleration = 4;
 
-    speed = 0.1;             // Modify-Faktor für Wolkenbewegung
-    otherDirection = false;  // in welche Richtigung bewegt sich das Objekt ... FALSE = nach rechts
-    speedY = 0;              // Start Fallgeschwindigkeit
-    acceleration = 4;        // Beschleunigung im Fall
-
-    energie = 100;           // Lebens-ENERGIE (Gesundheit, Trefferpunkte)
-    lastHit = 0;             // speichert, dass ein Treffer erfolgte (für spätere Animation Verletzung)
-    offset = {               // Korrektur der Kollision auf den tatsächlichen Körper !
+    energie = 100;
+    lastHit = 0;
+    offset = {
         top: 0,
         buttom: 0,
         left: 0,
         right: 0,
     }
 
-    // chickenCry = new Audio('assets/sound/chicken-1.mp3');   // aufgeregtes Huhn
-
-
+    /**
+     * Reports whether the object should continue vertical movement.
+     *
+     * @returns {boolean} True while the object is above its ground boundary.
+     */
     isAboveGround() {
-        // WENN ein "ThrowableObjects", DANN sofort RETURN ... 
         if (this instanceof ThrowableObjects) {
-            return true;                            // ABBRUCH der Funktion !
+            return true;
         } else {
-            // GIBT den Punkt zurück, an dem das Objekt den Boden berührt und Fall abgeschlossen ist ...
             return this.y < 130;
         }
     }
 
+    /**
+     * Applies gravity using a shared gameplay interval.
+     */
     applyGravity() {
         soundHub.registerInterval(setInterval(() => {
             if (this.isAboveGround() || this.speedY > 0) {
@@ -37,105 +42,139 @@ class MovableObject extends DrawableObjects {
         }, 30));
     }
 
-
+    /**
+     * Checks overlap with another movable object using collision offsets.
+     *
+     * @param {MovableObject} movableObject - Object to test against.
+     * @returns {boolean} True when the collision areas overlap.
+     */
     isColliding(movableObject) {
-        // Fall 1: Wenn das Objekt eine Flasche (ThrowableObjects) ist ...
         if (movableObject instanceof ThrowableObjects) {
-            // Bei Flaschen (ThrowableObjects) ist die Y-Position meist tiefer als beim Charakter.
-            // Deshalb eigene Rechteck-basierte Kollision (analog zu den beweglichen Objekten)...
             return (
-                this.x + this.width > movableObject.x + movableObject.offset.left &&     // rechter Rand des Charakters erreicht linke Seite der Flasche
+                this.x + this.width >
+                    movableObject.x + movableObject.offset.left &&
                 this.y + this.heigth >= movableObject.y
             );
         }
 
-
-        // Fall 2: Standardkollision für bewegliche Objekte (Character, Chicken, Endboss, etc.) ...
         return (
-            this.x + this.width - this.offset.right > movableObject.x + movableObject.offset.left &&
-            this.x + this.offset.left < movableObject.x + movableObject.width - movableObject.offset.right &&
-            this.y + this.heigth - this.offset.buttom > movableObject.y + movableObject.offset.top &&
-            this.y + this.offset.top < movableObject.y + movableObject.heigth - movableObject.offset.buttom
+            this.x + this.width - this.offset.right >
+                movableObject.x + movableObject.offset.left &&
+            this.x + this.offset.left <
+                movableObject.x + movableObject.width - movableObject.offset.right &&
+            this.y + this.heigth - this.offset.buttom >
+                movableObject.y + movableObject.offset.top &&
+            this.y + this.offset.top <
+                movableObject.y + movableObject.heigth - movableObject.offset.buttom
         );
     }
 
-    // Datei: js/models-classes/movable-objects.class.js
-
+    /**
+     * Applies damage and refreshes Character activity state after a hit.
+     */
     wasHit() {
-        // Schnarchen-Audio beenden ...
-        if (this instanceof Character && typeof soundHub !== "undefined" && soundHub && typeof soundHub.stopSnoring === "function") {
-            try { soundHub.stopSnoring(); } catch (e) { }
+        if (
+            this instanceof Character &&
+            typeof soundHub !== "undefined" &&
+            soundHub &&
+            typeof soundHub.stopSnoring === "function"
+        ) {
+            try {
+                soundHub.stopSnoring();
+            } catch (e) { }
         }
-        // Spieler als "aktiv" markieren, damit Idle/Long-Idle nicht sofort nachrücken ...
+
         if (this instanceof Character) {
-            try { this.lastActionTime = Date.now(); } catch (e) { }
+            try {
+                this.lastActionTime = Date.now();
+            } catch (e) { }
         }
 
-        // Schadenverarbeitung ...
-        this.energie -= 1;    // ENERGIE abziehen ...
+        this.energie -= 1;
         if (this.energie < 0) {
-            this.energie = 0; // Minimum ist 0 ...
+            this.energie = 0;
         } else {
-            this.lastHit = new Date().getTime();  // Zeitpunkt Treffer speichern ...
+            this.lastHit = new Date().getTime();
         }
     }
 
+    /**
+     * Reports whether the object is still inside its post-hit hurt period.
+     *
+     * @returns {boolean} True for three seconds after the latest hit.
+     */
     isHurt() {
-        // Zeitverzögerung nach Verletzung ...
-        let passedTime = new Date().getTime() - this.lastHit;    // Differenz im ms zwischen letzten Treffer und aktueller Zeit
-        passedTime = passedTime / 1000;                          // aus ms (Milli-Sekunden) werden Sekunden
-        return passedTime < 3;                                   // wird TRUE, wenn seit letzten Treffer weniger als 3 Sek. vergangen, sonst FALSE
+        let passedTime = new Date().getTime() - this.lastHit;
+        passedTime = passedTime / 1000;
+        return passedTime < 3;
     }
 
-
-
-
-
+    /**
+     * Reports whether the object's energy is depleted.
+     *
+     * @returns {boolean} True when no energy remains.
+     */
     isDead() {
         return this.energie == 0;
     }
 
+    /**
+     * Advances to the next cached image in an animation sequence.
+     *
+     * @param {string[]} images - Ordered animation image paths.
+     */
     playAnimation(images) {
-        // Wenn der Charakter gerade wirft oder stirbt → KEINE anderen Animationen zeigen ...
         if (this.isThrowing || this.isDeadAnimationPlaying) {
-            return; // stoppt Beinbewegung & Idle-Frames während des Wurfes / Todes
+            return;
         }
-        // Sicherheitsprüfung: nur arbeiten, wenn ein gültiges Array übergeben wurde ...
+
         if (!images || images.length === 0) return;
-        // Nächsten Frame aus der Bildsequenz berechnen ...
+
         let i = this.correntImage % images.length;
         let path = images[i];
         let img = this.imageCache[path];
-        // Nur gültige Bilder übernehmen ...
+
         if (img) {
             this.img = img;
         }
         this.correntImage++;
     }
 
+    /**
+     * Moves the object left and stops Character snoring when applicable.
+     */
     moveLeft() {
-        // Bewegung nach LINKS ...
         this.x -= this.speed;
-        // Schnarchen sofort stoppen, wenn Pepe sich bewegt ...
-        if (this instanceof Character && typeof this.stopSnoringSound === "function") {
+        if (
+            this instanceof Character &&
+            typeof this.stopSnoringSound === "function"
+        ) {
             this.stopSnoringSound();
         }
     }
 
+    /**
+     * Moves the object right and stops Character snoring when applicable.
+     */
     moveRight() {
-        // Bewegung nach RECHTS ...
         this.x += this.speed;
-        // Schnarchen sofort stoppen, wenn Pepe sich bewegt ...
-        if (this instanceof Character && typeof this.stopSnoringSound === "function") {
+        if (
+            this instanceof Character &&
+            typeof this.stopSnoringSound === "function"
+        ) {
             this.stopSnoringSound();
         }
     }
 
+    /**
+     * Starts an upward jump and stops Character snoring when applicable.
+     */
     jump() {
-        // Sprung nach oben ...
         this.speedY = 45;
-        // Schnarchen sofort stoppen, wenn Pepe springt ...
-        if (this instanceof Character && typeof this.stopSnoringSound === "function") {
+        if (
+            this instanceof Character &&
+            typeof this.stopSnoringSound === "function"
+        ) {
             this.stopSnoringSound();
         }
     }

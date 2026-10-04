@@ -1,26 +1,15 @@
 /**
- * ===========================================================
- *  SOUND- & GAMEHUB-KLASSE
- *  -----------------------
- *  Zentrale Steuerung für:
- *    - alle Audio-Sounds (Musik & Effekte)
- *    - Intervalle und Timeouts
- *    - globale Cleanup-Funktion (Spielende / Neustart)
- * ===========================================================
- *  (C) Jürgen Malinowski – Erweiterung am: 04.11.2025
- * ===========================================================
+ * Centralizes game audio, persistent sound settings, and shared timer cleanup.
  */
-
 class SoundHub {
 
     constructor() {
-        // === HINTERGRUNDMUSIK ===
+
         this.backgroundMusic = new Audio('./assets/sound/background-music.mp3');
         this.backgroundMusic.loop = true;
         this.backgroundMusic.volume = 0.3;
         this.backgroundMusic.preload = 'auto';
 
-        // === SOUND-EFFEKTE ===
         this.soundThrow = new Audio('./assets/sound/flying-bottle.mp3');
         this.soundCoin = new Audio('./assets/sound/coin-pling.mp3');
         this.soundHit = new Audio('./assets/sound/pepe-cry.mp3');
@@ -31,25 +20,16 @@ class SoundHub {
         this.soundBossStart = new Audio('./assets/sound/great-Chicken-Cry.mp3');
         this.soundBossCharge = new Audio('./assets/sound/thunder-attack.mp3');
 
-        // === SYSTEM-STATUS ===
         this.lastHitSoundTime = 0;
         this.hitSoundCooldown = 2000;
         this.isMuted = false;
 
-        // === AUDIO-EINSTELLUNGEN LADEN ===
         this.loadSettings();
         this.musicVolume = this.backgroundMusic.volume;
 
-        // === NEU: INTERVALL-/TIMEOUT-VERWALTUNG ===
-        this.activeIntervals = [];     // alle aktiven Intervall-IDs
-        this.activeTimeouts = [];      // alle aktiven Timeout-IDs
+        this.activeIntervals = [];
+        this.activeTimeouts = [];
     }
-
-
-    /* ===========================================================
-     *  AUDIO-STEUERUNG
-     * ===========================================================
-     */
 
     playBackgroundMusic() {
         if (this.isMuted) return;
@@ -63,7 +43,7 @@ class SoundHub {
         this.backgroundMusic.loop = true;
 
         this.backgroundMusic.play().catch(function (e) {
-            console.warn("Musik konnte nicht automatisch gestartet werden:", e);
+            console.warn("Background music could not start automatically:", e);
         });
     }
 
@@ -98,15 +78,13 @@ class SoundHub {
             this.soundBossStart,
             this.soundBossCharge,
         ];
-        // Schnarchen nur anhängen, wenn schon initialisiert
+
         if (this.snoringAudio) {
             list.push(this.snoringAudio);
         }
 
         return list;
     }
-
-
 
     setMusicVolume(value) {
         var v = parseFloat(value);
@@ -185,7 +163,7 @@ class SoundHub {
                 this.soundBossStart.loop = false;
             }
         } catch (e) {
-            console.warn("Fehler beim Stoppen der Boss-Sounds:", e);
+            console.warn("Failed to stop boss audio:", e);
         }
     }
 
@@ -207,16 +185,16 @@ class SoundHub {
                 this.setMuted(mute === 'true');
             }
         } catch (err) {
-            console.warn('Audioeinstellungen konnten nicht geladen werden:', err);
+            console.warn('Failed to load audio settings:', err);
         }
     }
 
-
-    /* ===========================================================
-     *  NEU: INTERVALL- UND TIMEOUT-VERWALTUNG
-     * ===========================================================
+    /**
+     * Registers an interval for global gameplay cleanup.
+     *
+     * @param {number} intervalId - Browser interval identifier.
+     * @returns {number} Registered interval identifier.
      */
-
     registerInterval(intervalId) {
         if (intervalId != null) {
             this.activeIntervals.push(intervalId);
@@ -224,6 +202,12 @@ class SoundHub {
         return intervalId;
     }
 
+    /**
+     * Registers a timeout for global gameplay cleanup.
+     *
+     * @param {number} timeoutId - Browser timeout identifier.
+     * @returns {number} Registered timeout identifier.
+     */
     registerTimeout(timeoutId) {
         if (timeoutId != null) {
             this.activeTimeouts.push(timeoutId);
@@ -231,6 +215,9 @@ class SoundHub {
         return timeoutId;
     }
 
+    /**
+     * Stops and clears all registered gameplay intervals.
+     */
     stopAllIntervals() {
         for (let i = 0; i < this.activeIntervals.length; i++) {
             clearInterval(this.activeIntervals[i]);
@@ -238,6 +225,9 @@ class SoundHub {
         this.activeIntervals = [];
     }
 
+    /**
+     * Stops and clears all registered gameplay timeouts.
+     */
     stopAllTimeouts() {
         for (let i = 0; i < this.activeTimeouts.length; i++) {
             clearTimeout(this.activeTimeouts[i]);
@@ -245,15 +235,8 @@ class SoundHub {
         this.activeTimeouts = [];
     }
 
-
-    /* ===========================================================
-     *  NEU: GLOBALE CLEANUP-FUNKTION
-     * ===========================================================
-     */
-
     /**
-     * Stoppt ALLE Audioquellen dieses Hubs (Musik, Effekte, Schnarchen, Boss).
-     * Kann gefahrlos mehrfach aufgerufen werden.
+     * Stops every audio source managed by this hub.
      */
     stopAllAudio() {
         try {
@@ -273,7 +256,9 @@ class SoundHub {
         } catch (e) { }
     }
 
-
+    /**
+     * Stops registered timers and all active game audio.
+     */
     stopAllGameActivities() {
         try {
             this.stopAllIntervals();
@@ -282,11 +267,12 @@ class SoundHub {
             this.stopBackgroundMusic();
             this.stopBossCharge();
         } catch (err) {
-            console.warn("Fehler beim globalen Stoppen aller Aktivitäten:", err);
+            console.warn("Failed to stop all game activities:", err);
         }
     }
+
     /**
-     * Stoppt und leert sämtliche Sound-, Video- und Intervall-Elemente
+     * Resets shared audio and timer state to an idle baseline.
      */
     resetAllSystems() {
         this.stopAllAudio();
@@ -294,31 +280,31 @@ class SoundHub {
         this.activeIntervals = [];
         this.activeTimeouts = [];
     }
+
     /**
- * Spielt den Schnarchsound ab (sofern nicht stumm).
- */
+     * Starts the looping snoring effect when audio is enabled.
+     */
     playSnoring() {
         if (this.isMuted) return;
 
         if (!this.snoringAudio) {
             this.snoringAudio = new Audio('./assets/sound/snoring.mp3');
             this.snoringAudio.loop = true;
-            this.snoringAudio.volume = this.getEffectsVolume(); // an Effekte anlehnen
+            this.snoringAudio.volume = this.getEffectsVolume();
             this.snoringAudio.preload = 'auto';
         } else {
-            // falls sich Effekte geändert haben
+
             this.snoringAudio.volume = this.getEffectsVolume();
         }
 
         try {
             this.snoringAudio.currentTime = 0;
-            this.snoringAudio.play().catch(err => console.warn('Snoring konnte nicht gestartet werden:', err));
+            this.snoringAudio.play().catch(err => console.warn('Snoring audio could not start:', err));
         } catch (e) { }
     }
 
-
     /**
-     * Stoppt das Schnarchen sofort.
+     * Stops and rewinds the snoring effect.
      */
     stopSnoring() {
         if (this.snoringAudio) {
@@ -328,33 +314,14 @@ class SoundHub {
     }
 }
 
-/**
- * ===========================================================
- *  Globale Initialisierung des SoundHub – sicher auch auf Servern
- * ===========================================================
- */
 (function () {
     try {
-        // Prüfen, ob wir uns im Browser befinden
+
         const globalObj = typeof window !== 'undefined' ? window : globalThis;
         if (!globalObj.soundHub) {
             globalObj.soundHub = new SoundHub();
-            console.log("✅ SoundHub global initialisiert (safe mode).");
-        } else {
-            console.log("ℹ️ SoundHub war bereits vorhanden.");
         }
     } catch (e) {
-        console.warn("⚠️ Konnte SoundHub nicht global registrieren:", e);
+        console.warn("Failed to register SoundHub globally:", e);
     }
 })();
-
-
-
-/**
- * ===========================================================
- *  SOUND- & GAMEHUB - DATEI-STATUS
- *  -----------------
- *  (C) Jürgen Malinowski – Letzte Bearbeitung:
- *  04.11.2025 – 14:00 Uhr
- * ===========================================================
- */
