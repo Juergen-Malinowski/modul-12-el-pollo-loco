@@ -609,6 +609,8 @@ canvas {
 /* Button zum Schließen */
 #closeGameControlHint {
   display: inline-block;
+  align-self: center;
+  width: fit-content;
   background-color: var(--color-ui-primary);
   color: var(--color-text-dark);
   border: 2px solid var(--color-text-dark);
@@ -666,6 +668,8 @@ canvas {
 
 #closeAudioHint {
   display: inline-block;
+  align-self: center;
+  width: fit-content;
   background-color: var(--color-ui-primary);
   color: var(--color-text-dark);
   border: 2px solid var(--color-text-dark);
