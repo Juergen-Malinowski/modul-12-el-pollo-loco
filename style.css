@@ -72,6 +72,48 @@ canvas {
   border-radius: 15px;
 }
 
+/* === MOBILE GAME CONTROLS === */
+#mobileControls {
+  display: none;
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  pointer-events: none;
+}
+
+.leftControls,
+.rightControls {
+  position: absolute;
+  top: clamp(56px, 18vh, 74px);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(10px, 3vh, 14px);
+}
+
+.leftControls {
+  left: clamp(10px, 2vw, 18px);
+}
+
+.rightControls {
+  right: clamp(10px, 2vw, 18px);
+}
+
+#mobileControls button {
+  width: clamp(58px, 10vw, 72px);
+  height: clamp(46px, 13vh, 56px);
+  padding: 0 6px;
+  background-color: var(--color-ui-primary);
+  color: var(--color-text-dark);
+  border: 2px solid var(--color-text-dark);
+  border-radius: 12px;
+  font-family: "Zabars", Arial, Helvetica, sans-serif;
+  font-size: clamp(1rem, 4.5vh, 1.4rem);
+  line-height: 1;
+  pointer-events: auto;
+  touch-action: none;
+  user-select: none;
+}
+
 @font-face {
   font-family: "Zabars";
   src: url("./assets/fonts/zabars.ttf") format("truetype");
@@ -854,6 +896,10 @@ canvas {
 
 
 @media (max-height: 600px) and (orientation: landscape) {
+  #mobileControls {
+    display: block;
+  }
+
   h1 {
     display: none;
   }
