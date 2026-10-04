@@ -407,7 +407,14 @@ function updateMobileControlLayout() {
   var button = document.getElementById("leftBtn");
 
   if (!controls || !stage || !button || !controls.classList.contains("isActive")) return;
-  if (!window.matchMedia("(max-height: 600px) and (orientation: landscape)").matches) return;
+
+  var touchControlsEnabled = supportsTouchControls();
+  controls.classList.toggle("touchControlsEnabled", touchControlsEnabled);
+
+  if (!touchControlsEnabled || !isLandscapeViewport()) {
+    controls.classList.remove("controlsOutsideStage", "controlsOverlayStage");
+    return;
+  }
 
   var stageRect = stage.getBoundingClientRect();
   var buttonWidth = button.getBoundingClientRect().width;
@@ -423,6 +430,17 @@ function updateMobileControlLayout() {
     buttonWidth,
     stageRect,
   );
+}
+
+function supportsTouchControls() {
+  return (
+    window.matchMedia("(any-pointer: coarse)").matches ||
+    navigator.maxTouchPoints > 0
+  );
+}
+
+function isLandscapeViewport() {
+  return window.matchMedia("(orientation: landscape)").matches;
 }
 
 function setMobileControlMode(controls, fitOutside, leftSpace, rightSpace, buttonWidth, stageRect) {

@@ -842,8 +842,7 @@ class World {
   isMobileOverlayHud() {
     var controls = document.getElementById("mobileControls");
     return (
-      controls &&
-      controls.classList.contains("isActive") &&
+      this.isMobileControlsActive() &&
       controls.classList.contains("controlsOverlayStage")
     );
   }
@@ -998,7 +997,12 @@ class World {
 
   isMobileControlsActive() {
     var controls = document.getElementById("mobileControls");
-    return controls && controls.classList.contains("isActive");
+    return (
+      controls &&
+      controls.classList.contains("isActive") &&
+      controls.classList.contains("touchControlsEnabled") &&
+      window.matchMedia("(orientation: landscape)").matches
+    );
   }
 
   getGameControlHintsPosition(mobileOverlayHud) {
