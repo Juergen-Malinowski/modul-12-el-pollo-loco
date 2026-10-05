@@ -38,11 +38,13 @@ class World {
   gameOverClickHandlerBound = null;
   managedTimeouts = new Set();
   managedIntervals = new Set();
+  collisionManager;
 
   constructor(canvas, keyboard) {
     this.ctx = canvas.getContext("2d");
     this.canvas = canvas;
     this.keyboard = keyboard;
+    this.collisionManager = new WorldCollisionManager(this);
     this.coffinImg.src = "./assets/img/2_charakter_pepe/5_dead/coffin.png";
     this.youWinImg.src = "./assets/img/0_you_won_you_lost/You Win A.png";
     this.gameOverImg.src =
@@ -165,186 +167,10 @@ class World {
   run() {
     soundHub.registerInterval(
       setInterval(() => {
-        this.checkCollisions();
+        this.collisionManager.checkCollisions();
         this.checkThrowObjects();
       }, 30),
     );
-  }
-
-  checkCollisions() {
-
-    if (this.gameOver) {
-      return;
-    }
-
-    for (let i = this.level.enemies.length - 1; i >= 0; i--) {
-      const enemy = this.level.enemies[i];
-
-      if (!this.character.isColliding(enemy)) continue;
-
-      const faelltNachUnten = this.character.speedY < 5;
-      const charBottom =
-        this.character.y +
-        this.character.heigth -
-        (this.character.offset ? this.character.offset.buttom : 0);
-      const enemyTop = enemy.y + (enemy.offset ? enemy.offset.top : 0);
-      const oberhalb = charBottom <= enemy.y + enemy.heigth * 0.7;
-
-      if (faelltNachUnten && oberhalb && !enemy.isDeadChicken) {
-
-        if (!(enemy instanceof Endboss)) {
-          this.character.speedY = 25;
-          this.character.y = enemyTop - this.character.heigth;
-          soundHub.playEffect(soundHub.soundChickenHit);
-          enemy.die();
-
-          if (enemy instanceof LittleChicken) {
-            this.addScore(15);
-          } else {
-            this.addScore(20);
-          }
-          this.setManagedTimeout(() => {
-            const index = this.level.enemies.indexOf(enemy);
-            if (index > -1) this.level.enemies.splice(index, 1);
-          }, 2000);
-          soundHub.playEffect(soundHub.soundChickenMud);
-          continue;
-        }
-
-        if (enemy instanceof Endboss && !enemy.isDeadBoss) {
-          soundHub.playEffect(soundHub.soundChickenHit);
-          enemy.wasHit();
-          this.addScore(65);
-
-          const bounceDistance = 300;
-          const bounceForceY = 50;
-          let bounceDirection;
-
-          if (this.character.x < enemy.x) {
-            bounceDirection = -1;
-          } else {
-            bounceDirection = 1;
-          }
-
-          const minX = 0;
-          const maxX = this.level.levelEndX - this.character.width;
-          const predictedX =
-            this.character.x + bounceDistance * bounceDirection;
-
-          if (predictedX < minX + 200 || predictedX > maxX - 200) {
-            bounceDirection *= -1;
-          }
-
-          this.character.speedY = bounceForceY;
-          this.character.x += bounceDistance * bounceDirection;
-
-          this.character.isBouncingOffBoss = true;
-          this.setManagedTimeout(() => {
-            this.character.isBouncingOffBoss = false;
-
-            if (typeof this.character.snapToGround === "function") {
-              this.character.snapToGround();
-            }
-          }, 500);
-          continue;
-        }
-      }
-
-      if (!enemy.isDeadChicken) {
-        var now = Date.now();
-        if (now - soundHub.lastHitSoundTime > soundHub.hitSoundCooldown) {
-          soundHub.playEffect(soundHub.soundHit);
-          soundHub.lastHitSoundTime = now;
-        }
-        this.character.wasHit();
-        this.percentage =
-          (this.character.energie / this.character.holeEnergie) * 100;
-        this.statusBar.setPercentage(this.percentage);
-      }
-    }
-
-    for (let i = this.level.bottles.length - 1; i >= 0; i--) {
-      const bottle = this.level.bottles[i];
-      if (this.character.isColliding(bottle)) {
-        this.collectBottle(i);
-      }
-    }
-
-    for (let i = this.level.coins.length - 1; i >= 0; i--) {
-      const coin = this.level.coins[i];
-      if (this.character.isColliding(coin)) {
-        this.collectCoin(i);
-      }
-    }
-
-    for (let i = this.throwableObjects.length - 1; i >= 0; i--) {
-      const bottle = this.throwableObjects[i];
-      if (bottle.y > 380) {
-        this.throwableObjects.splice(i, 1);
-        continue;
-      }
-      for (let j = this.level.enemies.length - 1; j >= 0; j--) {
-        const enemy = this.level.enemies[j];
-        if (enemy instanceof Endboss) continue;
-        if (enemy.isDeadChicken) continue;
-
-        const hit =
-          bottle.x + bottle.width > enemy.x + enemy.offset.left &&
-          bottle.x < enemy.x + enemy.width - enemy.offset.right &&
-          bottle.y + bottle.heigth > enemy.y + enemy.offset.top &&
-          bottle.y < enemy.y + enemy.heigth - enemy.offset.buttom;
-
-        if (hit) {
-          soundHub.playEffect(soundHub.soundChickenHit);
-          enemy.die();
-          this.addScore(20);
-          this.throwableObjects.splice(i, 1);
-          this.setManagedTimeout(() => {
-            const idx = this.level.enemies.indexOf(enemy);
-            if (idx > -1) this.level.enemies.splice(idx, 1);
-          }, 2000);
-          break;
-        }
-      }
-    }
-
-    for (let i = this.throwableObjects.length - 1; i >= 0; i--) {
-      const bottle = this.throwableObjects[i];
-      const boss = this.level.enemies.find(function (e) {
-        return e instanceof Endboss;
-      });
-      if (!boss || boss.isDeadBoss) continue;
-
-      const hit =
-        bottle.x + bottle.width > boss.x + boss.offset.left &&
-        bottle.x < boss.x + boss.width - boss.offset.right &&
-        bottle.y + bottle.heigth > boss.y + boss.offset.top &&
-        bottle.y < boss.y + boss.heigth - boss.offset.buttom;
-
-      if (hit) {
-        this.throwableObjects.splice(i, 1);
-        boss.wasHit();
-        this.addScore(40);
-        break;
-      }
-    }
-  }
-
-  collectBottle(index) {
-    soundHub.playEffect(soundHub.soundBottlePickup);
-    this.level.bottles.splice(index, 1);
-    this.collectedBottles++;
-    this.updateBottleBar();
-    this.addScore(2);
-    this.showBottlePickupEffect();
-  }
-
-  collectCoin(index) {
-    soundHub.playEffect(soundHub.soundCoin);
-    this.level.coins.splice(index, 1);
-    this.collectedCoins++;
-    this.updateCoinBar();
-    this.addScore(3);
   }
 
   showBottlePickupEffect() {
