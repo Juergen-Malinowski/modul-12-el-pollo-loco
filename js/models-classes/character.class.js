@@ -12,6 +12,7 @@ class Character extends MovableObject {
     energie = 300;
     holeEnergie = 300;
     isDeadAnimationPlaying = false;
+    isBossKnockback = false;
 
     offset = {
         top: 130,
@@ -268,6 +269,7 @@ class Character extends MovableObject {
         if (this.speedY <= 0 && this.y > 130 && !this.isAboveGround()) {
             this.y = 130;
             this.speedY = 0;
+            this.isBossKnockback = false;
         }
     }
 

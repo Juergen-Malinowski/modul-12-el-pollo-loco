@@ -35,6 +35,7 @@ class WorldCollisionManager {
   /** Checks whether the Character lands on an enemy from above. */
   isStompCollision(enemy) {
     const character = this.world.character;
+    if (enemy instanceof Endboss && character.isBossKnockback) return false;
     const characterBottom =
       character.y +
       character.heigth -

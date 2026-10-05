@@ -263,6 +263,7 @@ class Endboss extends MovableObject {
                 this.world.statusBar.setPercentage(percent);
                 soundHub.playEffect(soundHub.soundHit);
 
+                this.world.character.isBossKnockback = true;
                 this.world.character.speedY = 25;
                 clearInterval(moveInterval);
                 this.isCharging = false;
