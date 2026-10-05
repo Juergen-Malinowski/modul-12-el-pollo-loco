@@ -356,7 +356,8 @@ class World {
     const interval = this.setManagedInterval(() => {
       ctx.save();
       ctx.font = "bold 30px Zabars";
-      ctx.fillStyle = `rgba(255,255,0,${opacity})`;
+      ctx.globalAlpha = opacity;
+      ctx.fillStyle = getGameColor("--color-effect-bottle-pickup");
       ctx.fillText("+1", x - this.cameraX, y);
       ctx.restore();
       opacity -= 0.2;
@@ -375,7 +376,8 @@ class World {
     const interval = this.setManagedInterval(() => {
       ctx.save();
       ctx.font = "bold 25px Zabars";
-      ctx.fillStyle = `rgba(255,255,255,${opacity})`;
+      ctx.globalAlpha = opacity;
+      ctx.fillStyle = getGameColor("--color-text-light");
       ctx.fillText(`+${points} Pts`, x - this.cameraX, y);
       ctx.restore();
       opacity -= 0.2;
@@ -787,7 +789,7 @@ class World {
 
       ctx.save();
       ctx.font = "bold 90px Zabars";
-      ctx.fillStyle = "yellow";
+      ctx.fillStyle = getGameColor("--color-effect-bottle-pickup");
       ctx.textAlign = "center";
       ctx.fillText("R . i . P.", centerX, centerY - coffinHeight + 65);
       ctx.restore();
@@ -859,14 +861,14 @@ class World {
       ctxBtn.textAlign = "center";
 
       function drawButtonRect(c, area) {
-        c.fillStyle = "#ffcc00";
-        c.strokeStyle = "black";
+        c.fillStyle = getGameColor("--color-ui-primary");
+        c.strokeStyle = getGameColor("--color-border-dark");
         c.fillRect(area.x, area.y, area.width, area.height);
         c.strokeRect(area.x, area.y, area.width, area.height);
       }
 
       drawButtonRect(ctxBtn, this.menuButtonArea);
-      ctxBtn.fillStyle = "black";
+      ctxBtn.fillStyle = getGameColor("--color-text-dark");
       ctxBtn.fillText(
         "Menu",
         this.menuButtonArea.x + this.menuButtonArea.width / 2,
@@ -874,7 +876,7 @@ class World {
       );
 
       drawButtonRect(ctxBtn, this.tryAgainButtonArea);
-      ctxBtn.fillStyle = "black";
+      ctxBtn.fillStyle = getGameColor("--color-text-dark");
       ctxBtn.fillText(
         "Try again?",
         this.tryAgainButtonArea.x + this.tryAgainButtonArea.width / 2,
@@ -955,7 +957,7 @@ class World {
   drawStatusValues(mobileOverlayHud) {
     this.ctx.save();
     this.ctx.font = mobileOverlayHud ? "bold 28px Zabars" : "bold 36px Zabars";
-    this.ctx.fillStyle = "white";
+    this.ctx.fillStyle = getGameColor("--color-text-light");
     this.ctx.textAlign = "left";
     var bottlePosition = this.getBottleValuePosition(mobileOverlayHud);
     var coinPosition = this.getCoinValuePosition(mobileOverlayHud);
@@ -985,7 +987,7 @@ class World {
       var layout = this.getScoreLayout(mobileOverlayHud);
       this.ctx.save();
       this.ctx.font = "bold " + layout.fontSize + "px Zabars";
-      this.ctx.fillStyle = "#ffcc00";
+      this.ctx.fillStyle = getGameColor("--color-ui-primary");
       this.ctx.textAlign = layout.textAlign;
       this.ctx.textBaseline = "top";
       this.ctx.fillText("Score: " + this.score, layout.x, layout.y);
@@ -1032,7 +1034,7 @@ class World {
 
     ctx.save();
     ctx.font = "bold " + fontSize + "px Zabars";
-    ctx.fillStyle = "black";
+    ctx.fillStyle = getGameColor("--color-text-dark");
     ctx.textAlign = "right";
     ctx.textBaseline = "top";
 
@@ -1137,7 +1139,7 @@ class World {
     this.ctx.font = "70px Zabars";
     this.ctx.textAlign = "center";
     this.ctx.textBaseline = "middle";
-    this.ctx.fillStyle = "white";
+    this.ctx.fillStyle = getGameColor("--color-text-light");
     this.ctx.fillText(
       soundHub.isMuted ? "🔇" : "🔊",
       area.x + area.size / 2,
@@ -1287,16 +1289,16 @@ class World {
     overlay.style.top = "50%";
     overlay.style.left = "50%";
     overlay.style.transform = "translate(-50%, -50%)";
-    overlay.style.backgroundColor = "white";
-    overlay.style.color = "black";
+    overlay.style.backgroundColor = getGameColor("--color-surface-light");
+    overlay.style.color = getGameColor("--color-text-dark");
     overlay.style.padding = "30px 50px";
-    overlay.style.border = "4px solid black";
+    overlay.style.border = "4px solid " + getGameColor("--color-border-dark");
     overlay.style.borderRadius = "15px";
     overlay.style.fontFamily = "'Zabars', Arial, Helvetica, sans-serif";
     overlay.style.fontSize = "2em";
     overlay.style.textAlign = "center";
     overlay.style.zIndex = "9999";
-    overlay.style.boxShadow = "0 0 15px rgba(0,0,0,0.5)";
+    overlay.style.boxShadow = "0 0 15px " + getGameColor("--color-shadow-medium");
     document.body.appendChild(overlay);
 
     this.setManagedTimeout(function () {
@@ -1408,14 +1410,14 @@ class World {
     var win = this.victoryWindowRect;
 
     ctx.save();
-    ctx.fillStyle = "white";
-    ctx.strokeStyle = "black";
+    ctx.fillStyle = getGameColor("--color-surface-light");
+    ctx.strokeStyle = getGameColor("--color-border-dark");
     ctx.lineWidth = 4;
     ctx.fillRect(win.x, win.y, win.width, win.height);
     ctx.strokeRect(win.x, win.y, win.width, win.height);
 
     ctx.font = "bold 42px Zabars";
-    ctx.fillStyle = "black";
+    ctx.fillStyle = getGameColor("--color-text-dark");
     ctx.textAlign = "center";
     ctx.textBaseline = "top";
     ctx.fillText("Highscore", win.x + Math.floor(win.width / 2), win.y + 15);
@@ -1484,12 +1486,12 @@ class World {
       if (isHighlighted) {
 
         if (blinkOn) {
-          ctx.fillStyle = "red";
+          ctx.fillStyle = getGameColor("--color-accent-danger");
         } else {
-          ctx.fillStyle = "white";
+          ctx.fillStyle = getGameColor("--color-surface-light");
         }
       } else {
-        ctx.fillStyle = "black";
+        ctx.fillStyle = getGameColor("--color-text-dark");
       }
 
       ctx.fillText(rank, colRankX, y);
@@ -1514,14 +1516,14 @@ class World {
     ctx.textAlign = "center";
 
     function drawButtonRect(c, area) {
-      c.fillStyle = "#ffcc00";
-      c.strokeStyle = "black";
+      c.fillStyle = getGameColor("--color-ui-primary");
+      c.strokeStyle = getGameColor("--color-border-dark");
       c.fillRect(area.x, area.y, area.width, area.height);
       c.strokeRect(area.x, area.y, area.width, area.height);
     }
 
     drawButtonRect(ctx, btn);
-    ctx.fillStyle = "black";
+    ctx.fillStyle = getGameColor("--color-text-dark");
     ctx.fillText(
       "Menu",
       btn.x + Math.floor(btn.width / 2),
@@ -1529,7 +1531,7 @@ class World {
     );
 
     drawButtonRect(ctx, btn2);
-    ctx.fillStyle = "black";
+    ctx.fillStyle = getGameColor("--color-text-dark");
     ctx.fillText(
       "Play again?",
       btn2.x + Math.floor(btn2.width / 2),
