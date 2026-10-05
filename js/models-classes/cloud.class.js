@@ -17,6 +17,7 @@ class Cloud extends MovableObject {
      */
     animate() {
         this.animationInterval = soundHub.registerInterval(setInterval(() => {
+            if (typeof isGamePaused === "function" && isGamePaused()) return;
             this.moveLeft();
         }, 100));
     }

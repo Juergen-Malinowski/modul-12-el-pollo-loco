@@ -57,6 +57,7 @@ class ThrowableObjects extends MovableObject {
         this.applyGravity();
 
         soundHub.registerInterval(setInterval(() => {
+            if (typeof isGamePaused === "function" && isGamePaused()) return;
             this.x += 10 * this.direction;
         }, 20));
     }

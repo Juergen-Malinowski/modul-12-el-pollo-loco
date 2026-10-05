@@ -52,6 +52,7 @@ class Coin extends MovableObject {
     startSpin() {
         var self = this;
         this.spinInterval = soundHub.registerInterval(setInterval(function () {
+            if (typeof isGamePaused === "function" && isGamePaused()) return;
             self.rotationAngle += self.rotationSpeed;
 
             var scale = Math.abs(Math.cos(self.rotationAngle));

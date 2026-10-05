@@ -32,6 +32,7 @@ class SoundHub {
     }
 
     playBackgroundMusic() {
+        if (typeof isGamePaused === "function" && isGamePaused()) return;
         if (this.isMuted) return;
 
         if (!this.backgroundMusic.paused) {
@@ -55,6 +56,7 @@ class SoundHub {
     }
 
     playEffect(audio) {
+        if (typeof isGamePaused === "function" && isGamePaused()) return;
         if (!this.isMuted && audio) {
             try {
                 audio.currentTime = 0;

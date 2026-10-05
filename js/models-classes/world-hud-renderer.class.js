@@ -255,6 +255,7 @@ class WorldHudRenderer {
       position.y + lineHeight * 2,
     );
     ctx.fillText("SPACE  Jump", position.x, position.y + lineHeight * 3);
+    ctx.fillText("P  Pause / Resume", position.x, position.y + lineHeight * 4);
   }
 
   /** Checks whether landscape touch controls are active. */
@@ -338,6 +339,7 @@ class WorldHudRenderer {
       "➡  Move right",
       "SHIFT  or  ⬆  Throw bottle",
       "SPACE  Jump",
+      "P  Pause / Resume",
     ];
     const fontSize = this.isMobileControlsActive() ? 24 : 16;
     const ctx = this.world.ctx;
@@ -366,6 +368,38 @@ class WorldHudRenderer {
     );
     world.ctx.restore();
     this.drawLevelIndicator(area, mobileOverlayHud);
+    this.drawPauseButton(area);
+  }
+
+  /** Draws the visible pause indicator and resume button. */
+  drawPauseButton(soundArea) {
+    if (!this.world.isPaused) return;
+    const area = this.getPauseButtonArea(soundArea);
+    const ctx = this.world.ctx;
+    ctx.save();
+    ctx.fillStyle = getGameColor("--color-ui-primary");
+    ctx.strokeStyle = getGameColor("--color-border-dark");
+    ctx.lineWidth = 3;
+    ctx.fillRect(area.x, area.y, area.width, area.height);
+    ctx.strokeRect(area.x, area.y, area.width, area.height);
+    ctx.font = "bold 28px Zabars";
+    ctx.fillStyle = getGameColor("--color-text-dark");
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("PAUSED - RESUME", area.x + area.width / 2, area.y + area.height / 2);
+    ctx.restore();
+  }
+
+  /** Returns the pause button area below the level indicator. */
+  getPauseButtonArea(soundArea = this.getSoundIconArea()) {
+    const width = 220;
+    const height = 44;
+    return {
+      x: soundArea.x + soundArea.size / 2 - width / 2,
+      y: soundArea.y + soundArea.size + 100,
+      width: width,
+      height: height,
+    };
   }
 
   /**
@@ -435,6 +469,27 @@ class WorldHudRenderer {
       y: y,
       size: iconSize,
     };
+  }
+
+  /** Routes one canvas click to the active HUD controls. */
+  handleHudClick(x, y) {
+    if (this.handlePauseButtonClick(x, y)) return;
+    this.handleSoundIconClick(x, y);
+  }
+
+  /** Resumes gameplay when the visible pause button is clicked. */
+  handlePauseButtonClick(x, y) {
+    if (!this.world.isPaused) return false;
+    const area = this.getPauseButtonArea();
+    if (!this.isPointInsideRect(x, y, area)) return false;
+    this.world.togglePause();
+    return true;
+  }
+
+  /** Checks whether a point lies inside a rectangular HUD area. */
+  isPointInsideRect(x, y, area) {
+    return x >= area.x && x <= area.x + area.width &&
+      y >= area.y && y <= area.y + area.height;
   }
 
   /** Handles clicks inside the sound-icon area. */

@@ -22,6 +22,7 @@ class World {
   showYouWin = false;
   showGameOver = false;
   playerDefeated = false;
+  isPaused = false;
   blinkActive = false;
   blinkVisible = true;
   scoreBlinkInterval = null;
@@ -61,6 +62,7 @@ class World {
     this.collisionManager = new WorldCollisionManager(this);
     this.hudRenderer = new WorldHudRenderer(this);
     this.processManager = new WorldProcessManager(this);
+    this.pauseManager = new WorldPauseManager(this);
     this.gameStateManager = new WorldGameStateManager(this);
     this.levelManager = new WorldLevelManager(this);
     this.highscoreManager = new WorldHighscoreManager(this);
@@ -137,7 +139,10 @@ class World {
    * @returns {number} Browser interval identifier.
    */
   setManagedInterval(callback, delay) {
-    const intervalId = setInterval(callback, delay);
+    const world = this;
+    const intervalId = setInterval(function () {
+      if (!world.isPaused) callback();
+    }, delay);
     this.managedIntervals.add(intervalId);
     return intervalId;
   }
@@ -196,10 +201,12 @@ class World {
 
   /** Starts recurring collision and throw checks. */
   run() {
+    const world = this;
     soundHub.registerInterval(
-      setInterval(() => {
-        this.collisionManager.checkCollisions();
-        this.checkThrowObjects();
+      setInterval(function () {
+        if (world.isPaused) return;
+        world.collisionManager.checkCollisions();
+        world.checkThrowObjects();
       }, 30),
     );
   }
@@ -323,6 +330,12 @@ class World {
     if (percentage < 0) percentage = 0;
     this.coinBar.setPercentage(percentage);
   }
+
+  /** Toggles gameplay pause while the active level is running. */
+  togglePause() { this.pauseManager.togglePause(); }
+
+  /** Routes canvas HUD clicks to sound and pause controls. */
+  handleHudClick(x, y) { this.hudRenderer.handleHudClick(x, y); }
 
   /** Delegates complete audio shutdown to the process manager. */
   silenceAllAudio() { this.processManager.silenceAllAudio(); }

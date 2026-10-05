@@ -21,6 +21,11 @@ function getBottleCarryover() {
   return bottleCarryover;
 }
 
+/** Returns whether the active World is currently paused. */
+function isGamePaused() {
+  return !!(window.world && window.world.isPaused);
+}
+
 /**
  * Returns the configuration for the active level.
  *
@@ -74,7 +79,12 @@ function init() {
   window.world = world;
 }
 
-window.addEventListener("keydown", (e) => {
+window.addEventListener("keydown", function (e) {
+  if ((e.key === "p" || e.key === "P") && !e.repeat) {
+    if (window.world) window.world.togglePause();
+    return;
+  }
+  if (isGamePaused()) return;
   switch (e.key) {
     case "ArrowLeft":
       keyboard.LEFT = true;

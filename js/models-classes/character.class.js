@@ -103,6 +103,7 @@ class Character extends MovableObject {
         if (this.isThrowing) return;
 
         soundHub.registerInterval(setInterval(() => {
+            if (typeof isGamePaused === "function" && isGamePaused()) return;
             if (this.isDeadAnimationPlaying) {
                 return;
             }
@@ -136,6 +137,7 @@ class Character extends MovableObject {
         }, 100));
 
         soundHub.registerInterval(setInterval(() => {
+            if (typeof isGamePaused === "function" && isGamePaused()) return;
             if (this.isDead() && !this.isDeadAnimationPlaying) {
                 this.isDeadAnimationPlaying = true;
                 this.world.gameStateManager.markPlayerDefeated();
@@ -189,6 +191,7 @@ class Character extends MovableObject {
 
         let i = 0;
         const deathInterval = soundHub.registerInterval(setInterval(() => {
+            if (typeof isGamePaused === "function" && isGamePaused()) return;
             if (i < this.imagesDead.length) {
                 const path = this.imagesDead[i];
                 this.img = this.imageCache[path];
@@ -219,6 +222,7 @@ class Character extends MovableObject {
 
         let i = 0;
         const throwInterval = soundHub.registerInterval(setInterval(() => {
+            if (typeof isGamePaused === "function" && isGamePaused()) return;
             if (i < this.imagesThrowing.length) {
                 const path = this.imagesThrowing[i];
                 this.img = this.imageCache[path];

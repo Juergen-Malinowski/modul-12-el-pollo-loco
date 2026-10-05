@@ -35,6 +35,7 @@ class MovableObject extends DrawableObjects {
      */
     applyGravity() {
         soundHub.registerInterval(setInterval(() => {
+            if (typeof isGamePaused === "function" && isGamePaused()) return;
             if (this.isAboveGround() || this.speedY > 0) {
                 this.y -= this.speedY;
                 this.speedY -= this.acceleration;

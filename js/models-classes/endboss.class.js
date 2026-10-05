@@ -113,6 +113,7 @@ class Endboss extends MovableObject {
 
         if (this.animateInterval) clearInterval(this.animateInterval);
         this.animateInterval = soundHub.registerInterval(setInterval(() => {
+            if (typeof isGamePaused === "function" && isGamePaused()) return;
             if (this.isDeadBoss || (this.world && this.world.gameOver)) {
                 clearInterval(this.animateInterval);
                 this.animateInterval = null;
@@ -156,6 +157,7 @@ class Endboss extends MovableObject {
 
         var self = this;
         this.screamInterval = soundHub.registerInterval(setInterval(() => {
+            if (typeof isGamePaused === "function" && isGamePaused()) return;
 
             if (
                 !self.isDeadBoss &&
@@ -193,6 +195,7 @@ class Endboss extends MovableObject {
     playAlertAnimation(onComplete) {
         let i = 0;
         const alertInterval = soundHub.registerInterval(setInterval(() => {
+            if (typeof isGamePaused === "function" && isGamePaused()) return;
             if (i < this.imagesAlert.length) {
                 const path = this.imagesAlert[i];
                 this.img = this.imageCache[path];
@@ -206,6 +209,7 @@ class Endboss extends MovableObject {
 
     startWalkingAnimation() {
         soundHub.registerInterval(setInterval(() => {
+            if (typeof isGamePaused === "function" && isGamePaused()) return;
             if (this.isWalking && !this.isDeadBoss && !this.isCharging) {
                 this.playAnimation(this.imagesWalking);
             }
@@ -216,6 +220,7 @@ class Endboss extends MovableObject {
         if (this.chargeInterval) clearInterval(this.chargeInterval);
 
         this.chargeInterval = soundHub.registerInterval(setInterval(() => {
+            if (typeof isGamePaused === "function" && isGamePaused()) return;
             if (this.isDeadBoss) {
                 clearInterval(this.chargeInterval);
                 return;
@@ -246,6 +251,7 @@ class Endboss extends MovableObject {
         this.playAnimation(this.imagesThunderRun);
 
         const moveInterval = soundHub.registerInterval(setInterval(() => {
+            if (typeof isGamePaused === "function" && isGamePaused()) return;
             if (this.isDeadBoss) {
                 clearInterval(moveInterval);
                 this.isCharging = false;
@@ -327,6 +333,7 @@ class Endboss extends MovableObject {
 
         let i = 0;
         const deathInterval = soundHub.registerInterval(setInterval(() => {
+            if (typeof isGamePaused === "function" && isGamePaused()) return;
             if (i < this.imagesDead.length) {
                 this.img = this.imageCache[this.imagesDead[i]];
                 i++;

@@ -85,12 +85,14 @@ class Chicken extends MovableObject {
     animate() {
         var self = this;
         soundHub.registerInterval(setInterval(function () {
+            if (typeof isGamePaused === "function" && isGamePaused()) return;
             if (!self.isDeadChicken) {
                 self.moveWithinLevel();
             }
         }, 1000 / 60));
 
         soundHub.registerInterval(setInterval(function () {
+            if (typeof isGamePaused === "function" && isGamePaused()) return;
             if (!self.isDeadChicken) {
                 self.playAnimation(self.imagesWalking);
             }

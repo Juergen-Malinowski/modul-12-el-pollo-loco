@@ -606,7 +606,9 @@ function bindGlobalCanvasSoundHandler() {
     var x = coordinates.x;
     var y = coordinates.y;
 
-    if (typeof window.world.handleSoundIconClick === "function") {
+    if (typeof window.world.handleHudClick === "function") {
+      window.world.handleHudClick(x, y);
+    } else if (typeof window.world.handleSoundIconClick === "function") {
       window.world.handleSoundIconClick(x, y);
     }
   };
