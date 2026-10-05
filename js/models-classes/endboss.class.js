@@ -11,6 +11,7 @@ class Endboss extends MovableObject {
     moveSpeed = 5.0;
     minX = 400;
     maxX = 2100;
+    alertX = 1400;
 
     isCharging = false;
     chargeInterval = null;
@@ -103,7 +104,7 @@ class Endboss extends MovableObject {
                 return;
             }
             if (this.world && this.world.character) {
-                if (!this.isAlerted && this.world.character.x >= 1400) {
+                if (!this.isAlerted && this.world.character.x >= this.alertX) {
                     this.triggerAlert();
                 }
             }
@@ -315,7 +316,7 @@ class Endboss extends MovableObject {
                             this.world.freezeWorld();
                         }
                         this.world.addScore(150);
-                        this.world.showVictoryScreen();
+                        this.world.handleBossDefeat();
                     }, 1000);
                 }
             }

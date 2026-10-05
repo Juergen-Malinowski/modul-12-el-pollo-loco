@@ -905,7 +905,8 @@ canvas {
 }
 
 /* Highscore confirmation overlay */
-#highscoreSavedOverlay {
+#highscoreSavedOverlay,
+#levelTransitionOverlay {
   display: none;
   position: fixed;
   inset: 0;
@@ -920,7 +921,8 @@ canvas {
   overflow: hidden;
 }
 
-#highscoreSavedBox {
+#highscoreSavedBox,
+#levelTransitionBox {
   width: min(
     88vw,
     clamp(360px, calc(50dvh * 1.8), 1600px)
@@ -945,18 +947,21 @@ canvas {
   justify-content: center;
 }
 
-#highscoreSavedBox h2 {
+#highscoreSavedBox h2,
+#levelTransitionBox h2 {
   margin: 0 0 clamp(6px, 2.5vh, 40px);
   font-size: clamp(1.2rem, 5.5vh, 5.5rem);
   color: var(--color-accent-gold);
 }
 
-#highscoreSavedBox p {
+#highscoreSavedBox p,
+#levelTransitionBox p {
   margin: 0 0 clamp(7px, 2.8vh, 44px);
   font-size: clamp(1rem, 3.5vh, 3.4rem);
 }
 
-#closeHighscoreSavedButton {
+#closeHighscoreSavedButton,
+#startNextLevelButton {
   align-self: center;
   background-color: var(--color-ui-primary);
   color: var(--color-text-dark);
@@ -973,7 +978,8 @@ canvas {
     background-color 0.2s ease-in-out;
 }
 
-#closeHighscoreSavedButton:hover {
+#closeHighscoreSavedButton:hover,
+#startNextLevelButton:hover {
   background-color: var(--color-ui-primary-hover);
   transform: scale(1.2);
 }

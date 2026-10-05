@@ -129,7 +129,19 @@ class WorldGameStateManager {
   }
 
   /**
-   * Finalizes the current victory score and starts the victory flow.
+   * Routes a defeated Endboss to the next level or the final Victory flow.
+   */
+  handleBossDefeat() {
+    const world = this.world;
+    if (world.levelManager.shouldTransitionToNextLevel()) {
+      world.levelManager.completeLevel();
+      return;
+    }
+    this.showVictoryScreen();
+  }
+
+  /**
+   * Finalizes the current victory score and starts the final Victory flow.
    */
   showVictoryScreen() {
     const world = this.world;

@@ -43,6 +43,7 @@ class World {
   collisionManager;
   hudRenderer;
   gameStateManager;
+  levelManager;
   processManager;
   highscoreManager;
   renderer;
@@ -58,6 +59,7 @@ class World {
     this.hudRenderer = new WorldHudRenderer(this);
     this.processManager = new WorldProcessManager(this);
     this.gameStateManager = new WorldGameStateManager(this);
+    this.levelManager = new WorldLevelManager(this);
     this.highscoreManager = new WorldHighscoreManager(this);
     this.renderer = new WorldRenderer(this);
     this.coffinImg.src = "./assets/img/2_charakter_pepe/5_dead/coffin.png";
@@ -65,6 +67,7 @@ class World {
     this.gameOverImg.src =
       "./assets/img/9_intro_outro_bildschirm/game_over/game over.png";
     this.setWorld();
+    this.levelManager.applyLevelScale();
     this.draw();
     this.run();
     this.score = score;
@@ -284,7 +287,10 @@ class World {
   /** Delegates global canvas sound-handler cleanup. */
   detachGlobalCanvasSoundHandler(canvas) { this.processManager.detachGlobalCanvasSoundHandler(canvas); }
 
-  /** Delegates the Victory flow to the game-state manager. */
+  /** Routes an Endboss defeat to a level transition or final Victory. */
+  handleBossDefeat() { this.gameStateManager.handleBossDefeat(); }
+
+  /** Delegates the final Victory flow to the game-state manager. */
   showVictoryScreen() { this.gameStateManager.showVictoryScreen(); }
 
   /** Delegates the Game Over flow to the game-state manager. */

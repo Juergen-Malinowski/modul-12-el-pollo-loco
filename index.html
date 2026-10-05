@@ -88,6 +88,16 @@
         </div>
       </div>
 
+      <div id="levelTransitionOverlay" style="display: none">
+        <div id="levelTransitionBox">
+          <h2 id="levelTransitionTitle">Level completed!</h2>
+          <p id="levelTransitionText">Ready for the next level?</p>
+          <button id="startNextLevelButton" onclick="startNextLevel()">
+            Start
+          </button>
+        </div>
+      </div>
+
       <div id="audioOverlay" onclick="closeAudioSettings()">
         <div id="audioBox" onclick="event.stopPropagation()">
           <h2>🎧 Audio Settings</h2>
@@ -209,6 +219,7 @@
   <script src="./js/models-classes/world-hud-renderer.class.js"></script>
   <script src="./js/models-classes/world-process-manager.class.js"></script>
   <script src="./js/models-classes/world-game-state-manager.class.js"></script>
+  <script src="./js/models-classes/world-level-manager.class.js"></script>
   <script src="./js/models-classes/world-victory-renderer.class.js"></script>
   <script src="./js/models-classes/world-highscore-manager.class.js"></script>
   <script src="./js/models-classes/world-renderer.class.js"></script>

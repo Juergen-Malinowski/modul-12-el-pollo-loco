@@ -34,8 +34,14 @@ function startGame() {
     init();
   }
 
-  showMobileControls();
+  activateGameplayUi();
+}
 
+/**
+ * Activates controls, background music, and the shared canvas sound handler.
+ */
+function activateGameplayUi() {
+  showMobileControls();
   if (
     typeof soundHub !== "undefined" &&
     soundHub &&
@@ -46,6 +52,37 @@ function startGame() {
   if (typeof bindGlobalCanvasSoundHandler === "function") {
     bindGlobalCanvasSoundHandler();
   }
+}
+
+/**
+ * Opens the static transition dialog after a successful level.
+ */
+function showLevelTransition(completedLevel, nextLevel) {
+  var overlay = document.getElementById("levelTransitionOverlay");
+  var title = document.getElementById("levelTransitionTitle");
+  var text = document.getElementById("levelTransitionText");
+  var button = document.getElementById("startNextLevelButton");
+  if (!overlay || !title || !text) return;
+
+  title.textContent = "Level " + completedLevel + " completed!";
+  text.textContent = "Ready for Level " + nextLevel + "?";
+  overlay.style.display = "flex";
+  if (button) button.focus();
+}
+
+/** Hides the level transition dialog. */
+function closeLevelTransition() {
+  var overlay = document.getElementById("levelTransitionOverlay");
+  if (overlay) overlay.style.display = "none";
+}
+
+/**
+ * Starts the next level while preserving the accumulated run score.
+ */
+function startNextLevel() {
+  closeLevelTransition();
+  if (typeof advanceLevel === "function") advanceLevel();
+  activateGameplayUi();
 }
 
 var highscoreBlinkInterval = null;

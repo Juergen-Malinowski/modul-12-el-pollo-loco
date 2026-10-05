@@ -19,6 +19,15 @@ function getCurrentLevelConfig() {
 }
 
 /**
+ * Advances the run by one level without resetting the accumulated score.
+ */
+function advanceLevel() {
+  if (currentLevel >= 3) return;
+  currentLevel++;
+  init();
+}
+
+/**
  * Converts pointer coordinates from the displayed canvas size
  * to the canvas' internal coordinate system.
  *
