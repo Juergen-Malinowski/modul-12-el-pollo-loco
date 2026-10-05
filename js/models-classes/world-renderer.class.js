@@ -18,8 +18,8 @@ class WorldRenderer {
     const mobileOverlayHud = world.hudRenderer.isMobileOverlayHud();
     this.drawHudLayer(mobileOverlayHud);
     this.drawGameplayLayer();
-    this.drawTerminalOverlays();
     world.hudRenderer.drawSoundIcon(mobileOverlayHud);
+    this.drawTerminalOverlays();
     this.scheduleNextFrame();
   }
 
