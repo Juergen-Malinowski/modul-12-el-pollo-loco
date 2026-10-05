@@ -19,6 +19,7 @@ class WorldVictoryRenderer {
     this.drawVictoryButtons(ctx);
   }
 
+  /** Draws the Victory result window. */
   drawVictoryWindow(ctx) {
     const win = this.world.victoryWindowRect;
     ctx.save();
@@ -35,6 +36,7 @@ class WorldVictoryRenderer {
     ctx.restore();
   }
 
+  /** Draws the stored highscore table. */
   drawVictoryTable(ctx) {
     const win = this.world.victoryWindowRect;
     const list = this.highscoreManager.loadHighscores().slice(0, 10);
@@ -47,6 +49,7 @@ class WorldVictoryRenderer {
     ctx.restore();
   }
 
+  /** Returns column positions for the Victory table. */
   getVictoryTableColumns(win) {
     return {
       rank: win.x + 40,
@@ -55,6 +58,7 @@ class WorldVictoryRenderer {
     };
   }
 
+  /** Draws the Victory table header. */
   drawVictoryTableHeader(ctx, win, columns) {
     ctx.font = "bold 28px Zabars";
     ctx.fillStyle = getGameColor("--color-text-dark");
@@ -65,6 +69,7 @@ class WorldVictoryRenderer {
     ctx.fillText("Score", columns.score, win.y + 70);
   }
 
+  /** Draws all visible Victory highscore rows. */
   drawVictoryRows(ctx, win, columns, list, newEntry) {
     const fontSize = Math.max(20, Math.floor(win.height / 18));
     const lineHeight = Math.floor(fontSize * 1.15);
@@ -85,6 +90,7 @@ class WorldVictoryRenderer {
     }
   }
 
+  /** Draws one Victory highscore row. */
   drawVictoryRow(ctx, columns, entry, newEntry, index, y, blinkOn) {
     const rank = index + 1 + ".";
     const name = entry && entry.name ? entry.name : "Player";
@@ -102,6 +108,7 @@ class WorldVictoryRenderer {
     ctx.fillText(scoreValue + "", columns.score, y);
   }
 
+  /** Returns the row color for the current highlight state. */
   getVictoryRowColor(highlighted, blinkOn) {
     if (!highlighted) return getGameColor("--color-text-dark");
     return getGameColor(
@@ -109,6 +116,7 @@ class WorldVictoryRenderer {
     );
   }
 
+  /** Draws Victory menu and replay buttons. */
   drawVictoryButtons(ctx) {
     const world = this.world;
     if (!world.victoryMenuButtonArea || !world.victoryPlayAgainButtonArea) return;
@@ -123,6 +131,7 @@ class WorldVictoryRenderer {
     ctx.restore();
   }
 
+  /** Draws one Victory action button. */
   drawVictoryButton(ctx, area, label) {
     ctx.fillStyle = getGameColor("--color-ui-primary");
     ctx.strokeStyle = getGameColor("--color-border-dark");
