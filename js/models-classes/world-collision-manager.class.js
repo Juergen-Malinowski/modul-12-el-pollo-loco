@@ -130,10 +130,21 @@ class WorldCollisionManager {
   /** Checks collectible bottle collisions. */
   checkBottlePickups() {
     for (let i = this.world.level.bottles.length - 1; i >= 0; i--) {
-      if (this.world.character.isColliding(this.world.level.bottles[i])) {
+      if (this.isBottlePickupCollision(this.world.level.bottles[i])) {
         this.collectBottle(i);
       }
     }
+  }
+
+  /** Checks whether Pepe's actual hit box overlaps a ground bottle. */
+  isBottlePickupCollision(bottle) {
+    const character = this.world.character;
+    return (
+      character.x + character.width - character.offset.right > bottle.x &&
+      character.x + character.offset.left < bottle.x + bottle.width &&
+      character.y + character.heigth - character.offset.buttom > bottle.y &&
+      character.y + character.offset.top < bottle.y + bottle.heigth
+    );
   }
 
   /** Collects one bottle and updates inventory and score. */
