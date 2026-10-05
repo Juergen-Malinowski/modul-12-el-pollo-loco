@@ -40,6 +40,8 @@ class World {
   managedIntervals = new Set();
   collisionManager;
   hudRenderer;
+  gameStateManager;
+  processManager;
 
   constructor(canvas, keyboard) {
     this.ctx = canvas.getContext("2d");
@@ -47,6 +49,8 @@ class World {
     this.keyboard = keyboard;
     this.collisionManager = new WorldCollisionManager(this);
     this.hudRenderer = new WorldHudRenderer(this);
+    this.processManager = new WorldProcessManager(this);
+    this.gameStateManager = new WorldGameStateManager(this);
     this.coffinImg.src = "./assets/img/2_charakter_pepe/5_dead/coffin.png";
     this.youWinImg.src = "./assets/img/0_you_won_you_lost/You Win A.png";
     this.gameOverImg.src =
@@ -243,267 +247,43 @@ class World {
   }
 
   startCoffinAnimation() {
-    this.showCoffin = true;
-    this.coffinRotation = 0;
-    var rotationSpeed = 15;
-    var spins = 0;
-    var self = this;
-
-    this.coffinSpin = this.setManagedInterval(function () {
-      self.coffinRotation += rotationSpeed;
-      if (self.coffinRotation >= 360) {
-        self.coffinRotation = 0;
-        spins++;
-      }
-      if (spins >= 3 && rotationSpeed > 0) {
-        rotationSpeed -= 0.8;
-        if (rotationSpeed <= 0) {
-          rotationSpeed = 0;
-          self.coffinRotation = 0;
-          self.clearManagedInterval(self.coffinSpin);
-          self.coffinSpin = null;
-          self.waitAndReturnToMenu();
-        }
-      }
-    }, 30);
+    this.gameStateManager.startCoffinAnimation();
   }
 
   waitAndReturnToMenu() {
-    this.showGameOverScreen();
+    this.gameStateManager.showGameOverScreen();
   }
 
   showGameOverScreen() {
-    this.showGameOver = true;
-    this.stopAllGameProcesses();
-    this.silenceAllAudio();
-
-    const canvas = this.canvas;
-    const ctx = this.ctx;
-    const buttonHeight = 60;
-    const buttonWidth = 220;
-    const bottomY = this.canvas.height * 0.75;
-    const centerX = this.canvas.width / 2;
-
-    this.menuButtonArea = {
-      x: centerX - buttonWidth - 40,
-      y: bottomY,
-      width: buttonWidth,
-      height: buttonHeight,
-    };
-    this.tryAgainButtonArea = {
-      x: centerX + 40,
-      y: bottomY,
-      width: buttonWidth,
-      height: buttonHeight,
-    };
-
-    const self = this;
-    this.gameOverClickHandlerBound = function (event) {
-      const coordinates = getCanvasCoordinates(event, canvas);
-      const clickX = coordinates.x;
-      const clickY = coordinates.y;
-
-      if (
-        clickX >= self.tryAgainButtonArea.x &&
-        clickX <= self.tryAgainButtonArea.x + self.tryAgainButtonArea.width &&
-        clickY >= self.tryAgainButtonArea.y &&
-        clickY <= self.tryAgainButtonArea.y + self.tryAgainButtonArea.height
-      ) {
-        canvas.removeEventListener("mousedown", self.gameOverClickHandlerBound);
-        self.gameOverClickHandlerBound = null;
-        self.restartGame();
-        return;
-      }
-
-      if (
-        clickX >= self.menuButtonArea.x &&
-        clickX <= self.menuButtonArea.x + self.menuButtonArea.width &&
-        clickY >= self.menuButtonArea.y &&
-        clickY <= self.menuButtonArea.y + self.menuButtonArea.height
-      ) {
-        canvas.removeEventListener("mousedown", self.gameOverClickHandlerBound);
-        self.gameOverClickHandlerBound = null;
-        self.setManagedTimeout(function () {
-          self.showGameOver = false;
-          self.returnToMenu();
-        }, 500);
-        return;
-      }
-
-      canvas.removeEventListener("mousedown", self.gameOverClickHandlerBound);
-        self.gameOverClickHandlerBound = null;
-      self.setManagedTimeout(function () {
-        self.showGameOver = false;
-        self.returnToMenu();
-      }, 500);
-    };
-
-    canvas.addEventListener("mousedown", this.gameOverClickHandlerBound);
+    this.gameStateManager.showGameOverScreen();
   }
 
-  /**
-   * Stops the current World and restores a clean start-menu state.
-   */
   returnToMenu() {
-    this.showCoffin = false;
-    this.gameOver = true;
-    this.destroy();
-    this.stopBossProcesses();
-    this.resetMenuInputState();
-    this.resetMenuUiState();
+    this.gameStateManager.returnToMenu();
   }
 
-  /**
-   * Stops boss-specific processes that may outlive normal gameplay intervals.
-   */
   stopBossProcesses() {
-    if (typeof soundHub !== "undefined" && soundHub) {
-      soundHub.stopBossCharge();
-      soundHub.stopAllEffects();
-      soundHub.stopBackgroundMusic();
-    }
-
-    if (!this.level || !this.level.enemies) return;
-
-    this.level.enemies.forEach((enemy) => {
-      if (
-        enemy instanceof Endboss &&
-        typeof enemy.forceStopBossAudio === "function"
-      ) {
-        enemy.forceStopBossAudio();
-      }
-    });
+    this.processManager.stopBossProcesses();
   }
 
-  /**
-   * Clears keyboard and touch-control state before returning to the menu.
-   */
   resetMenuInputState() {
-    if (typeof resetMobileControlStates === "function") {
-      resetMobileControlStates();
-    }
-
-    if (typeof keyboard === "undefined") return;
-
-    keyboard.LEFT = false;
-    keyboard.RIGHT = false;
-    keyboard.UP = false;
-    keyboard.DOWN = false;
-    keyboard.SPACE = false;
-    keyboard.SHIFT = false;
-    keyboard.ENTER = false;
+    this.processManager.resetMenuInputState();
   }
 
-  /**
-   * Restores menu visibility and removes gameplay-only UI state.
-   */
   resetMenuUiState() {
-    var canvas = document.getElementById("canvas");
-    var start = document.getElementById("startScreen");
-    var controls = document.getElementById("mobileControls");
-
-    if (canvas) {
-      canvas.style.display = "none";
-      this.detachGlobalCanvasSoundHandler(canvas);
-    }
-    if (start) start.style.display = "flex";
-    if (controls) {
-      controls.classList.remove(
-        "isActive",
-        "touchControlsEnabled",
-        "controlsOutsideStage",
-        "controlsOverlayStage",
-      );
-      controls.style.removeProperty("--left-control-offset");
-      controls.style.removeProperty("--right-control-offset");
-      controls.style.removeProperty("--overlay-control-top");
-    }
-    window.world = null;
+    this.processManager.resetMenuUiState();
   }
 
-  /**
-   * Removes the shared canvas sound handler when gameplay ends.
-   *
-   * @param {HTMLCanvasElement} canvas - Game canvas that owns the listener.
-   */
   detachGlobalCanvasSoundHandler(canvas) {
-    if (!window.__canvasSoundHandler) return;
-
-    canvas.removeEventListener("mousedown", window.__canvasSoundHandler);
-    window.__canvasSoundHandler = null;
+    this.processManager.detachGlobalCanvasSoundHandler(canvas);
   }
 
-  /**
-   * Finalizes the victory score and starts the delayed victory flow.
-   */
   showVictoryScreen() {
-    this.stopAllGameProcesses();
-    soundHub.stopBackgroundMusic();
-    this.silenceAllAudio();
-    let bonusFlaschen = this.collectedBottles * 3;
-    let bonusCoins = this.collectedCoins * 15;
-    let bonusHealth = Math.max(0, Math.round(this.character.energie * 0.7));
-    let totalBonus = bonusFlaschen + bonusCoins + bonusHealth;
-    this.addScore(totalBonus);
-    this.showYouWin = true;
-    this.gameOver = true;
-    this.keyboard = new Keyboard();
-
-    this.setManagedTimeout(() => {
-      this.saveHighScoreEntry();
-
-      if (typeof this.showVictoryOptions === "function") {
-        this.showVictoryOptions();
-      }
-    }, 2000);
-    this.startScoreBlink();
+    this.gameStateManager.showVictoryScreen();
   }
 
-  /**
-   * Stops active combat state and starts the delayed game-over flow.
-   */
   endGame() {
-
-    if (this.level && this.level.enemies) {
-      var boss = this.level.enemies.find(function (e) {
-        return e instanceof Endboss;
-      });
-      if (boss && typeof boss.onGameOverCleanup === "function") {
-        boss.onGameOverCleanup();
-      }
-    }
-    this.gameOver = true;
-    soundHub.stopBackgroundMusic();
-    this.silenceAllAudio();
-    if (typeof this.freezeWorld === "function") {
-      this.freezeWorld();
-    }
-    this.keyboard = new Keyboard();
-
-    if (this.level && this.level.enemies) {
-      this.level.enemies.forEach((enemy) => {
-        if (
-          enemy instanceof Endboss &&
-          typeof enemy.stopAllBossSounds === "function"
-        ) {
-          enemy.stopAllBossSounds();
-        }
-      });
-    }
-
-    var boss = this.level.enemies.find(function (e) {
-      return e instanceof Endboss;
-    });
-    if (boss && typeof boss.onGameOverCleanup === "function") {
-      boss.onGameOverCleanup();
-      if (typeof soundHub !== "undefined") {
-        soundHub.stopEffect(soundHub.soundBossStart);
-        soundHub.stopEffect(soundHub.soundBossCharge);
-      }
-    }
-    this.setManagedTimeout(() => {
-      this.startCoffinAnimation();
-    }, 1500);
+    this.gameStateManager.endGame();
   }
 
   updateBottleBar() {
@@ -521,55 +301,7 @@ class World {
   }
 
   silenceAllAudio() {
-    try {
-
-      if (typeof soundHub !== "undefined" && soundHub) {
-        if (typeof soundHub.stopBackgroundMusic === "function") {
-          soundHub.stopBackgroundMusic();
-        }
-        if (typeof soundHub.stopAllEffects === "function") {
-          soundHub.stopAllEffects();
-        }
-        if (typeof soundHub.stopBossCharge === "function") {
-          soundHub.stopBossCharge();
-        }
-      }
-
-      if (this.character && this.character.soundSnoring) {
-        try {
-          this.character.soundSnoring.pause();
-          this.character.soundSnoring.currentTime = 0;
-        } catch (e) {}
-      }
-
-      if (this.level && this.level.enemies) {
-        for (var i = 0; i < this.level.enemies.length; i++) {
-          var enemy = this.level.enemies[i];
-          if (enemy instanceof Endboss) {
-
-            if (typeof enemy.stopAllBossSounds === "function") {
-              enemy.stopAllBossSounds();
-            }
-            if (typeof enemy.stopBossAudioAndTimers === "function") {
-              enemy.stopBossAudioAndTimers();
-            }
-            if (typeof enemy.stopThunderAttackSound === "function") {
-              enemy.stopThunderAttackSound();
-            }
-          }
-        }
-      }
-
-      try {
-        var allAudio = document.getElementsByTagName("audio");
-        for (var j = 0; j < allAudio.length; j++) {
-          allAudio[j].pause();
-          allAudio[j].currentTime = 0;
-        }
-      } catch (e) {}
-    } catch (err) {
-      console.warn("Fehler in silenceAllAudio():", err);
-    }
+    this.processManager.silenceAllAudio();
   }
 
   draw() {
@@ -1097,110 +829,15 @@ class World {
   }
 
   restartGame() {
-
-    this.silenceAllAudio();
-
-    if (
-      typeof soundHub !== "undefined" &&
-      typeof soundHub.stopBossCharge === "function"
-    ) {
-      soundHub.stopBossCharge();
-
-      if (this.level && this.level.enemies) {
-        for (var i = 0; i < this.level.enemies.length; i++) {
-          var enemy = this.level.enemies[i];
-          if (
-            enemy instanceof Endboss &&
-            typeof enemy.forceStopBossAudio === "function"
-          ) {
-            enemy.forceStopBossAudio();
-          }
-        }
-      }
-    }
-
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-    this.showGameOver = false;
-    this.gameOver = false;
-    this.showCoffin = false;
-
-    this.score = 0;
-    this.blinkActive = false;
-    this.blinkVisible = true;
-
-    if (typeof score !== "undefined") {
-      score = 0;
-    }
-
-    if (typeof startGame === "function") {
-      startGame();
-    }
+    this.gameStateManager.restartGame();
   }
 
   freezeWorld() {
-    try {
-
-      if (this.character) {
-        this.character.speed = 0;
-        this.character.acceleration = 0;
-        if (typeof this.character.stopSnoringSound === "function") {
-          this.character.stopSnoringSound();
-        }
-      }
-
-      if (this.level && Array.isArray(this.level.enemies)) {
-        for (var i = 0; i < this.level.enemies.length; i++) {
-          var e = this.level.enemies[i];
-          if (!e) continue;
-          e.speed = 0;
-          e.acceleration = 0;
-
-          if (e.animateInterval) {
-            clearInterval(e.animateInterval);
-            e.animateInterval = null;
-          }
-          if (e.chargeInterval) {
-            clearInterval(e.chargeInterval);
-            e.chargeInterval = null;
-          }
-          if (e.walkAnimInterval) {
-            clearInterval(e.walkAnimInterval);
-            e.walkAnimInterval = null;
-          }
-        }
-      }
-
-      if (this.level && Array.isArray(this.level.clouds)) {
-        for (var j = 0; j < this.level.clouds.length; j++) {
-          if (this.level.clouds[j]) {
-            this.level.clouds[j].speed = 0;
-          }
-        }
-      }
-
-      if (this.level && Array.isArray(this.level.backgroundObjects)) {
-        for (var k = 0; k < this.level.backgroundObjects.length; k++) {
-          if (this.level.backgroundObjects[k]) {
-            this.level.backgroundObjects[k].speed = 0;
-          }
-        }
-      }
-
-    } catch (err) {
-      console.warn("Failed to freeze the game world:", err);
-    }
+    this.processManager.freezeWorld();
   }
 
   stopAllGameProcesses() {
-    try {
-      if (typeof soundHub !== "undefined" && soundHub) {
-        soundHub.stopAllIntervals();
-        soundHub.stopAllAudio();
-      }
-    } catch (e) {
-      console.warn("Failed to stop game processes:", e);
-    }
+    this.processManager.stopAllGameProcesses();
   }
 
 }
