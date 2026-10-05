@@ -1,7 +1,24 @@
+var highscoreHandledForCurrentGame = false;
+
+/**
+ * Reads a named game color from the shared CSS palette.
+ *
+ * @param {string} variableName - CSS custom property name.
+ * @returns {string} Resolved color value.
+ */
+function getGameColor(variableName) {
+  return getComputedStyle(document.documentElement)
+    .getPropertyValue(variableName)
+    .trim();
+}
+
 /**
  * Starts a fresh game world and activates the gameplay UI.
  */
 function startGame() {
+  score = 0;
+  highscoreHandledForCurrentGame = false;
+
   var start = document.getElementById("startScreen");
   if (start) {
     start.style.display = "none";
@@ -119,7 +136,9 @@ function startHighscoreBlink() {
   var visible = true;
   highscoreBlinkInterval = setInterval(function () {
     for (var i = 0; i < blinkEls.length; i++) {
-      blinkEls[i].style.color = visible ? "red" : "white";
+      blinkEls[i].style.color = visible
+        ? getGameColor("--color-accent-danger")
+        : getGameColor("--color-text-light");
     }
     visible = !visible;
   }, 500);
@@ -295,7 +314,7 @@ function showEndHighscoreOverlay() {
   overlay.style.left = "0";
   overlay.style.width = "100%";
   overlay.style.height = "100%";
-  overlay.style.backgroundColor = "rgba(0,0,0,0.8)";
+  overlay.style.backgroundColor = getGameColor("--color-overlay-dark");
   overlay.style.display = "flex";
   overlay.style.flexDirection = "column";
   overlay.style.alignItems = "center";
@@ -306,7 +325,7 @@ function showEndHighscoreOverlay() {
   message.textContent = "🏆 Dein Highscore wurde gespeichert!";
   message.style.fontFamily = "'Zabars', Arial, Helvetica, sans-serif";
   message.style.fontSize = "2em";
-  message.style.color = "white";
+  message.style.color = getGameColor("--color-text-light");
   message.style.marginBottom = "30px";
 
   var button = document.createElement("button");
@@ -562,8 +581,14 @@ function bindGlobalCanvasSoundHandler() {
  * @param {number} score - Score to store after confirmation.
  */
 function openHighscoreNameDialog(score) {
-  if (document.getElementById("highscoreNameOverlay")) return;
+  if (
+    highscoreHandledForCurrentGame ||
+    document.getElementById("highscoreNameOverlay")
+  ) {
+    return;
+  }
 
+  highscoreHandledForCurrentGame = true;
   var overlay = document.createElement("div");
   overlay.id = "highscoreNameOverlay";
   overlay.innerHTML = `
@@ -602,8 +627,9 @@ function openHighscoreNameDialog(score) {
  * @param {number} score - Score associated with the entered name.
  */
 function submitHighscoreName(score) {
+  var overlay = document.getElementById("highscoreNameOverlay");
   var input = document.getElementById("highscoreNameInput");
-  if (!input) return;
+  if (!overlay || !input || overlay.dataset.submitted === "true") return;
 
   var name = input.value.trim();
   if (!name) {
@@ -611,6 +637,7 @@ function submitHighscoreName(score) {
     return;
   }
 
+  overlay.dataset.submitted = "true";
   storeHighscore(name, score);
   closeHighscoreNameDialog();
 }

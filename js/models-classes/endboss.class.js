@@ -210,6 +210,9 @@ class Endboss extends MovableObject {
         }, this.chargeCooldown));
     }
 
+    /**
+     * Charges toward Pepe and keeps the boss on the side where the charge ends.
+     */
     performChargeAttack() {
         if (!this.world || !this.world.character) return;
 
@@ -220,7 +223,6 @@ class Endboss extends MovableObject {
 
         soundHub.playEffect(soundHub.soundBossCharge);
 
-        const startX = this.x;
         const attackSpeed = this.chargeSpeed;
         const targetDistance = this.chargeDistance;
         let traveled = 0;
@@ -255,7 +257,6 @@ class Endboss extends MovableObject {
                 clearInterval(moveInterval);
                 this.isCharging = false;
                 this.world.addScore(70);
-                this.x = startX;
             }
         }, 40));
     }
