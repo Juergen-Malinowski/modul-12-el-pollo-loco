@@ -43,6 +43,7 @@ class World {
   gameStateManager;
   processManager;
   highscoreManager;
+  renderer;
 
   constructor(canvas, keyboard) {
     this.ctx = canvas.getContext("2d");
@@ -53,6 +54,7 @@ class World {
     this.processManager = new WorldProcessManager(this);
     this.gameStateManager = new WorldGameStateManager(this);
     this.highscoreManager = new WorldHighscoreManager(this);
+    this.renderer = new WorldRenderer(this);
     this.coffinImg.src = "./assets/img/2_charakter_pepe/5_dead/coffin.png";
     this.youWinImg.src = "./assets/img/0_you_won_you_lost/You Win A.png";
     this.gameOverImg.src =
@@ -307,153 +309,7 @@ class World {
   }
 
   draw() {
-    if (!this.isRunning) {
-      return;
-    }
-
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-    this.ctx.translate(this.cameraX, 0);
-    this.addObjectsToMap(this.level.backgroundObjects);
-    this.addObjectsToMap(this.level.clouds);
-
-    this.ctx.translate(-this.cameraX, 0);
-    var mobileOverlayHud = this.hudRenderer.isMobileOverlayHud();
-    this.hudRenderer.drawStatusHud(mobileOverlayHud);
-    this.hudRenderer.drawScoreHud(mobileOverlayHud);
-
-    this.ctx.translate(this.cameraX, 0);
-    this.addObjectsToMap(this.level.bottles);
-    this.addObjectsToMap(this.level.coins);
-    this.addToMap(this.character);
-    this.addObjectsToMap(this.level.enemies);
-    this.addObjectsToMap(this.throwableObjects);
-    this.ctx.translate(-this.cameraX, 0);
-
-    if (this.showCoffin) {
-      var ctx = this.ctx;
-      var centerX = this.canvas.width / 2;
-      var centerY = this.canvas.height / 2;
-      var coffinWidth = 250;
-      var coffinHeight = 150;
-
-      ctx.save();
-      ctx.translate(centerX, centerY);
-      ctx.rotate((this.coffinRotation * Math.PI) / 180);
-      ctx.drawImage(
-        this.coffinImg,
-        -coffinWidth / 2,
-        -coffinHeight / 2,
-        coffinWidth,
-        coffinHeight,
-      );
-      ctx.restore();
-
-      ctx.save();
-      ctx.font = "bold 90px Zabars";
-      ctx.fillStyle = getGameColor("--color-effect-bottle-pickup");
-      ctx.textAlign = "center";
-      ctx.fillText("R . i . P.", centerX, centerY - coffinHeight + 65);
-      ctx.restore();
-    }
-
-    if (this.showYouWin) {
-      var ctxYw = this.ctx;
-      ctxYw.save();
-      ctxYw.globalAlpha = 1.0;
-      ctxYw.drawImage(
-        this.youWinImg,
-        0,
-        0,
-        this.canvas.width,
-        this.canvas.height,
-      );
-      ctxYw.restore();
-    }
-
-    if (this.showYouWin && this.showVictoryOptionsOverlay) {
-      this.drawVictoryOptions(this.ctx);
-    }
-
-    if (this.showYouWin && this.showVictoryOptionsOverlay) {
-      this.drawVictoryOptions(this.ctx);
-    }
-
-    if (this.showGameOver) {
-      var ctxGo = this.ctx;
-      ctxGo.save();
-      ctxGo.globalAlpha = 1.0;
-      ctxGo.drawImage(
-        this.gameOverImg,
-        0,
-        0,
-        this.canvas.width,
-        this.canvas.height,
-      );
-      ctxGo.restore();
-
-      var buttonHeight = 60;
-      var buttonWidth = 220;
-      var spacing = 40;
-      var cx = this.canvas.width / 2;
-      var by = Math.floor(this.canvas.height * 0.75);
-
-      if (!this.menuButtonArea) {
-        this.menuButtonArea = {
-          x: cx - buttonWidth - spacing,
-          y: by,
-          width: buttonWidth,
-          height: buttonHeight,
-        };
-      }
-      if (!this.tryAgainButtonArea) {
-        this.tryAgainButtonArea = {
-          x: cx + spacing,
-          y: by,
-          width: buttonWidth,
-          height: buttonHeight,
-        };
-      }
-
-      var ctxBtn = this.ctx;
-      ctxBtn.save();
-      ctxBtn.lineWidth = 4;
-      ctxBtn.font = "bold 36px Zabars";
-      ctxBtn.textBaseline = "middle";
-      ctxBtn.textAlign = "center";
-
-      function drawButtonRect(c, area) {
-        c.fillStyle = getGameColor("--color-ui-primary");
-        c.strokeStyle = getGameColor("--color-border-dark");
-        c.fillRect(area.x, area.y, area.width, area.height);
-        c.strokeRect(area.x, area.y, area.width, area.height);
-      }
-
-      drawButtonRect(ctxBtn, this.menuButtonArea);
-      ctxBtn.fillStyle = getGameColor("--color-text-dark");
-      ctxBtn.fillText(
-        "Menu",
-        this.menuButtonArea.x + this.menuButtonArea.width / 2,
-        this.menuButtonArea.y + this.menuButtonArea.height / 2,
-      );
-
-      drawButtonRect(ctxBtn, this.tryAgainButtonArea);
-      ctxBtn.fillStyle = getGameColor("--color-text-dark");
-      ctxBtn.fillText(
-        "Try again?",
-        this.tryAgainButtonArea.x + this.tryAgainButtonArea.width / 2,
-        this.tryAgainButtonArea.y + this.tryAgainButtonArea.height / 2,
-      );
-
-      ctxBtn.restore();
-    }
-
-    this.hudRenderer.drawSoundIcon(mobileOverlayHud);
-
-    var self = this;
-    this.animationFrameId = requestAnimationFrame(function () {
-      self.draw();
-    });
+    this.renderer.draw();
   }
 
   /**
@@ -476,29 +332,15 @@ class World {
   }
 
   addObjectsToMap(objects) {
-    objects.forEach((o) => this.addToMap(o));
+    this.renderer.addObjectsToMap(objects);
   }
 
   addToMap(movableObject) {
-    if (movableObject.otherDirection) {
-      this.flipImage(movableObject);
-    } else {
-      movableObject.draw(this.ctx);
-    }
+    this.renderer.addToMap(movableObject);
   }
 
   flipImage(movableObject) {
-    this.ctx.save();
-    this.ctx.translate(movableObject.x + movableObject.width, movableObject.y);
-    this.ctx.scale(-1, 1);
-    this.ctx.drawImage(
-      movableObject.img,
-      0,
-      0,
-      movableObject.width,
-      movableObject.heigth,
-    );
-    this.ctx.restore();
+    this.renderer.flipImage(movableObject);
   }
 
   startScoreBlink() {
