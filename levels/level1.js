@@ -17,15 +17,64 @@ function initLevel(levelConfig = getLevelConfig(1)) {
 
 /** Creates the configured numbers of normal enemies plus one Endboss. */
 function createEnemies(levelConfig) {
-    const enemies = [];
-    for (let i = 0; i < levelConfig.chickenCount; i++) {
-        enemies.push(new Chicken(levelConfig));
-    }
-    for (let i = 0; i < levelConfig.littleChickenCount; i++) {
-        enemies.push(new LittleChicken(levelConfig));
-    }
+    const enemies = createNormalEnemies(levelConfig);
     enemies.push(new Endboss(levelConfig));
     return enemies;
+}
+
+/** Creates normal enemies across separated random spawn slots. */
+function createNormalEnemies(levelConfig) {
+    const types = createEnemyTypes(levelConfig);
+    const positions = createEnemySpawnPositions(levelConfig, types.length);
+    const enemies = [];
+    shuffleArray(types);
+    for (let i = 0; i < types.length; i++) {
+        enemies.push(createEnemyByType(types[i], levelConfig, positions[i]));
+    }
+    return enemies;
+}
+
+/** Builds the configured mix of normal and small chickens. */
+function createEnemyTypes(levelConfig) {
+    const types = [];
+    for (let i = 0; i < levelConfig.chickenCount; i++) types.push("chicken");
+    for (let i = 0; i < levelConfig.littleChickenCount; i++) types.push("little");
+    return types;
+}
+
+/** Creates one randomized spawn position inside each horizontal level slot. */
+function createEnemySpawnPositions(levelConfig, enemyCount) {
+    const startX = 450;
+    const endX = levelConfig.levelEndX - 100;
+    const slotWidth = (endX - startX) / enemyCount;
+    const positions = [];
+    for (let i = 0; i < enemyCount; i++) {
+        positions.push(getEnemySlotPosition(startX, slotWidth, i));
+    }
+    return positions;
+}
+
+/** Returns a random position from the middle area of one spawn slot. */
+function getEnemySlotPosition(startX, slotWidth, index) {
+    const slotStart = startX + slotWidth * index;
+    const randomStart = slotStart + slotWidth * 0.3;
+    return randomStart + Math.random() * slotWidth * 0.4;
+}
+
+/** Randomizes enemy types without changing the separated spawn positions. */
+function shuffleArray(items) {
+    for (let i = items.length - 1; i > 0; i--) {
+        const randomIndex = Math.floor(Math.random() * (i + 1));
+        const current = items[i];
+        items[i] = items[randomIndex];
+        items[randomIndex] = current;
+    }
+}
+
+/** Creates one enemy type at its assigned spawn position. */
+function createEnemyByType(type, levelConfig, spawnX) {
+    if (type === "little") return new LittleChicken(levelConfig, spawnX);
+    return new Chicken(levelConfig, spawnX);
 }
 
 /** Creates the configured number of collectible ground bottles. */

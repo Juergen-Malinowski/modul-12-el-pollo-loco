@@ -22,22 +22,28 @@ class LittleChicken extends MovableObject {
     isDeadChicken = false;
     levelConfig;
 
-    constructor(levelConfig = getLevelConfig(1)) {
+    constructor(levelConfig = getLevelConfig(1), spawnX) {
         super().loadImage('./assets/img/3_feinde_huehner/chicken_small/1_walk/1_w.png');
         this.levelConfig = levelConfig;
-        this.setLevelValues(levelConfig);
+        this.setLevelValues(levelConfig, spawnX);
         this.loadImages(this.imagesWalking);
         this.animate();
     }
 
     /** Applies the configured spawn range and movement speed for this level. */
-    setLevelValues(levelConfig) {
-        const baseLevel = getLevelConfig(1);
-        const scale = levelConfig.levelEndX / baseLevel.levelEndX;
-        const requestedRange = 1650 * scale;
-        const availableRange = Math.max(0, levelConfig.levelEndX - this.width - 450);
-        this.x = 450 + Math.random() * Math.min(requestedRange, availableRange);
+    setLevelValues(levelConfig, spawnX) {
+        if (typeof spawnX === "number") {
+            this.x = spawnX;
+        } else {
+            this.x = this.getRandomSpawnX(levelConfig);
+        }
         this.setRandomSpeed();
+    }
+
+    /** Returns a fallback spawn position inside the playable level. */
+    getRandomSpawnX(levelConfig) {
+        const availableRange = Math.max(0, levelConfig.levelEndX - this.width - 450);
+        return 450 + Math.random() * availableRange;
     }
 
     /** Selects a new movement speed from the current level range. */
