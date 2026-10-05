@@ -1,5 +1,5 @@
 /**
- * Coordinates terminal game states, cleanup, menu transitions, and restarts.
+ * Coordinates Game Over, Victory, restart, and menu transition flow.
  */
 class WorldGameStateManager {
   constructor(world) {
@@ -58,9 +58,6 @@ class WorldGameStateManager {
     this.bindGameOverClickHandler();
   }
 
-  /**
-   * Calculates the Game Over button hit areas.
-   */
   setGameOverButtonAreas() {
     const world = this.world;
     const buttonHeight = 60;
@@ -82,26 +79,16 @@ class WorldGameStateManager {
     };
   }
 
-  /**
-   * Binds the Game Over click handler to the canvas.
-   */
   bindGameOverClickHandler() {
     const world = this.world;
     const canvas = world.canvas;
-
     world.gameOverClickHandlerBound = (event) => {
-      const coordinates = getCanvasCoordinates(event, canvas);
-      this.handleGameOverClick(coordinates.x, coordinates.y);
+      const point = getCanvasCoordinates(event, canvas);
+      this.handleGameOverClick(point.x, point.y);
     };
     canvas.addEventListener("mousedown", world.gameOverClickHandlerBound);
   }
 
-  /**
-   * Routes a Game Over click to restart or menu.
-   *
-   * @param {number} x - Canvas x coordinate.
-   * @param {number} y - Canvas y coordinate.
-   */
   handleGameOverClick(x, y) {
     const world = this.world;
     this.detachGameOverClickHandler();
@@ -117,9 +104,6 @@ class WorldGameStateManager {
     }, 500);
   }
 
-  /**
-   * Removes the Game Over canvas listener.
-   */
   detachGameOverClickHandler() {
     const world = this.world;
     if (!world.gameOverClickHandlerBound) return;
@@ -135,94 +119,9 @@ class WorldGameStateManager {
     world.showCoffin = false;
     world.gameOver = true;
     world.destroy();
-    this.stopBossProcesses();
-    this.resetMenuInputState();
-    this.resetMenuUiState();
-  }
-
-  /**
-   * Stops boss processes that can outlive normal gameplay intervals.
-   */
-  stopBossProcesses() {
-    const world = this.world;
-    if (typeof soundHub !== "undefined" && soundHub) {
-      soundHub.stopBossCharge();
-      soundHub.stopAllEffects();
-      soundHub.stopBackgroundMusic();
-    }
-    if (!world.level || !world.level.enemies) return;
-
-    world.level.enemies.forEach((enemy) => {
-      if (
-        enemy instanceof Endboss &&
-        typeof enemy.forceStopBossAudio === "function"
-      ) {
-        enemy.forceStopBossAudio();
-      }
-    });
-  }
-
-  /**
-   * Clears keyboard and touch-control state before returning to the menu.
-   */
-  resetMenuInputState() {
-    if (typeof resetMobileControlStates === "function") {
-      resetMobileControlStates();
-    }
-    if (typeof keyboard === "undefined") return;
-
-    keyboard.LEFT = false;
-    keyboard.RIGHT = false;
-    keyboard.UP = false;
-    keyboard.DOWN = false;
-    keyboard.SPACE = false;
-    keyboard.SHIFT = false;
-    keyboard.ENTER = false;
-  }
-
-  /**
-   * Restores menu visibility and removes gameplay-only UI state.
-   */
-  resetMenuUiState() {
-    const canvas = document.getElementById("canvas");
-    const start = document.getElementById("startScreen");
-    const controls = document.getElementById("mobileControls");
-
-    if (canvas) {
-      canvas.style.display = "none";
-      this.detachGlobalCanvasSoundHandler(canvas);
-    }
-    if (start) start.style.display = "flex";
-    if (controls) this.resetMobileControls(controls);
-    window.world = null;
-  }
-
-  /**
-   * Clears gameplay-only classes and offsets from mobile controls.
-   *
-   * @param {HTMLElement} controls - Mobile controls container.
-   */
-  resetMobileControls(controls) {
-    controls.classList.remove(
-      "isActive",
-      "touchControlsEnabled",
-      "controlsOutsideStage",
-      "controlsOverlayStage",
-    );
-    controls.style.removeProperty("--left-control-offset");
-    controls.style.removeProperty("--right-control-offset");
-    controls.style.removeProperty("--overlay-control-top");
-  }
-
-  /**
-   * Removes the shared canvas sound handler when gameplay ends.
-   *
-   * @param {HTMLCanvasElement} canvas - Game canvas that owns the listener.
-   */
-  detachGlobalCanvasSoundHandler(canvas) {
-    if (!window.__canvasSoundHandler) return;
-    canvas.removeEventListener("mousedown", window.__canvasSoundHandler);
-    window.__canvasSoundHandler = null;
+    world.stopBossProcesses();
+    world.resetMenuInputState();
+    world.resetMenuUiState();
   }
 
   /**
@@ -276,9 +175,6 @@ class WorldGameStateManager {
     }, 1500);
   }
 
-  /**
-   * Runs boss cleanup hooks for Game Over.
-   */
   cleanupBossAfterGameOver() {
     const boss = this.findBoss();
     if (!boss || typeof boss.onGameOverCleanup !== "function") return;
@@ -290,9 +186,6 @@ class WorldGameStateManager {
     }
   }
 
-  /**
-   * Stops boss-owned sounds before terminal UI is shown.
-   */
   stopBossSounds() {
     const enemies = this.world.level && this.world.level.enemies;
     if (!enemies) return;
@@ -307,78 +200,10 @@ class WorldGameStateManager {
     });
   }
 
-  /**
-   * Finds the current Endboss.
-   *
-   * @returns {Endboss|undefined} Current boss instance.
-   */
   findBoss() {
     const enemies = this.world.level && this.world.level.enemies;
     if (!enemies) return undefined;
     return enemies.find((enemy) => enemy instanceof Endboss);
-  }
-
-  /**
-   * Stops all active game audio sources.
-   */
-  silenceAllAudio() {
-    try {
-      this.stopSoundHubAudio();
-      this.stopCharacterAudio();
-      this.stopEnemyAudio();
-      this.stopDocumentAudio();
-    } catch (error) {
-      console.warn("Failed to silence all game audio:", error);
-    }
-  }
-
-  /**
-   * Stops SoundHub-owned music and effects.
-   */
-  stopSoundHubAudio() {
-    if (typeof soundHub === "undefined" || !soundHub) return;
-    if (typeof soundHub.stopBackgroundMusic === "function") soundHub.stopBackgroundMusic();
-    if (typeof soundHub.stopAllEffects === "function") soundHub.stopAllEffects();
-    if (typeof soundHub.stopBossCharge === "function") soundHub.stopBossCharge();
-  }
-
-  /**
-   * Stops character-owned audio.
-   */
-  stopCharacterAudio() {
-    const character = this.world.character;
-    if (!character || !character.soundSnoring) return;
-
-    try {
-      character.soundSnoring.pause();
-      character.soundSnoring.currentTime = 0;
-    } catch (error) {}
-  }
-
-  /**
-   * Stops boss-owned audio and timers.
-   */
-  stopEnemyAudio() {
-    const enemies = this.world.level && this.world.level.enemies;
-    if (!enemies) return;
-
-    enemies.forEach((enemy) => {
-      if (!(enemy instanceof Endboss)) return;
-      if (typeof enemy.stopAllBossSounds === "function") enemy.stopAllBossSounds();
-      if (typeof enemy.stopBossAudioAndTimers === "function") enemy.stopBossAudioAndTimers();
-      if (typeof enemy.stopThunderAttackSound === "function") enemy.stopThunderAttackSound();
-    });
-  }
-
-  /**
-   * Stops any remaining audio elements in the document.
-   */
-  stopDocumentAudio() {
-    const allAudio = document.getElementsByTagName("audio");
-    for (let i = 0; i < allAudio.length; i++) {
-      allAudio[i].pause();
-      allAudio[i].currentTime = 0;
-    }
   }
 
   /**
@@ -387,7 +212,7 @@ class WorldGameStateManager {
   restartGame() {
     const world = this.world;
     world.silenceAllAudio();
-    this.stopBossBeforeRestart();
+    world.processManager.stopBossBeforeRestart();
     world.ctx.clearRect(0, 0, world.canvas.width, world.canvas.height);
     world.showGameOver = false;
     world.gameOver = false;
@@ -398,113 +223,6 @@ class WorldGameStateManager {
 
     if (typeof score !== "undefined") score = 0;
     if (typeof startGame === "function") startGame();
-  }
-
-  /**
-   * Stops boss activity before a restart.
-   */
-  stopBossBeforeRestart() {
-    if (
-      typeof soundHub === "undefined" ||
-      typeof soundHub.stopBossCharge !== "function"
-    ) {
-      return;
-    }
-
-    soundHub.stopBossCharge();
-    const enemies = this.world.level && this.world.level.enemies;
-    if (!enemies) return;
-
-    enemies.forEach((enemy) => {
-      if (
-        enemy instanceof Endboss &&
-        typeof enemy.forceStopBossAudio === "function"
-      ) {
-        enemy.forceStopBossAudio();
-      }
-    });
-  }
-
-  /**
-   * Freezes character, enemy, cloud, and background movement.
-   */
-  freezeWorld() {
-    try {
-      this.freezeCharacter();
-      this.freezeEnemies();
-      this.freezeObjects(this.world.level && this.world.level.clouds);
-      this.freezeObjects(this.world.level && this.world.level.backgroundObjects);
-    } catch (error) {
-      console.warn("Failed to freeze the game world:", error);
-    }
-  }
-
-  /**
-   * Freezes the player character.
-   */
-  freezeCharacter() {
-    const character = this.world.character;
-    if (!character) return;
-    character.speed = 0;
-    character.acceleration = 0;
-    if (typeof character.stopSnoringSound === "function") {
-      character.stopSnoringSound();
-    }
-  }
-
-  /**
-   * Freezes enemies and stops their movement intervals.
-   */
-  freezeEnemies() {
-    const enemies = this.world.level && this.world.level.enemies;
-    if (!Array.isArray(enemies)) return;
-
-    enemies.forEach((enemy) => {
-      if (!enemy) return;
-      enemy.speed = 0;
-      enemy.acceleration = 0;
-      this.clearEnemyInterval(enemy, "animateInterval");
-      this.clearEnemyInterval(enemy, "chargeInterval");
-      this.clearEnemyInterval(enemy, "walkAnimInterval");
-    });
-  }
-
-  /**
-   * Clears one enemy interval by property name.
-   *
-   * @param {object} enemy - Enemy that owns the interval.
-   * @param {string} property - Interval property name.
-   */
-  clearEnemyInterval(enemy, property) {
-    if (!enemy[property]) return;
-    clearInterval(enemy[property]);
-    enemy[property] = null;
-  }
-
-  /**
-   * Freezes a collection of moving level objects.
-   *
-   * @param {Array|undefined} objects - Objects to freeze.
-   */
-  freezeObjects(objects) {
-    if (!Array.isArray(objects)) return;
-    objects.forEach((object) => {
-      if (object) object.speed = 0;
-    });
-  }
-
-  /**
-   * Stops globally registered game processes and audio.
-   */
-  stopAllGameProcesses() {
-    try {
-      if (typeof soundHub !== "undefined" && soundHub) {
-        soundHub.stopAllIntervals();
-        soundHub.stopAllAudio();
-      }
-    } catch (error) {
-      console.warn("Failed to stop game processes:", error);
-    }
   }
 
   /**
