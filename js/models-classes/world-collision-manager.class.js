@@ -18,18 +18,21 @@ class WorldCollisionManager {
     this.checkBottleBossHits();
   }
 
+  /** Checks all enemy collisions for the current tick. */
   checkEnemyCollisions() {
     for (let i = this.world.level.enemies.length - 1; i >= 0; i--) {
       this.handleEnemyCollision(this.world.level.enemies[i]);
     }
   }
 
+  /** Resolves one enemy collision with the Character. */
   handleEnemyCollision(enemy) {
     if (!this.world.character.isColliding(enemy)) return;
     if (this.isStompCollision(enemy) && this.resolveStompCollision(enemy)) return;
     if (!enemy.isDeadChicken) this.damageCharacter();
   }
 
+  /** Checks whether the Character lands on an enemy from above. */
   isStompCollision(enemy) {
     const character = this.world.character;
     const characterBottom =
@@ -41,6 +44,7 @@ class WorldCollisionManager {
     return isFalling && isAboveEnemy && !enemy.isDeadChicken;
   }
 
+  /** Routes a stomp to normal-enemy or Endboss handling. */
   resolveStompCollision(enemy) {
     if (!(enemy instanceof Endboss)) {
       this.handleChickenStomp(enemy);
@@ -53,6 +57,7 @@ class WorldCollisionManager {
     return false;
   }
 
+  /** Resolves a stomp on a normal chicken enemy. */
   handleChickenStomp(enemy) {
     const world = this.world;
     world.character.speedY = 25;
@@ -65,6 +70,7 @@ class WorldCollisionManager {
     soundHub.playEffect(soundHub.soundChickenMud);
   }
 
+  /** Schedules removal of a defeated enemy. */
   removeEnemyLater(enemy) {
     this.world.setManagedTimeout(() => {
       const index = this.world.level.enemies.indexOf(enemy);
@@ -72,6 +78,7 @@ class WorldCollisionManager {
     }, 2000);
   }
 
+  /** Applies damage and bounce behavior for an Endboss stomp. */
   handleBossStomp(enemy) {
     soundHub.playEffect(soundHub.soundChickenHit);
     enemy.wasHit();
@@ -79,6 +86,7 @@ class WorldCollisionManager {
     this.bounceCharacterOffBoss(enemy);
   }
 
+  /** Bounces the Character away from the Endboss. */
   bounceCharacterOffBoss(enemy) {
     const character = this.world.character;
     const direction = this.getBossBounceDirection(enemy);
@@ -88,6 +96,7 @@ class WorldCollisionManager {
     this.world.setManagedTimeout(() => this.finishBossBounce(), 500);
   }
 
+  /** Resolves a safe horizontal bounce direction. */
   getBossBounceDirection(enemy) {
     const character = this.world.character;
     let direction = character.x < enemy.x ? -1 : 1;
@@ -97,12 +106,14 @@ class WorldCollisionManager {
     return direction;
   }
 
+  /** Clears the temporary boss-bounce state. */
   finishBossBounce() {
     const character = this.world.character;
     character.isBouncingOffBoss = false;
     if (typeof character.snapToGround === "function") character.snapToGround();
   }
 
+  /** Applies enemy-contact damage and updates health UI. */
   damageCharacter() {
     const world = this.world;
     const now = Date.now();
@@ -116,6 +127,7 @@ class WorldCollisionManager {
     world.statusBar.setPercentage(world.percentage);
   }
 
+  /** Checks collectible bottle collisions. */
   checkBottlePickups() {
     for (let i = this.world.level.bottles.length - 1; i >= 0; i--) {
       if (this.world.character.isColliding(this.world.level.bottles[i])) {
@@ -124,6 +136,7 @@ class WorldCollisionManager {
     }
   }
 
+  /** Collects one bottle and updates inventory and score. */
   collectBottle(index) {
     const world = this.world;
     soundHub.playEffect(soundHub.soundBottlePickup);
@@ -134,6 +147,7 @@ class WorldCollisionManager {
     world.showBottlePickupEffect();
   }
 
+  /** Checks collectible coin collisions. */
   checkCoinPickups() {
     for (let i = this.world.level.coins.length - 1; i >= 0; i--) {
       if (this.world.character.isColliding(this.world.level.coins[i])) {
@@ -142,6 +156,7 @@ class WorldCollisionManager {
     }
   }
 
+  /** Collects one coin and updates counter and score. */
   collectCoin(index) {
     const world = this.world;
     soundHub.playEffect(soundHub.soundCoin);
@@ -151,6 +166,7 @@ class WorldCollisionManager {
     world.addScore(3);
   }
 
+  /** Checks thrown bottles against normal enemies. */
   checkBottleEnemyHits() {
     for (let i = this.world.throwableObjects.length - 1; i >= 0; i--) {
       const bottle = this.world.throwableObjects[i];
@@ -162,6 +178,7 @@ class WorldCollisionManager {
     }
   }
 
+  /** Checks one bottle against all normal enemies. */
   hitChickenWithBottle(bottle, bottleIndex) {
     for (let i = this.world.level.enemies.length - 1; i >= 0; i--) {
       const enemy = this.world.level.enemies[i];
@@ -173,6 +190,7 @@ class WorldCollisionManager {
     return false;
   }
 
+  /** Resolves a bottle hit on a normal enemy. */
   handleBottleChickenHit(enemy, bottleIndex) {
     soundHub.playEffect(soundHub.soundChickenHit);
     enemy.die();
@@ -181,6 +199,7 @@ class WorldCollisionManager {
     this.removeEnemyLater(enemy);
   }
 
+  /** Checks thrown bottles against the Endboss. */
   checkBottleBossHits() {
     const boss = this.world.level.enemies.find((enemy) => enemy instanceof Endboss);
     if (!boss || boss.isDeadBoss) return;
@@ -194,6 +213,7 @@ class WorldCollisionManager {
     }
   }
 
+  /** Checks bottle overlap against a target hit box. */
   isBottleHitTarget(bottle, target) {
     return (
       bottle.x + bottle.width > target.x + target.offset.left &&
