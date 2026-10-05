@@ -67,7 +67,7 @@ class World {
     this.gameOverImg.src =
       "./assets/img/9_intro_outro_bildschirm/game_over/game over.png";
     this.setWorld();
-    this.levelManager.applyLevelScale();
+    this.levelManager.applyLevelSetup();
     this.draw();
     this.run();
     this.score = score;

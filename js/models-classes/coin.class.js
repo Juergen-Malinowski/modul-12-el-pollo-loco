@@ -14,19 +14,19 @@ class Coin extends MovableObject {
     centerX = 0;
     centerY = 0;
 
-    constructor(x, y) {
+    constructor(x, y, levelConfig = getLevelConfig(1)) {
         super().loadImage('./assets/img/8_muenzen/coin_2.png');
 
         if (typeof x === 'number') {
             this.x = x;
         } else {
-            this.x = 300 + Math.random() * 1800;
+            this.x = this.getRandomX(levelConfig);
         }
 
         if (typeof y === 'number') {
             this.y = y;
         } else {
-            this.y = 150 + Math.random() * 200;
+            this.y = levelConfig.coinMinY + Math.random() * (levelConfig.coinMaxY - levelConfig.coinMinY);
         }
 
         this.baseWidth = this.width;
@@ -35,6 +35,15 @@ class Coin extends MovableObject {
         this.rotationAngle = Math.random() * Math.PI * 2;
 
         this.startSpin();
+    }
+
+    /** Returns a horizontal coin spawn position inside the configured level. */
+    getRandomX(levelConfig) {
+        const baseLevel = getLevelConfig(1);
+        const scale = levelConfig.levelEndX / baseLevel.levelEndX;
+        const requestedRange = 1800 * scale;
+        const availableRange = Math.max(0, levelConfig.levelEndX - this.width - 300);
+        return 300 + Math.random() * Math.min(requestedRange, availableRange);
     }
 
     /**

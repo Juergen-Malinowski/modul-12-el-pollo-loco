@@ -14,14 +14,14 @@ class ThrowableObjects extends MovableObject {
      * @param {number} y - Initial vertical position for thrown bottles.
      * @param {boolean} isGroundBottle - Whether the bottle is collectible.
      * @param {number} direction - Horizontal throw direction.
+     * @param {Object} levelConfig - Configuration of the current level.
      */
-    constructor(x = 0, y = 0, isGroundBottle = false, direction = 1) {
+    constructor(x = 0, y = 0, isGroundBottle = false, direction = 1, levelConfig = getLevelConfig(1)) {
         super();
 
         if (isGroundBottle) {
             this.loadImage('./assets/img/6_salsa_flasche/1_salsa_bottle_on_ground.png');
-            this.x = 200 + Math.random() * 1600;
-            this.y = 380;
+            this.setGroundBottlePosition(levelConfig);
         } else {
             this.loadImage('./assets/img/6_salsa_flasche/salsa_bottle.png');
             this.x = x;
@@ -29,6 +29,16 @@ class ThrowableObjects extends MovableObject {
             this.direction = direction;
             this.throwBottle();
         }
+    }
+
+    /** Places a collectible bottle inside the configured level width. */
+    setGroundBottlePosition(levelConfig) {
+        const baseLevel = getLevelConfig(1);
+        const scale = levelConfig.levelEndX / baseLevel.levelEndX;
+        const requestedRange = 1600 * scale;
+        const availableRange = Math.max(0, levelConfig.levelEndX - this.width - 200);
+        this.x = 200 + Math.random() * Math.min(requestedRange, availableRange);
+        this.y = 380;
     }
 
     /**

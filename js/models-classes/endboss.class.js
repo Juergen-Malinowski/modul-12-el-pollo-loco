@@ -8,10 +8,11 @@ class Endboss extends MovableObject {
     y = 180;
     x = 1750;
     energieBoss = 300;
+    maxEnergy = 300;
     moveSpeed = 5.0;
     minX = 400;
-    maxX = 2100;
-    alertX = 1400;
+    maxX = 1700;
+    alertX = 1150;
 
     isCharging = false;
     chargeInterval = null;
@@ -82,8 +83,9 @@ class Endboss extends MovableObject {
     isHurtBoss = false;
     alertPlayed = false;
 
-    constructor() {
+    constructor(levelConfig = getLevelConfig(1)) {
         super().loadImage('./assets/img/4_feinde_boss_huhn/2_alert/G5.png');
+        this.applyLevelConfig(levelConfig);
         this.loadImages(this.imagesWalking);
         this.loadImages(this.imagesAlert);
         this.loadImages(this.imagesAttack);
@@ -92,6 +94,19 @@ class Endboss extends MovableObject {
         this.loadImages(this.imagesDead);
         this.animate();
         this.thunderAttack = new Audio('./assets/sound/thunder-attack.mp3'); this.thunderAttack.preload = 'auto';
+    }
+
+    /** Applies level-specific boss strength, position, and timing values. */
+    applyLevelConfig(levelConfig) {
+        this.maxEnergy = levelConfig.bossEnergy;
+        this.energieBoss = levelConfig.bossEnergy;
+        this.moveSpeed = levelConfig.bossMoveSpeed;
+        this.chargeCooldown = levelConfig.bossChargeCooldown;
+        this.hitCooldownMs = levelConfig.bossHitCooldown;
+        this.minX = levelConfig.bossMinX;
+        this.maxX = levelConfig.levelEndX - this.width;
+        this.x = Math.max(this.minX, this.maxX - levelConfig.bossRightMargin);
+        this.alertX = Math.max(this.minX, this.x - levelConfig.bossAlertDistance);
     }
 
     animate() {
@@ -237,7 +252,7 @@ class Endboss extends MovableObject {
                 return;
             }
 
-            this.x += attackSpeed * (toRight ? 1 : -1);
+            const reachedBoundary = this.moveChargeStep(toRight, attackSpeed);
             traveled += Math.abs(attackSpeed);
 
             if (this.world.character.isColliding(this)) {
@@ -254,12 +269,22 @@ class Endboss extends MovableObject {
                 return;
             }
 
-            if (traveled >= targetDistance) {
+            if (traveled >= targetDistance || reachedBoundary) {
                 clearInterval(moveInterval);
                 this.isCharging = false;
                 this.world.addScore(70);
             }
         }, 40));
+    }
+
+    /** Moves one charge step and keeps the boss completely inside the level. */
+    moveChargeStep(toRight, attackSpeed) {
+        const direction = toRight ? 1 : -1;
+        const nextX = this.x + attackSpeed * direction;
+        const leftBound = this.minX;
+        const rightBound = Math.min(this.maxX, this.world.level.levelEndX - this.width);
+        this.x = Math.max(leftBound, Math.min(rightBound, nextX));
+        return this.x === leftBound || this.x === rightBound;
     }
 
     wasHit() {
@@ -272,7 +297,7 @@ class Endboss extends MovableObject {
         this.energieBoss -= 60;
 
         if (this.world && this.world.bossBar) {
-            let bossHealthPercentage = (this.energieBoss / 300) * 100;
+            let bossHealthPercentage = (this.energieBoss / this.maxEnergy) * 100;
             if (bossHealthPercentage < 0) bossHealthPercentage = 0;
             this.world.bossBar.setPercentage(bossHealthPercentage);
         }
