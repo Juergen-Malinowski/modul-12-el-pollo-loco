@@ -40,8 +40,6 @@ class WorldCollisionManager {
   handleBossContact(enemy) {
     if (enemy.isDeadBoss || enemy.isCharging) return;
     this.damageCharacter();
-    if (this.world.character.isDead()) return;
-    this.applyBossAttackKnockback(enemy);
   }
 
   /** Checks whether the Character lands on an enemy from above. */
