@@ -298,8 +298,31 @@ class WorldHudRenderer {
       area.y + area.size / 2,
     );
     world.ctx.restore();
+    this.drawLevelIndicator(area, mobileOverlayHud);
   }
 
+  /**
+   * Draws the active level below the sound icon using the Score style.
+   */
+  drawLevelIndicator(area, mobileOverlayHud) {
+    const world = this.world;
+    const scoreLayout = this.getScoreLayout(mobileOverlayHud);
+    world.ctx.save();
+    world.ctx.font = "bold " + scoreLayout.fontSize + "px Zabars";
+    world.ctx.fillStyle = getGameColor("--color-ui-primary");
+    world.ctx.textAlign = "center";
+    world.ctx.textBaseline = "top";
+    world.ctx.fillText(
+      world.levelConfig.label,
+      area.x + area.size / 2,
+      area.y + area.size + 8,
+    );
+    world.ctx.restore();
+  }
+
+  /**
+   * Returns the sound-icon hit area for the current HUD layout.
+   */
   getSoundIconArea(mobileOverlayHud = this.isMobileOverlayHud()) {
     const iconSize = 80;
     if (!mobileOverlayHud) {

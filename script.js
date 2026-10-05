@@ -16,6 +16,7 @@ function getGameColor(variableName) {
  * Starts a fresh game world and activates the gameplay UI.
  */
 function startGame() {
+  resetCurrentLevel();
   score = 0;
   highscoreHandledForCurrentGame = false;
 

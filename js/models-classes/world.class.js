@@ -1,9 +1,11 @@
 class World {
   character = new Character();
-  level = level1;
+  level;
   canvas;
   ctx;
   keyboard;
+  currentLevel = 1;
+  levelConfig;
   cameraX = 0;
   statusBar = new StatusBar("health");
   bottleBar = new StatusBar("bottle");
@@ -45,10 +47,13 @@ class World {
   highscoreManager;
   renderer;
 
-  constructor(canvas, keyboard) {
+  constructor(canvas, keyboard, levelInstance, levelConfig) {
     this.ctx = canvas.getContext("2d");
     this.canvas = canvas;
     this.keyboard = keyboard;
+    this.level = levelInstance;
+    this.levelConfig = levelConfig;
+    this.currentLevel = levelConfig.number;
     this.collisionManager = new WorldCollisionManager(this);
     this.hudRenderer = new WorldHudRenderer(this);
     this.processManager = new WorldProcessManager(this);

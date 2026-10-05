@@ -1,16 +1,20 @@
 class level {
-    enemies;
-    bottles;
-    coins;               // 🟡 Neu: Coins-Feld ergänzen
-    clouds;
-    backgroundObjects;
-    levelEndX = 2000;    // Endpunkt für Laufen nach RECHTS 
+  enemies;
+  bottles;
+  coins;
+  clouds;
+  backgroundObjects;
+  levelEndX;
 
-    constructor(enemies, bottles, coins, clouds, backgroundObjects) {
-        this.enemies = enemies;
-        this.bottles = bottles;
-        this.coins = coins || [];             // Fallback, falls keine Münzen übergeben werden
-        this.clouds = clouds;
-        this.backgroundObjects = backgroundObjects;
-    }
+  /**
+   * Creates one playable level from its game objects and world boundary.
+   */
+  constructor(enemies, bottles, coins, clouds, backgroundObjects, levelEndX = 2000) {
+    this.enemies = enemies;
+    this.bottles = bottles;
+    this.coins = coins || [];
+    this.clouds = clouds;
+    this.backgroundObjects = backgroundObjects;
+    this.levelEndX = levelEndX;
+  }
 }

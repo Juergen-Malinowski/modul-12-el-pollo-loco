@@ -4,7 +4,7 @@ let level1;
 /**
  * Creates level one with its enemies, collectibles, clouds, and layered background.
  */
-function initLevel() {
+function initLevel(levelConfig = getLevelConfig(1)) {
     level1 = new level(
         [
             new Chicken(),
@@ -83,5 +83,6 @@ function initLevel() {
             new BackgroundObject('./assets/img/5_hintergrund/layers/2_second_layer/2.png', 2160),
             new BackgroundObject('./assets/img/5_hintergrund/layers/1_first_layer/2.png', 2160),
         ],
+        levelConfig.levelEndX,
     );
 }

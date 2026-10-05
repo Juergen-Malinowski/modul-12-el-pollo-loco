@@ -2,6 +2,21 @@ let canvas;
 let world;
 let keyboard = new Keyboard();
 let score = 0;
+let currentLevel = 1;
+
+/** Resets a fresh game run to Level 1. */
+function resetCurrentLevel() {
+  currentLevel = 1;
+}
+
+/**
+ * Returns the configuration for the active level.
+ *
+ * @returns {{number:number,label:string,levelEndX:number}} Active level configuration.
+ */
+function getCurrentLevelConfig() {
+  return getLevelConfig(currentLevel);
+}
 
 /**
  * Converts pointer coordinates from the displayed canvas size
@@ -32,8 +47,9 @@ function init() {
     world.destroy();
   }
 
-  initLevel();
-  world = new World(canvas, keyboard);
+  const levelConfig = getCurrentLevelConfig();
+  initLevel(levelConfig);
+  world = new World(canvas, keyboard, level1, levelConfig);
   window.world = world;
 }
 
