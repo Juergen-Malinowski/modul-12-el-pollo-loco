@@ -39,12 +39,14 @@ class World {
   managedTimeouts = new Set();
   managedIntervals = new Set();
   collisionManager;
+  hudRenderer;
 
   constructor(canvas, keyboard) {
     this.ctx = canvas.getContext("2d");
     this.canvas = canvas;
     this.keyboard = keyboard;
     this.collisionManager = new WorldCollisionManager(this);
+    this.hudRenderer = new WorldHudRenderer(this);
     this.coffinImg.src = "./assets/img/2_charakter_pepe/5_dead/coffin.png";
     this.youWinImg.src = "./assets/img/0_you_won_you_lost/You Win A.png";
     this.gameOverImg.src =
@@ -582,9 +584,9 @@ class World {
     this.addObjectsToMap(this.level.clouds);
 
     this.ctx.translate(-this.cameraX, 0);
-    var mobileOverlayHud = this.isMobileOverlayHud();
-    this.drawStatusHud(mobileOverlayHud);
-    this.drawScoreHud(mobileOverlayHud);
+    var mobileOverlayHud = this.hudRenderer.isMobileOverlayHud();
+    this.hudRenderer.drawStatusHud(mobileOverlayHud);
+    this.hudRenderer.drawScoreHud(mobileOverlayHud);
 
     this.ctx.translate(this.cameraX, 0);
     this.addObjectsToMap(this.level.bottles);
@@ -712,7 +714,7 @@ class World {
       ctxBtn.restore();
     }
 
-    this.drawSoundIcon(mobileOverlayHud);
+    this.hudRenderer.drawSoundIcon(mobileOverlayHud);
 
     var self = this;
     this.animationFrameId = requestAnimationFrame(function () {
@@ -720,320 +722,23 @@ class World {
     });
   }
 
-  isMobileOverlayHud() {
-    var controls = document.getElementById("mobileControls");
-    return (
-      this.isMobileControlsActive() &&
-      controls.classList.contains("controlsOverlayStage")
-    );
-  }
-
-  drawStatusHud(mobileOverlayHud) {
-    this.setStatusBarLayout(mobileOverlayHud);
-    this.addToMap(this.statusBar);
-    this.addToMap(this.bottleBar);
-    this.addToMap(this.coinBar);
-    this.addToMap(this.bossBar);
-    this.drawStatusValues(mobileOverlayHud);
-  }
-
+  /**
+   * Returns the mobile HUD layout used by responsive controls.
+   *
+   * @returns {{edge:number,barWidth:number,barHeight:number,barY:number,bottom:number}}
+   */
   getMobileHudLayout() {
-    var edge = 10;
-    var barWidth = 140;
-    var barHeight = 46;
-    var rowTop = 6;
-    var rowHeight = 54;
-    return {
-      edge: edge,
-      barWidth: barWidth,
-      barHeight: barHeight,
-      barY: rowTop + (rowHeight - barHeight) / 2,
-      bottom: rowTop + rowHeight,
-    };
-  }
-
-  setStatusBarLayout(mobileOverlayHud) {
-    var bars = [this.statusBar, this.bottleBar, this.coinBar, this.bossBar];
-    if (!mobileOverlayHud) {
-      this.setDesktopStatusBarLayout(bars);
-      return;
-    }
-
-    var layout = this.getMobileHudLayout();
-    var gap = (this.canvas.width - layout.edge * 2 - layout.barWidth * bars.length) / (bars.length - 1);
-
-    for (var i = 0; i < bars.length; i++) {
-      bars[i].x = layout.edge + i * (layout.barWidth + gap);
-      bars[i].y = layout.barY;
-      bars[i].width = layout.barWidth;
-      bars[i].heigth = layout.barHeight;
-    }
-  }
-
-  setDesktopStatusBarLayout(bars) {
-    var yPositions = [10, 70, 130, 190];
-    for (var i = 0; i < bars.length; i++) {
-      bars[i].x = 10;
-      bars[i].y = yPositions[i];
-      bars[i].width = 150;
-      bars[i].heigth = 50;
-    }
-  }
-
-  drawStatusValues(mobileOverlayHud) {
-    this.ctx.save();
-    this.ctx.font = mobileOverlayHud ? "bold 28px Zabars" : "bold 36px Zabars";
-    this.ctx.fillStyle = getGameColor("--color-text-light");
-    this.ctx.textAlign = "left";
-    var bottlePosition = this.getBottleValuePosition(mobileOverlayHud);
-    var coinPosition = this.getCoinValuePosition(mobileOverlayHud);
-    this.ctx.fillText(this.collectedBottles + "", bottlePosition.x, bottlePosition.y);
-    this.ctx.fillText(this.collectedCoins + "", coinPosition.x, coinPosition.y);
-    this.ctx.restore();
-  }
-
-  getBottleValuePosition(mobileOverlayHud) {
-    if (!mobileOverlayHud) return { x: 175, y: 117 };
-    return {
-      x: this.bottleBar.x + this.bottleBar.width + 5,
-      y: this.bottleBar.y + this.bottleBar.heigth * 0.75,
-    };
-  }
-
-  getCoinValuePosition(mobileOverlayHud) {
-    if (!mobileOverlayHud) return { x: 175, y: 175 };
-    return {
-      x: this.coinBar.x + this.coinBar.width + 5,
-      y: this.coinBar.y + this.coinBar.heigth * 0.75,
-    };
-  }
-
-  drawScoreHud(mobileOverlayHud) {
-    if (!this.blinkActive || (this.blinkActive && this.blinkVisible)) {
-      var layout = this.getScoreLayout(mobileOverlayHud);
-      this.ctx.save();
-      this.ctx.font = "bold " + layout.fontSize + "px Zabars";
-      this.ctx.fillStyle = getGameColor("--color-ui-primary");
-      this.ctx.textAlign = layout.textAlign;
-      this.ctx.textBaseline = "top";
-      this.ctx.fillText("Score: " + this.score, layout.x, layout.y);
-      this.ctx.restore();
-    }
-    this.drawGameControlHints(this.ctx, mobileOverlayHud);
-  }
-
-  getScoreLayout(mobileOverlayHud) {
-    if (!mobileOverlayHud) {
-      return { x: 570, y: 22, fontSize: 40, textAlign: "left" };
-    }
-
-    var hintPosition = this.getGameControlHintsPosition(true);
-    var hintLeft = this.getGameControlHintsLeftEdge(hintPosition.x);
-    var centerX = this.canvas.width / 2;
-    var maxWidth = Math.max(100, (hintLeft - centerX - 12) * 2);
-    var fontSize = this.getScoreFontSize("Score: " + this.score, maxWidth);
-
-    return {
-      x: centerX,
-      y: hintPosition.y,
-      fontSize: fontSize,
-      textAlign: "center",
-    };
-  }
-
-  getScoreFontSize(text, maxWidth) {
-    var fontSize = 32;
-    this.ctx.save();
-    this.ctx.font = "bold " + fontSize + "px Zabars";
-    var textWidth = this.ctx.measureText(text).width;
-    this.ctx.restore();
-
-    if (textWidth <= maxWidth) return fontSize;
-    return Math.max(22, Math.floor(fontSize * (maxWidth / textWidth)));
-  }
-
-  drawGameControlHints(ctx, mobileOverlayHud = false) {
-    var mobileControlsActive = this.isMobileControlsActive();
-    var position = this.getGameControlHintsPosition(mobileOverlayHud);
-    var fontSize = mobileControlsActive ? 24 : 16;
-    var lineHeight = mobileControlsActive ? 30 : 30;
-
-    ctx.save();
-    ctx.font = "bold " + fontSize + "px Zabars";
-    ctx.fillStyle = getGameColor("--color-text-dark");
-    ctx.textAlign = "right";
-    ctx.textBaseline = "top";
-
-    ctx.fillText("⬅  Move left", position.x, position.y);
-    ctx.fillText("➡  Move right", position.x, position.y + lineHeight);
-    ctx.fillText(
-      "SHIFT  or  ⬆  Throw bottle",
-      position.x,
-      position.y + lineHeight * 2,
-    );
-    ctx.fillText("SPACE  Jump", position.x, position.y + lineHeight * 3);
-
-    ctx.restore();
-  }
-
-  isMobileControlsActive() {
-    var controls = document.getElementById("mobileControls");
-    return (
-      controls &&
-      controls.classList.contains("isActive") &&
-      controls.classList.contains("touchControlsEnabled") &&
-      window.matchMedia("(orientation: landscape)").matches
-    );
+    return this.hudRenderer.getMobileHudLayout();
   }
 
   /**
-   * Resolves the control-hint anchor for the current HUD layout.
+   * Handles clicks on the canvas sound icon.
    *
-   * @param {boolean} mobileOverlayHud - Whether touch controls overlap the stage.
-   * @returns {{x: number, y: number}} Canvas coordinates for right-aligned hints.
+   * @param {number} x - Canvas x coordinate.
+   * @param {number} y - Canvas y coordinate.
    */
-  getGameControlHintsPosition(mobileOverlayHud) {
-    if (mobileOverlayHud) return this.getOverlayGameControlHintsPosition();
-    return this.getRightAlignedGameControlHintsPosition();
-  }
-
-  /**
-   * Keeps desktop and outside-stage control hints 20 CSS pixels from the stage edge.
-   *
-   * @returns {{x: number, y: number}} Canvas coordinates for the hint anchor.
-   */
-  getRightAlignedGameControlHintsPosition() {
-    var stage = document.getElementById("gameStage");
-    if (!stage) return { x: this.canvas.width - 20, y: 70 };
-
-    var stageRect = stage.getBoundingClientRect();
-    var scaleX = this.canvas.width / stageRect.width;
-    return { x: this.canvas.width - 20 * scaleX, y: 70 };
-  }
-
-  getOverlayGameControlHintsPosition() {
-    var stage = document.getElementById("gameStage");
-    var rightControls = document.querySelector("#mobileControls .rightControls");
-    var layout = this.getMobileHudLayout();
-    if (!stage || !rightControls) return { x: 620, y: layout.bottom + 18 };
-
-    var stageRect = stage.getBoundingClientRect();
-    var controlRect = rightControls.getBoundingClientRect();
-    var touchExtension = this.getMobileTouchInwardExtension();
-    var scaleX = this.canvas.width / stageRect.width;
-    var scaleY = this.canvas.height / stageRect.height;
-
-    return {
-      x: Math.max(
-        120,
-        (controlRect.left - touchExtension - 20 - stageRect.left) * scaleX,
-      ),
-      y: layout.bottom + 12 * scaleY,
-    };
-  }
-
-  getMobileTouchInwardExtension() {
-    var controls = document.getElementById("mobileControls");
-    if (!controls) return 0;
-
-    var value = getComputedStyle(controls).getPropertyValue(
-      "--touch-inward-extension",
-    );
-    return parseFloat(value) || 0;
-  }
-
-  getGameControlHintsLeftEdge(rightEdge) {
-    var lines = [
-      "⬅  Move left",
-      "➡  Move right",
-      "SHIFT  or  ⬆  Throw bottle",
-      "SPACE  Jump",
-    ];
-    var fontSize = this.isMobileControlsActive() ? 24 : 16;
-
-    this.ctx.save();
-    this.ctx.font = "bold " + fontSize + "px Zabars";
-    var maxWidth = Math.max(...lines.map((line) => this.ctx.measureText(line).width));
-    this.ctx.restore();
-
-    return rightEdge - maxWidth;
-  }
-
-  drawSoundIcon(mobileOverlayHud) {
-    var area = this.getSoundIconArea(mobileOverlayHud);
-    this.ctx.save();
-    this.ctx.font = "70px Zabars";
-    this.ctx.textAlign = "center";
-    this.ctx.textBaseline = "middle";
-    this.ctx.fillStyle = getGameColor("--color-text-light");
-    this.ctx.fillText(
-      soundHub.isMuted ? "🔇" : "🔊",
-      area.x + area.size / 2,
-      area.y + area.size / 2,
-    );
-    this.ctx.restore();
-  }
-
-  getSoundIconArea(mobileOverlayHud = this.isMobileOverlayHud()) {
-    var iconSize = 80;
-    if (!mobileOverlayHud) {
-      return { x: (this.canvas.width - iconSize) / 2, y: 20, size: iconSize };
-    }
-    return this.getMobileSoundIconArea(iconSize);
-  }
-
-  getMobileSoundIconArea(iconSize) {
-    var stage = document.getElementById("gameStage");
-    var leftControls = document.querySelector("#mobileControls .leftControls");
-    var layout = this.getMobileHudLayout();
-    if (!stage || !leftControls) return { x: 90, y: layout.bottom + 18, size: iconSize };
-
-    var stageRect = stage.getBoundingClientRect();
-    var controlRect = leftControls.getBoundingClientRect();
-    var touchExtension = this.getMobileTouchInwardExtension();
-    var scaleX = this.canvas.width / stageRect.width;
-    var scaleY = this.canvas.height / stageRect.height;
-    var x =
-      (controlRect.right + touchExtension + 20 - stageRect.left) * scaleX;
-    var y = layout.bottom + 12 * scaleY;
-
-    return {
-      x: Math.max(8, Math.min(x, this.canvas.width - iconSize - 8)),
-      y: y,
-      size: iconSize,
-    };
-  }
-
   handleSoundIconClick(x, y) {
-    const area = this.getSoundIconArea();
-
-    if (
-      x >= area.x &&
-      x <= area.x + area.size &&
-      y >= area.y &&
-      y <= area.y + area.size
-    ) {
-      if (
-        typeof soundHub !== "undefined" &&
-        soundHub &&
-        typeof soundHub.toggleMute === "function"
-      ) {
-        const wasMuted = soundHub.isMuted;
-        soundHub.toggleMute();
-
-        if (
-          wasMuted &&
-          !soundHub.isMuted &&
-          typeof soundHub.playBackgroundMusic === "function"
-        ) {
-          soundHub.playBackgroundMusic();
-        }
-
-        if (typeof syncAudioUIFromSoundHub === "function") {
-          syncAudioUIFromSoundHub();
-        }
-      }
-    }
+    this.hudRenderer.handleSoundIconClick(x, y);
   }
 
   addObjectsToMap(objects) {
