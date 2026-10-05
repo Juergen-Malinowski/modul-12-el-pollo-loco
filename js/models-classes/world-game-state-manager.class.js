@@ -6,6 +6,17 @@ class WorldGameStateManager {
     this.world = world;
   }
 
+  /** Marks Pepe's death as the authoritative terminal state for this level. */
+  markPlayerDefeated() {
+    this.world.playerDefeated = true;
+    this.world.gameOver = true;
+  }
+
+  /** Returns whether Pepe has already lost the current run. */
+  isPlayerDefeated() {
+    return this.world.playerDefeated || this.world.character.isDead();
+  }
+
   /**
    * Starts the rotating coffin sequence after Pepe dies.
    */
@@ -56,6 +67,14 @@ class WorldGameStateManager {
     world.silenceAllAudio();
     this.setGameOverButtonAreas();
     this.bindGameOverClickHandler();
+    this.openGameOverHighscore();
+  }
+
+  /** Opens the existing highscore dialog only when the death score qualifies. */
+  openGameOverHighscore() {
+    const manager = this.world.highscoreManager;
+    if (!manager || !manager.qualifiesForHighscore()) return;
+    this.world.saveHighScoreEntry();
   }
 
   /** Calculates Game Over button hit areas. */
@@ -133,6 +152,7 @@ class WorldGameStateManager {
    */
   handleBossDefeat() {
     const world = this.world;
+    if (this.isPlayerDefeated()) return;
     if (world.levelManager.shouldTransitionToNextLevel()) {
       world.levelManager.completeLevel();
       return;
@@ -145,6 +165,7 @@ class WorldGameStateManager {
    */
   showVictoryScreen() {
     const world = this.world;
+    if (this.isPlayerDefeated()) return;
     world.stopAllGameProcesses();
     soundHub.stopBackgroundMusic();
     world.silenceAllAudio();

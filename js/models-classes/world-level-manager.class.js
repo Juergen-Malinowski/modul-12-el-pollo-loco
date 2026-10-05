@@ -54,6 +54,7 @@ class WorldLevelManager {
    */
   completeLevel() {
     const world = this.world;
+    if (world.gameStateManager.isPlayerDefeated()) return;
     world.stopAllGameProcesses();
     soundHub.stopBackgroundMusic();
     world.silenceAllAudio();
@@ -66,6 +67,7 @@ class WorldLevelManager {
 
   /** Opens the static transition dialog for the following level. */
   openTransition() {
+    if (this.world.gameStateManager.isPlayerDefeated()) return;
     const currentLevel = this.world.currentLevel;
     const nextLevel = currentLevel + 1;
     if (typeof showLevelTransition === "function") {

@@ -22,14 +22,18 @@ class WorldHighscoreManager {
     }, 500);
   }
 
+  /** Returns whether the current score qualifies for the stored TOP-10. */
+  qualifiesForHighscore() {
+    const highScores = this.loadHighscores();
+    if (highScores.length < 10) return true;
+    return this.world.score > this.getMinimumQualifyingScore(highScores);
+  }
+
   /**
    * Checks whether the current score qualifies for the stored TOP-10.
    */
   saveHighScoreEntry() {
-    const highScores = this.loadHighscores();
-    const minimumScore = this.getMinimumQualifyingScore(highScores);
-
-    if (highScores.length >= 10 && this.world.score <= minimumScore) {
+    if (!this.qualifiesForHighscore()) {
       this.showHighscoreMessage("Not enough for the TOP-10 !");
       return;
     }

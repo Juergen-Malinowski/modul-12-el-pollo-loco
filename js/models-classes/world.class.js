@@ -21,6 +21,7 @@ class World {
   gameOverImg = new Image();
   showYouWin = false;
   showGameOver = false;
+  playerDefeated = false;
   blinkActive = false;
   blinkVisible = true;
   scoreBlinkInterval = null;
@@ -245,6 +246,7 @@ class World {
 
   /** Creates thrown bottles when the current input and cooldown allow it. */
   checkThrowObjects() {
+    if (this.gameOver || this.playerDefeated) return;
     const now = Date.now();
     if (
       (this.keyboard.SHIFT || this.keyboard.UP) &&

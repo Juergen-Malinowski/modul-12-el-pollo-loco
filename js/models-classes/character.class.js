@@ -137,6 +137,7 @@ class Character extends MovableObject {
         soundHub.registerInterval(setInterval(() => {
             if (this.isDead() && !this.isDeadAnimationPlaying) {
                 this.isDeadAnimationPlaying = true;
+                this.world.gameStateManager.markPlayerDefeated();
                 soundHub.stopSnoring();
                 this.playDeadAnimation();
                 return;
