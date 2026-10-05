@@ -13,7 +13,8 @@ class World {
   bossBar = new StatusBar("endboss");
   percentage = 100;
   throwableObjects = [];
-  collectedBottles = 3;
+  collectedBottles = 0;
+  maxBottlesLevel = 1;
   collectedCoins = 0;
   score = 0;
   youWinImg = new Image();
@@ -55,6 +56,7 @@ class World {
     this.level = levelInstance;
     this.levelConfig = levelConfig;
     this.currentLevel = levelConfig.number;
+    this.initializeBottleInventory();
     this.collisionManager = new WorldCollisionManager(this);
     this.hudRenderer = new WorldHudRenderer(this);
     this.processManager = new WorldProcessManager(this);
@@ -72,6 +74,7 @@ class World {
     this.run();
     this.score = score;
     this.updateBottleBar();
+    this.updateCoinBar();
 
     this.canvasVictoryHandlerBound = function () {
       if (this.gameOver && !this.showGameOver) {
@@ -83,6 +86,13 @@ class World {
     }.bind(this);
     this.canvas.addEventListener("mousedown", this.canvasVictoryHandlerBound);
 
+  }
+
+  /** Initializes the current bottle inventory and its fixed level maximum. */
+  initializeBottleInventory() {
+    const startingBottles = getBottleCarryover() + this.levelConfig.startBottleCount;
+    this.collectedBottles = startingBottles;
+    this.maxBottlesLevel = startingBottles + this.levelConfig.groundBottleCount;
   }
 
   /** Links the Character and enemies to this World instance. */
@@ -296,17 +306,17 @@ class World {
   /** Delegates the Game Over flow to the game-state manager. */
   endGame() { this.gameStateManager.endGame(); }
 
-  /** Updates the bottle status bar from the current inventory. */
+  /** Updates the bottle bar against the fixed maximum available in this level. */
   updateBottleBar() {
-    let percentage = (this.collectedBottles / 5) * 100;
+    let percentage = (this.collectedBottles / this.maxBottlesLevel) * 100;
     if (percentage > 100) percentage = 100;
     if (percentage < 0) percentage = 0;
     this.bottleBar.setPercentage(percentage);
   }
 
-  /** Updates the coin status bar from the current collection count. */
+  /** Updates the coin bar against the configured number of coins in this level. */
   updateCoinBar() {
-    let percentage = (this.collectedCoins / 15) * 100;
+    let percentage = (this.collectedCoins / this.levelConfig.coinCount) * 100;
     if (percentage > 100) percentage = 100;
     if (percentage < 0) percentage = 0;
     this.coinBar.setPercentage(percentage);

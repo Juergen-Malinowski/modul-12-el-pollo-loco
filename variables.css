@@ -12,6 +12,9 @@
   --color-accent-gold: #ffd700;
   --color-accent-danger: #ff0000;
   --color-effect-bottle-pickup: #ffff00;
+  --color-status-bottle: #2d8bd8;
+  --color-status-coin: #f0a000;
+  --color-status-empty: rgba(255, 255, 255, 0.28);
   --color-overlay-dark: rgba(0, 0, 0, 0.8);
   --color-overlay-strong: rgba(0, 0, 0, 0.85);
   --color-shadow-soft: rgba(0, 0, 0, 0.4);

@@ -57,6 +57,7 @@ class WorldLevelManager {
     world.stopAllGameProcesses();
     soundHub.stopBackgroundMusic();
     world.silenceAllAudio();
+    storeBottleCarryover(world.collectedBottles);
     world.addScore(world.gameStateManager.calculateVictoryBonus());
     world.gameOver = true;
     world.freezeWorld();

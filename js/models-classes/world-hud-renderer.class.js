@@ -4,6 +4,10 @@
 class WorldHudRenderer {
   constructor(world) {
     this.world = world;
+    this.bottleIcon = new Image();
+    this.coinIcon = new Image();
+    this.bottleIcon.src = "./assets/img/6_salsa_flasche/1_salsa_bottle_on_ground.png";
+    this.coinIcon.src = "./assets/img/8_muenzen/coin_2.png";
   }
 
   /** Checks whether mobile controls currently overlap the game stage. */
@@ -20,10 +24,73 @@ class WorldHudRenderer {
     const world = this.world;
     this.setStatusBarLayout(mobileOverlayHud);
     world.addToMap(world.statusBar);
-    world.addToMap(world.bottleBar);
-    world.addToMap(world.coinBar);
+    this.drawSegmentedResourceBar(world.bottleBar, this.bottleIcon, "--color-status-bottle");
+    this.drawSegmentedResourceBar(world.coinBar, this.coinIcon, "--color-status-coin");
     world.addToMap(world.bossBar);
     this.drawStatusValues(mobileOverlayHud);
+  }
+
+  /** Draws one icon-based resource bar with twenty five-percent segments. */
+  drawSegmentedResourceBar(bar, icon, fillColor) {
+    const layout = this.getSegmentedBarLayout(bar);
+    const ctx = this.world.ctx;
+    ctx.save();
+    this.drawResourceIcon(ctx, icon, layout);
+    this.drawResourceSegments(ctx, bar.percentage, layout, fillColor);
+    ctx.restore();
+  }
+
+  /** Returns icon and segment geometry for one resource bar. */
+  getSegmentedBarLayout(bar) {
+    const iconSize = bar.heigth * 0.72;
+    const segmentX = bar.x + iconSize + 5;
+    return {
+      iconX: bar.x,
+      iconY: bar.y + (bar.heigth - iconSize) / 2,
+      iconSize: iconSize,
+      segmentX: segmentX,
+      segmentY: bar.y + bar.heigth * 0.3,
+      segmentWidth: bar.width - iconSize - 5,
+      segmentHeight: bar.heigth * 0.4,
+    };
+  }
+
+  /** Draws the Bottle or Coin icon beside its segmented bar. */
+  drawResourceIcon(ctx, icon, layout) {
+    if (!icon.complete) return;
+    ctx.drawImage(
+      icon,
+      layout.iconX,
+      layout.iconY,
+      layout.iconSize,
+      layout.iconSize,
+    );
+  }
+
+  /** Draws twenty resource segments from the current percentage. */
+  drawResourceSegments(ctx, percentage, layout, fillColor) {
+    const segmentCount = 20;
+    const gap = 1;
+    const width = (layout.segmentWidth - gap * (segmentCount - 1)) / segmentCount;
+    const filled = this.getFilledSegmentCount(percentage, segmentCount);
+    for (let i = 0; i < segmentCount; i++) {
+      this.drawResourceSegment(ctx, layout, width, gap, i, i < filled, fillColor);
+    }
+  }
+
+  /** Returns the number of visible five-percent segments. */
+  getFilledSegmentCount(percentage, segmentCount) {
+    if (percentage <= 0) return 0;
+    return Math.min(segmentCount, Math.ceil(percentage / 100 * segmentCount));
+  }
+
+  /** Draws one filled or empty resource segment. */
+  drawResourceSegment(ctx, layout, width, gap, index, filled, fillColor) {
+    const x = layout.segmentX + index * (width + gap);
+    ctx.fillStyle = getGameColor(filled ? fillColor : "--color-status-empty");
+    ctx.fillRect(x, layout.segmentY, width, layout.segmentHeight);
+    ctx.strokeStyle = getGameColor("--color-border-dark");
+    ctx.strokeRect(x, layout.segmentY, width, layout.segmentHeight);
   }
 
   /** Returns the shared mobile HUD dimensions. */

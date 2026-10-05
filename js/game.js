@@ -3,10 +3,22 @@ let world;
 let keyboard = new Keyboard();
 let score = 0;
 let currentLevel = 1;
+let bottleCarryover = 0;
 
 /** Resets a fresh game run to Level 1. */
 function resetCurrentLevel() {
   currentLevel = 1;
+  bottleCarryover = 0;
+}
+
+/** Stores unused bottles for the next level of the current run. */
+function storeBottleCarryover(amount) {
+  bottleCarryover = Math.max(0, amount);
+}
+
+/** Returns the bottle inventory carried into the next level. */
+function getBottleCarryover() {
+  return bottleCarryover;
 }
 
 /**
