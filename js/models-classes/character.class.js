@@ -131,7 +131,7 @@ class Character extends MovableObject {
                 this.snapToGround();
             }
 
-            this.world.cameraX = -this.x + 200;
+            this.updateCameraPosition();
         }, 100));
 
         soundHub.registerInterval(setInterval(() => {
@@ -225,6 +225,13 @@ class Character extends MovableObject {
                 clearInterval(throwInterval);
             }
         }, 20));
+    }
+
+    /** Keeps the camera inside the playable level while it follows Pepe. */
+    updateCameraPosition() {
+        const desiredCameraX = -this.x + 200;
+        const minCameraX = this.world.canvas.width - this.world.level.levelEndX;
+        this.world.cameraX = Math.max(minCameraX, Math.min(0, desiredCameraX));
     }
 
     /** Returns Pepe's left movement boundary inside the level. */
