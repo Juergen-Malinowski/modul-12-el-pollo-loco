@@ -58,6 +58,7 @@ class WorldGameStateManager {
     this.bindGameOverClickHandler();
   }
 
+  /** Calculates Game Over button hit areas. */
   setGameOverButtonAreas() {
     const world = this.world;
     const buttonHeight = 60;
@@ -79,6 +80,7 @@ class WorldGameStateManager {
     };
   }
 
+  /** Binds the Game Over canvas click handler. */
   bindGameOverClickHandler() {
     const world = this.world;
     const canvas = world.canvas;
@@ -89,6 +91,7 @@ class WorldGameStateManager {
     canvas.addEventListener("mousedown", world.gameOverClickHandlerBound);
   }
 
+  /** Routes a Game Over click to restart or menu flow. */
   handleGameOverClick(x, y) {
     const world = this.world;
     this.detachGameOverClickHandler();
@@ -104,6 +107,7 @@ class WorldGameStateManager {
     }, 500);
   }
 
+  /** Removes the Game Over canvas click handler. */
   detachGameOverClickHandler() {
     const world = this.world;
     if (!world.gameOverClickHandlerBound) return;
@@ -175,6 +179,7 @@ class WorldGameStateManager {
     }, 1500);
   }
 
+  /** Runs Endboss cleanup hooks before Game Over. */
   cleanupBossAfterGameOver() {
     const boss = this.findBoss();
     if (!boss || typeof boss.onGameOverCleanup !== "function") return;
@@ -186,6 +191,7 @@ class WorldGameStateManager {
     }
   }
 
+  /** Stops Endboss-owned sounds during terminal flow. */
   stopBossSounds() {
     const enemies = this.world.level && this.world.level.enemies;
     if (!enemies) return;
@@ -200,6 +206,7 @@ class WorldGameStateManager {
     });
   }
 
+  /** Returns the current Endboss instance when available. */
   findBoss() {
     const enemies = this.world.level && this.world.level.enemies;
     if (!enemies) return undefined;
