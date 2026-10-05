@@ -86,6 +86,7 @@ function startNextLevel() {
 }
 
 var highscoreBlinkInterval = null;
+var openHighscoreAfterSavedOverlay = false;
 
 /**
  * Opens the stored highscore list and highlights the most recent entry.
@@ -412,6 +413,14 @@ function closeHighscoreSaved() {
   if (overlay) {
     overlay.style.display = "none";
   }
+  openSavedGameOverHighscore();
+}
+
+/** Opens the stored highscore table after a saved Game Over score. */
+function openSavedGameOverHighscore() {
+  if (!openHighscoreAfterSavedOverlay) return;
+  openHighscoreAfterSavedOverlay = false;
+  openHighscore();
 }
 
 function showMobileControls() {
@@ -678,8 +687,18 @@ function submitHighscoreName(score) {
   }
 
   overlay.dataset.submitted = "true";
+  openHighscoreAfterSavedOverlay = isGameOverHighscoreFlow();
   storeHighscore(name, score);
   closeHighscoreNameDialog();
+}
+
+/** Returns whether the saved score belongs to an active Game Over flow. */
+function isGameOverHighscoreFlow() {
+  return !!(
+    window.world &&
+    window.world.playerDefeated &&
+    window.world.showGameOver
+  );
 }
 
 /**
