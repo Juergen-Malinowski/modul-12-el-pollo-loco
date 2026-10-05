@@ -42,6 +42,7 @@ class World {
   hudRenderer;
   gameStateManager;
   processManager;
+  highscoreManager;
 
   constructor(canvas, keyboard) {
     this.ctx = canvas.getContext("2d");
@@ -51,6 +52,7 @@ class World {
     this.hudRenderer = new WorldHudRenderer(this);
     this.processManager = new WorldProcessManager(this);
     this.gameStateManager = new WorldGameStateManager(this);
+    this.highscoreManager = new WorldHighscoreManager(this);
     this.coffinImg.src = "./assets/img/2_charakter_pepe/5_dead/coffin.png";
     this.youWinImg.src = "./assets/img/0_you_won_you_lost/You Win A.png";
     this.gameOverImg.src =
@@ -500,332 +502,31 @@ class World {
   }
 
   startScoreBlink() {
-    this.blinkActive = true;
-    this.blinkVisible = true;
-
-    if (this.scoreBlinkInterval !== null) return;
-
-    let self = this;
-    this.scoreBlinkInterval = this.setManagedInterval(function () {
-      if (!self.blinkActive) return;
-      self.blinkVisible = !self.blinkVisible;
-    }, 500);
+    this.highscoreManager.startScoreBlink();
   }
 
   saveHighScoreEntry() {
-    var highScores = [];
-    try {
-      highScores = JSON.parse(localStorage.getItem("highScoreTable") || "[]");
-    } catch (e) {
-      highScores = [];
-    }
-
-    var minScore = 0;
-    if (highScores.length >= 10) {
-      highScores.sort(function (a, b) {
-        return b.score - a.score;
-      });
-      minScore = highScores[highScores.length - 1].score;
-    }
-
-    if (highScores.length >= 10 && this.score <= minScore) {
-      this.showHighscoreMessage("Not enough for the TOP-10 !");
-      return;
-    }
-
-    if (typeof openHighscoreNameDialog === "function") {
-      openHighscoreNameDialog(this.score);
-    }
-
+    this.highscoreManager.saveHighScoreEntry();
   }
 
-  /**
-   * Shows a temporary message above the game canvas.
-   *
-   * @param {string} text - Message shown to the player.
-   */
   showHighscoreMessage(text) {
-    let overlay = document.createElement("div");
-    overlay.className = "highscoreMessageOverlay";
-    overlay.textContent = text;
-    overlay.style.position = "fixed";
-    overlay.style.top = "50%";
-    overlay.style.left = "50%";
-    overlay.style.transform = "translate(-50%, -50%)";
-    overlay.style.backgroundColor = getGameColor("--color-surface-light");
-    overlay.style.color = getGameColor("--color-text-dark");
-    overlay.style.padding = "30px 50px";
-    overlay.style.border = "4px solid " + getGameColor("--color-border-dark");
-    overlay.style.borderRadius = "15px";
-    overlay.style.fontFamily = "'Zabars', Arial, Helvetica, sans-serif";
-    overlay.style.fontSize = "2em";
-    overlay.style.textAlign = "center";
-    overlay.style.zIndex = "9999";
-    overlay.style.boxShadow = "0 0 15px " + getGameColor("--color-shadow-medium");
-    document.body.appendChild(overlay);
-
-    this.setManagedTimeout(function () {
-      overlay.remove();
-    }, 3000);
+    this.highscoreManager.showHighscoreMessage(text);
   }
 
   showVictoryOptions() {
-
-    if (this.showVictoryOptionsOverlay) {
-      return;
-    }
-
-    this.silenceAllAudio();
-    if (
-      typeof soundHub !== "undefined" &&
-      typeof soundHub.stopBossCharge === "function"
-    ) {
-      try {
-        soundHub.stopBossCharge();
-      } catch (e) {}
-    }
-
-    try {
-      if (this.level && this.level.enemies) {
-        for (var i = 0; i < this.level.enemies.length; i++) {
-          var enemy = this.level.enemies[i];
-          if (enemy instanceof Endboss) {
-            if (typeof enemy.stopAllBossSounds === "function") {
-              enemy.stopAllBossSounds();
-            }
-            if (typeof enemy.stopBossAudioAndTimers === "function") {
-              enemy.stopBossAudioAndTimers();
-            }
-          }
-        }
-      }
-    } catch (e) {}
-
-    this.showVictoryOptionsOverlay = true;
-
-    var cvsW = this.canvas.width;
-    var cvsH = this.canvas.height;
-
-    var winW = Math.floor(cvsW * 0.7);
-    var winH = Math.floor(cvsH * 0.72);
-    var winX = Math.floor((cvsW - winW) / 2);
-    var winY = Math.floor((cvsH - winH) / 2);
-
-    this.victoryWindowRect = { x: winX, y: winY, width: winW, height: winH };
-
-    var buttonWidth = 220;
-    var buttonHeight = 45;
-    var spacing = 40;
-
-    var by = winY + winH + 10;
-
-    var cx = Math.floor(cvsW / 2);
-
-    this.victoryMenuButtonArea = {
-      x: cx - buttonWidth - spacing,
-      y: by,
-      width: buttonWidth,
-      height: buttonHeight,
-    };
-    this.victoryPlayAgainButtonArea = {
-      x: cx + spacing,
-      y: by,
-      width: buttonWidth,
-      height: buttonHeight,
-    };
-
-    var self = this;
-    this.victoryClickHandlerBound = function (event) {
-      var coordinates = getCanvasCoordinates(event, self.canvas);
-      var clickX = coordinates.x;
-      var clickY = coordinates.y;
-
-      if (self.isPointInArea(clickX, clickY, self.victoryPlayAgainButtonArea)) {
-        self.detachVictoryClickHandler();
-        self.showVictoryOptionsOverlay = false;
-        self.restartGame();
-        return;
-      }
-
-      if (self.isPointInArea(clickX, clickY, self.victoryMenuButtonArea)) {
-        self.detachVictoryClickHandler();
-        self.showVictoryOptionsOverlay = false;
-        self.returnToMenu();
-        return;
-      }
-
-      if (!self.isPointInArea(clickX, clickY, self.victoryWindowRect)) {
-        self.detachVictoryClickHandler();
-        self.showVictoryOptionsOverlay = false;
-        self.returnToMenu();
-        return;
-      }
-    };
-
-    this.canvas.addEventListener("mousedown", this.victoryClickHandlerBound);
+    this.highscoreManager.showVictoryOptions();
   }
 
   drawVictoryOptions(ctx) {
-    if (!this.victoryWindowRect) {
-      return;
-    }
-
-    var win = this.victoryWindowRect;
-
-    ctx.save();
-    ctx.fillStyle = getGameColor("--color-surface-light");
-    ctx.strokeStyle = getGameColor("--color-border-dark");
-    ctx.lineWidth = 4;
-    ctx.fillRect(win.x, win.y, win.width, win.height);
-    ctx.strokeRect(win.x, win.y, win.width, win.height);
-
-    ctx.font = "bold 42px Zabars";
-    ctx.fillStyle = getGameColor("--color-text-dark");
-    ctx.textAlign = "center";
-    ctx.textBaseline = "top";
-    ctx.fillText("Highscore", win.x + Math.floor(win.width / 2), win.y + 15);
-
-    var list = [];
-    try {
-      list = JSON.parse(localStorage.getItem("highScoreTable") || "[]");
-    } catch (e) {
-      list = [];
-    }
-
-    var newEntry = null;
-    try {
-      newEntry = JSON.parse(
-        localStorage.getItem("newHighscoreEntry") || "null",
-      );
-    } catch (e) {
-      newEntry = null;
-    }
-
-    if (list && list.length > 10) {
-      list = list.slice(0, 10);
-    }
-
-    var colRankX = win.x + 40;
-    var colNameX = win.x + 140;
-    var colScoreX = win.x + win.width - 120;
-
-    ctx.font = "bold 28px Zabars";
-    ctx.textAlign = "left";
-    ctx.fillText("Rank", colRankX, win.y + 70);
-    ctx.fillText("Name", colNameX, win.y + 70);
-    ctx.textAlign = "right";
-    ctx.fillText("Score", colScoreX, win.y + 70);
-
-    var maxVisibleRows = 10;
-    var tableTop = win.y + 105;
-    var tableBottom = win.y + win.height - 60;
-    var availableHeight = tableBottom - tableTop;
-    var baseFontSize = Math.max(20, Math.floor(win.height / 18));
-    ctx.font = baseFontSize + "px Zabars";
-    var lineH = Math.floor(baseFontSize * 1.15);
-    var startY = tableTop;
-
-    var now = Date.now();
-    var blinkOn = Math.floor(now / 500) % 2 === 0;
-
-    for (var i = 0; i < list.length && i < maxVisibleRows; i++) {
-      var entry = list[i];
-      var rank = i + 1 + ".";
-      var name = entry && entry.name ? entry.name : "Player";
-      var scoreVal = entry && typeof entry.score === "number" ? entry.score : 0;
-      var y = startY + i * lineH;
-
-      var isHighlighted = false;
-      if (
-        newEntry &&
-        entry.name === newEntry.name &&
-        entry.score === newEntry.score
-      ) {
-        isHighlighted = true;
-      }
-
-      ctx.textAlign = "left";
-
-      if (isHighlighted) {
-
-        if (blinkOn) {
-          ctx.fillStyle = getGameColor("--color-accent-danger");
-        } else {
-          ctx.fillStyle = getGameColor("--color-surface-light");
-        }
-      } else {
-        ctx.fillStyle = getGameColor("--color-text-dark");
-      }
-
-      ctx.fillText(rank, colRankX, y);
-      ctx.fillText(name, colNameX, y);
-      ctx.textAlign = "right";
-      ctx.fillText(scoreVal + "", colScoreX, y);
-    }
-
-    ctx.restore();
-
-    if (!this.victoryMenuButtonArea || !this.victoryPlayAgainButtonArea) {
-      return;
-    }
-
-    var btn = this.victoryMenuButtonArea;
-    var btn2 = this.victoryPlayAgainButtonArea;
-
-    ctx.save();
-    ctx.lineWidth = 3;
-    ctx.font = "bold 32px Zabars";
-    ctx.textBaseline = "middle";
-    ctx.textAlign = "center";
-
-    function drawButtonRect(c, area) {
-      c.fillStyle = getGameColor("--color-ui-primary");
-      c.strokeStyle = getGameColor("--color-border-dark");
-      c.fillRect(area.x, area.y, area.width, area.height);
-      c.strokeRect(area.x, area.y, area.width, area.height);
-    }
-
-    drawButtonRect(ctx, btn);
-    ctx.fillStyle = getGameColor("--color-text-dark");
-    ctx.fillText(
-      "Menu",
-      btn.x + Math.floor(btn.width / 2),
-      btn.y + Math.floor(btn.height / 2),
-    );
-
-    drawButtonRect(ctx, btn2);
-    ctx.fillStyle = getGameColor("--color-text-dark");
-    ctx.fillText(
-      "Play again?",
-      btn2.x + Math.floor(btn2.width / 2),
-      btn2.y + Math.floor(btn2.height / 2),
-    );
-
-    ctx.restore();
+    this.highscoreManager.drawVictoryOptions(ctx);
   }
 
   isPointInArea(x, y, area) {
-    if (!area) {
-      return false;
-    }
-    return (
-      x >= area.x &&
-      x <= area.x + area.width &&
-      y >= area.y &&
-      y <= area.y + area.height
-    );
+    return this.highscoreManager.isPointInArea(x, y, area);
   }
 
   detachVictoryClickHandler() {
-    try {
-      if (this.victoryClickHandlerBound) {
-        this.canvas.removeEventListener(
-          "mousedown",
-          this.victoryClickHandlerBound,
-        );
-        this.victoryClickHandlerBound = null;
-      }
-    } catch (e) {}
+    this.highscoreManager.detachVictoryClickHandler();
   }
 
   restartGame() {
