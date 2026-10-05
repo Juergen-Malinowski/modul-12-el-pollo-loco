@@ -106,15 +106,15 @@ class Character extends MovableObject {
                 return;
             }
 
-            if (this.world.keyboard.RIGHT && this.x < this.world.level.levelEndX) {
-                this.moveRight();
+            if (this.world.keyboard.RIGHT && this.x < this.getRightBoundary()) {
+                this.moveRightWithinLevel();
                 this.otherDirection = false;
                 this.lastActionTime = Date.now();
                 soundHub.stopSnoring();
             }
 
-            if (this.world.keyboard.LEFT && this.x > 0) {
-                this.moveLeft();
+            if (this.world.keyboard.LEFT && this.x > this.getLeftBoundary()) {
+                this.moveLeftWithinLevel();
                 this.otherDirection = true;
                 this.lastActionTime = Date.now();
                 soundHub.stopSnoring();
@@ -225,6 +225,35 @@ class Character extends MovableObject {
                 clearInterval(throwInterval);
             }
         }, 20));
+    }
+
+    /** Returns Pepe's left movement boundary inside the level. */
+    getLeftBoundary() {
+        return 50;
+    }
+
+    /** Returns Pepe's right movement boundary while keeping him fully visible. */
+    getRightBoundary() {
+        return Math.max(
+            this.getLeftBoundary(),
+            this.world.level.levelEndX - this.width - 50
+        );
+    }
+
+    /** Moves Pepe right without crossing the configured level boundary. */
+    moveRightWithinLevel() {
+        this.moveRight();
+        if (this.x > this.getRightBoundary()) {
+            this.x = this.getRightBoundary();
+        }
+    }
+
+    /** Moves Pepe left without crossing the configured level boundary. */
+    moveLeftWithinLevel() {
+        this.moveLeft();
+        if (this.x < this.getLeftBoundary()) {
+            this.x = this.getLeftBoundary();
+        }
     }
 
     snapToGround() {
