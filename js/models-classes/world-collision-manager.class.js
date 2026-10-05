@@ -29,7 +29,19 @@ class WorldCollisionManager {
   handleEnemyCollision(enemy) {
     if (!this.world.character.isColliding(enemy)) return;
     if (this.isStompCollision(enemy) && this.resolveStompCollision(enemy)) return;
+    if (enemy instanceof Endboss) {
+      this.handleBossContact(enemy);
+      return;
+    }
     if (!enemy.isDeadChicken) this.damageCharacter();
+  }
+
+  /** Resolves normal Endboss contact without interfering with charge hits. */
+  handleBossContact(enemy) {
+    if (enemy.isDeadBoss || enemy.isCharging) return;
+    this.damageCharacter();
+    if (this.world.character.isDead()) return;
+    this.applyBossAttackKnockback(enemy);
   }
 
   /** Checks whether the Character lands on an enemy from above. */
@@ -100,11 +112,41 @@ class WorldCollisionManager {
   /** Resolves a safe horizontal bounce direction. */
   getBossBounceDirection(enemy) {
     const character = this.world.character;
-    let direction = character.x < enemy.x ? -1 : 1;
-    const maxX = this.world.level.levelEndX - character.width;
-    const predictedX = character.x + 300 * direction;
-    if (predictedX < 200 || predictedX > maxX - 200) direction *= -1;
-    return direction;
+    const targetX = this.getSafeBossKnockbackTarget(enemy, 300);
+    return targetX < character.x ? -1 : 1;
+  }
+
+  /** Applies one boss-caused knockback after its safe target was resolved. */
+  applyBossAttackKnockback(enemy) {
+    const character = this.world.character;
+    const targetX = this.getSafeBossKnockbackTarget(enemy, 300);
+    character.isBossKnockback = true;
+    character.speedY = 25;
+    character.x = targetX;
+  }
+
+  /** Resolves the complete horizontal knockback target before Pepe is moved. */
+  getSafeBossKnockbackTarget(enemy, distance) {
+    const character = this.world.character;
+    const direction = this.getDirectionAwayFromBoss(enemy);
+    const preferredTarget = character.x + distance * direction;
+    if (this.isCharacterXInsideLevel(preferredTarget)) return preferredTarget;
+    const alternativeTarget = character.x - distance * direction;
+    return Math.max(character.getLeftBoundary(),
+      Math.min(character.getRightBoundary(), alternativeTarget));
+  }
+
+  /** Returns the horizontal direction leading away from the Endboss. */
+  getDirectionAwayFromBoss(enemy) {
+    const characterCenter = this.world.character.x + this.world.character.width / 2;
+    const bossCenter = enemy.x + enemy.width / 2;
+    return characterCenter < bossCenter ? -1 : 1;
+  }
+
+  /** Checks whether Pepe would remain completely inside the level. */
+  isCharacterXInsideLevel(x) {
+    const character = this.world.character;
+    return x >= character.getLeftBoundary() && x <= character.getRightBoundary();
   }
 
   /** Clears the temporary boss-bounce state. */

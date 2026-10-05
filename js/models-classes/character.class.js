@@ -242,14 +242,14 @@ class Character extends MovableObject {
 
     /** Returns Pepe's left movement boundary inside the level. */
     getLeftBoundary() {
-        return 50;
+        return 0;
     }
 
     /** Returns Pepe's right movement boundary while keeping him fully visible. */
     getRightBoundary() {
         return Math.max(
             this.getLeftBoundary(),
-            this.world.level.levelEndX - this.width - 50
+            this.world.level.levelEndX - this.width
         );
     }
 

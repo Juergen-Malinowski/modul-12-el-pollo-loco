@@ -262,17 +262,7 @@ class Endboss extends MovableObject {
             traveled += Math.abs(attackSpeed);
 
             if (this.world.character.isColliding(this)) {
-                this.world.character.energie -= 100;
-                if (this.world.character.energie < 0) this.world.character.energie = 0;
-
-                const percent = this.world.character.energie / this.world.character.holeEnergie * 100;
-                this.world.statusBar.setPercentage(percent);
-                soundHub.playEffect(soundHub.soundHit);
-
-                this.world.character.isBossKnockback = true;
-                this.world.character.speedY = 25;
-                clearInterval(moveInterval);
-                this.isCharging = false;
+                this.handleChargeHit(moveInterval);
                 return;
             }
 
@@ -282,6 +272,18 @@ class Endboss extends MovableObject {
                 this.world.addScore(70);
             }
         }, 40));
+    }
+
+    /** Applies charge damage and one pre-resolved safe knockback to Pepe. */
+    handleChargeHit(moveInterval) {
+        const character = this.world.character;
+        character.energie = Math.max(0, character.energie - 100);
+        const percent = character.energie / character.holeEnergie * 100;
+        this.world.statusBar.setPercentage(percent);
+        soundHub.playEffect(soundHub.soundHit);
+        if (!character.isDead()) this.world.collisionManager.applyBossAttackKnockback(this);
+        clearInterval(moveInterval);
+        this.isCharging = false;
     }
 
     /** Moves one charge step and keeps the boss completely inside the level. */
