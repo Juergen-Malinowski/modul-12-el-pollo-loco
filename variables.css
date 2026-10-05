@@ -1,8 +1,20 @@
 :root {
   --color-ui-primary: #ffcc00;
   --color-ui-primary-hover: #ffe85c;
+  --color-ui-primary-shadow-soft: rgba(255, 204, 0, 0.5);
+  --color-ui-primary-shadow-strong: rgba(255, 204, 0, 0.6);
   --color-text-light: #ffffff;
   --color-text-dark: #000000;
   --color-surface-light: #ffffff;
+  --color-surface-dark: #000000;
+  --color-surface-light-translucent: rgba(255, 255, 255, 0.9);
+  --color-border-dark: #000000;
+  --color-accent-gold: #ffd700;
+  --color-accent-danger: #ff0000;
+  --color-effect-bottle-pickup: #ffff00;
   --color-overlay-dark: rgba(0, 0, 0, 0.8);
+  --color-overlay-strong: rgba(0, 0, 0, 0.85);
+  --color-shadow-soft: rgba(0, 0, 0, 0.4);
+  --color-shadow-medium: rgba(0, 0, 0, 0.5);
+  --color-shadow-strong: rgba(0, 0, 0, 0.6);
 }
