@@ -54,6 +54,19 @@ class WorldHighscoreManager {
   }
 
   /**
+   * Reads the most recently stored highscore entry.
+   *
+   * @returns {object|null} Most recent highscore entry.
+   */
+  loadNewestHighscoreEntry() {
+    try {
+      return JSON.parse(localStorage.getItem("newHighscoreEntry") || "null");
+    } catch (error) {
+      return null;
+    }
+  }
+
+  /**
    * Returns the lowest score that currently qualifies for the table.
    *
    * @param {Array} highScores - Stored highscore entries.
