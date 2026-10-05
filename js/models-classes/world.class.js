@@ -77,6 +77,7 @@ class World {
 
   }
 
+  /** Links the Character and enemies to this World instance. */
   setWorld() {
     this.character.world = this;
 
@@ -174,6 +175,7 @@ class World {
     this.detachVictoryClickHandler();
   }
 
+  /** Starts recurring collision and throw checks. */
   run() {
     soundHub.registerInterval(
       setInterval(() => {
@@ -183,6 +185,7 @@ class World {
     );
   }
 
+  /** Draws the temporary bottle pickup feedback. */
   showBottlePickupEffect() {
     const x = this.character.x + this.character.width / 2;
     const y = this.character.y - 50;
@@ -201,6 +204,7 @@ class World {
     }, step);
   }
 
+  /** Adds score points and displays temporary score feedback. */
   addScore(points) {
     this.score += points;
     score = this.score;
@@ -221,6 +225,7 @@ class World {
     }, step);
   }
 
+  /** Creates thrown bottles when the current input and cooldown allow it. */
   checkThrowObjects() {
     const now = Date.now();
     if (
@@ -250,46 +255,37 @@ class World {
     }
   }
 
-  startCoffinAnimation() {
-    this.gameStateManager.startCoffinAnimation();
-  }
+  /** Delegates the coffin sequence to the game-state manager. */
+  startCoffinAnimation() { this.gameStateManager.startCoffinAnimation(); }
 
-  waitAndReturnToMenu() {
-    this.gameStateManager.showGameOverScreen();
-  }
+  /** Opens the Game Over screen after the coffin sequence. */
+  waitAndReturnToMenu() { this.gameStateManager.showGameOverScreen(); }
 
-  showGameOverScreen() {
-    this.gameStateManager.showGameOverScreen();
-  }
+  /** Delegates Game Over screen setup to the game-state manager. */
+  showGameOverScreen() { this.gameStateManager.showGameOverScreen(); }
 
-  returnToMenu() {
-    this.gameStateManager.returnToMenu();
-  }
+  /** Delegates the return-to-menu flow to the game-state manager. */
+  returnToMenu() { this.gameStateManager.returnToMenu(); }
 
-  stopBossProcesses() {
-    this.processManager.stopBossProcesses();
-  }
+  /** Delegates boss-process cleanup to the process manager. */
+  stopBossProcesses() { this.processManager.stopBossProcesses(); }
 
-  resetMenuInputState() {
-    this.processManager.resetMenuInputState();
-  }
+  /** Delegates input reset before returning to the menu. */
+  resetMenuInputState() { this.processManager.resetMenuInputState(); }
 
-  resetMenuUiState() {
-    this.processManager.resetMenuUiState();
-  }
+  /** Delegates menu UI restoration to the process manager. */
+  resetMenuUiState() { this.processManager.resetMenuUiState(); }
 
-  detachGlobalCanvasSoundHandler(canvas) {
-    this.processManager.detachGlobalCanvasSoundHandler(canvas);
-  }
+  /** Delegates global canvas sound-handler cleanup. */
+  detachGlobalCanvasSoundHandler(canvas) { this.processManager.detachGlobalCanvasSoundHandler(canvas); }
 
-  showVictoryScreen() {
-    this.gameStateManager.showVictoryScreen();
-  }
+  /** Delegates the Victory flow to the game-state manager. */
+  showVictoryScreen() { this.gameStateManager.showVictoryScreen(); }
 
-  endGame() {
-    this.gameStateManager.endGame();
-  }
+  /** Delegates the Game Over flow to the game-state manager. */
+  endGame() { this.gameStateManager.endGame(); }
 
+  /** Updates the bottle status bar from the current inventory. */
   updateBottleBar() {
     let percentage = (this.collectedBottles / 5) * 100;
     if (percentage > 100) percentage = 100;
@@ -297,6 +293,7 @@ class World {
     this.bottleBar.setPercentage(percentage);
   }
 
+  /** Updates the coin status bar from the current collection count. */
   updateCoinBar() {
     let percentage = (this.collectedCoins / 15) * 100;
     if (percentage > 100) percentage = 100;
@@ -304,13 +301,11 @@ class World {
     this.coinBar.setPercentage(percentage);
   }
 
-  silenceAllAudio() {
-    this.processManager.silenceAllAudio();
-  }
+  /** Delegates complete audio shutdown to the process manager. */
+  silenceAllAudio() { this.processManager.silenceAllAudio(); }
 
-  draw() {
-    this.renderer.draw();
-  }
+  /** Delegates frame rendering to the World renderer. */
+  draw() { this.renderer.draw(); }
 
   /**
    * Returns the mobile HUD layout used by responsive controls.
@@ -331,56 +326,43 @@ class World {
     this.hudRenderer.handleSoundIconClick(x, y);
   }
 
-  addObjectsToMap(objects) {
-    this.renderer.addObjectsToMap(objects);
-  }
+  /** Delegates collection rendering to the World renderer. */
+  addObjectsToMap(objects) { this.renderer.addObjectsToMap(objects); }
 
-  addToMap(movableObject) {
-    this.renderer.addToMap(movableObject);
-  }
+  /** Delegates single-object rendering to the World renderer. */
+  addToMap(movableObject) { this.renderer.addToMap(movableObject); }
 
-  flipImage(movableObject) {
-    this.renderer.flipImage(movableObject);
-  }
+  /** Delegates mirrored sprite rendering to the World renderer. */
+  flipImage(movableObject) { this.renderer.flipImage(movableObject); }
 
-  startScoreBlink() {
-    this.highscoreManager.startScoreBlink();
-  }
+  /** Delegates result-score blinking to the highscore manager. */
+  startScoreBlink() { this.highscoreManager.startScoreBlink(); }
 
-  saveHighScoreEntry() {
-    this.highscoreManager.saveHighScoreEntry();
-  }
+  /** Delegates highscore qualification to the highscore manager. */
+  saveHighScoreEntry() { this.highscoreManager.saveHighScoreEntry(); }
 
-  showHighscoreMessage(text) {
-    this.highscoreManager.showHighscoreMessage(text);
-  }
+  /** Delegates temporary highscore messages to the highscore manager. */
+  showHighscoreMessage(text) { this.highscoreManager.showHighscoreMessage(text); }
 
-  showVictoryOptions() {
-    this.highscoreManager.showVictoryOptions();
-  }
+  /** Delegates Victory options to the highscore manager. */
+  showVictoryOptions() { this.highscoreManager.showVictoryOptions(); }
 
-  drawVictoryOptions(ctx) {
-    this.highscoreManager.drawVictoryOptions(ctx);
-  }
+  /** Delegates Victory result rendering to the highscore manager. */
+  drawVictoryOptions(ctx) { this.highscoreManager.drawVictoryOptions(ctx); }
 
-  isPointInArea(x, y, area) {
-    return this.highscoreManager.isPointInArea(x, y, area);
-  }
+  /** Delegates rectangular hit testing to the highscore manager. */
+  isPointInArea(x, y, area) { return this.highscoreManager.isPointInArea(x, y, area); }
 
-  detachVictoryClickHandler() {
-    this.highscoreManager.detachVictoryClickHandler();
-  }
+  /** Delegates Victory listener cleanup to the highscore manager. */
+  detachVictoryClickHandler() { this.highscoreManager.detachVictoryClickHandler(); }
 
-  restartGame() {
-    this.gameStateManager.restartGame();
-  }
+  /** Delegates a clean restart to the game-state manager. */
+  restartGame() { this.gameStateManager.restartGame(); }
 
-  freezeWorld() {
-    this.processManager.freezeWorld();
-  }
+  /** Delegates world freezing to the process manager. */
+  freezeWorld() { this.processManager.freezeWorld(); }
 
-  stopAllGameProcesses() {
-    this.processManager.stopAllGameProcesses();
-  }
+  /** Delegates global process cleanup to the process manager. */
+  stopAllGameProcesses() { this.processManager.stopAllGameProcesses(); }
 
 }
