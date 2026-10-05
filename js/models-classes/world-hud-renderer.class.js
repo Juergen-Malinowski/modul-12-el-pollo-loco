@@ -6,6 +6,7 @@ class WorldHudRenderer {
     this.world = world;
   }
 
+  /** Checks whether mobile controls currently overlap the game stage. */
   isMobileOverlayHud() {
     const controls = document.getElementById("mobileControls");
     return (
@@ -14,6 +15,7 @@ class WorldHudRenderer {
     );
   }
 
+  /** Draws status bars and their numeric values. */
   drawStatusHud(mobileOverlayHud) {
     const world = this.world;
     this.setStatusBarLayout(mobileOverlayHud);
@@ -24,6 +26,7 @@ class WorldHudRenderer {
     this.drawStatusValues(mobileOverlayHud);
   }
 
+  /** Returns the shared mobile HUD dimensions. */
   getMobileHudLayout() {
     const edge = 10;
     const barWidth = 140;
@@ -39,6 +42,7 @@ class WorldHudRenderer {
     };
   }
 
+  /** Applies desktop or mobile status-bar positions. */
   setStatusBarLayout(mobileOverlayHud) {
     const world = this.world;
     const bars = [world.statusBar, world.bottleBar, world.coinBar, world.bossBar];
@@ -49,6 +53,7 @@ class WorldHudRenderer {
     this.setMobileStatusBarLayout(bars);
   }
 
+  /** Places status bars in one responsive mobile row. */
   setMobileStatusBarLayout(bars) {
     const layout = this.getMobileHudLayout();
     const canvasWidth = this.world.canvas.width;
@@ -64,6 +69,7 @@ class WorldHudRenderer {
     }
   }
 
+  /** Places status bars in the desktop layout. */
   setDesktopStatusBarLayout(bars) {
     const yPositions = [10, 70, 130, 190];
     for (let i = 0; i < bars.length; i++) {
@@ -74,6 +80,7 @@ class WorldHudRenderer {
     }
   }
 
+  /** Draws collected bottle and coin values. */
   drawStatusValues(mobileOverlayHud) {
     const world = this.world;
     world.ctx.save();
@@ -87,6 +94,7 @@ class WorldHudRenderer {
     world.ctx.restore();
   }
 
+  /** Returns the bottle counter position. */
   getBottleValuePosition(mobileOverlayHud) {
     const bottleBar = this.world.bottleBar;
     if (!mobileOverlayHud) return { x: 175, y: 117 };
@@ -96,6 +104,7 @@ class WorldHudRenderer {
     };
   }
 
+  /** Returns the coin counter position. */
   getCoinValuePosition(mobileOverlayHud) {
     const coinBar = this.world.coinBar;
     if (!mobileOverlayHud) return { x: 175, y: 175 };
@@ -105,6 +114,7 @@ class WorldHudRenderer {
     };
   }
 
+  /** Draws score and control hints. */
   drawScoreHud(mobileOverlayHud) {
     const world = this.world;
     if (!world.blinkActive || (world.blinkActive && world.blinkVisible)) {
@@ -120,6 +130,7 @@ class WorldHudRenderer {
     this.drawGameControlHints(world.ctx, mobileOverlayHud);
   }
 
+  /** Returns responsive score positioning and font size. */
   getScoreLayout(mobileOverlayHud) {
     if (!mobileOverlayHud) {
       return { x: 570, y: 22, fontSize: 40, textAlign: "left" };
@@ -138,6 +149,7 @@ class WorldHudRenderer {
     };
   }
 
+  /** Scales score text to the available width. */
   getScoreFontSize(text, maxWidth) {
     const ctx = this.world.ctx;
     const fontSize = 32;
@@ -150,6 +162,7 @@ class WorldHudRenderer {
     return Math.max(22, Math.floor(fontSize * (maxWidth / textWidth)));
   }
 
+  /** Draws the gameplay control hints. */
   drawGameControlHints(ctx, mobileOverlayHud = false) {
     const mobileControlsActive = this.isMobileControlsActive();
     const position = this.getGameControlHintsPosition(mobileOverlayHud);
@@ -165,6 +178,7 @@ class WorldHudRenderer {
     ctx.restore();
   }
 
+  /** Draws the individual control-hint lines. */
   drawGameControlHintLines(ctx, position, lineHeight) {
     ctx.fillText("⬅  Move left", position.x, position.y);
     ctx.fillText("➡  Move right", position.x, position.y + lineHeight);
@@ -176,6 +190,7 @@ class WorldHudRenderer {
     ctx.fillText("SPACE  Jump", position.x, position.y + lineHeight * 3);
   }
 
+  /** Checks whether landscape touch controls are active. */
   isMobileControlsActive() {
     const controls = document.getElementById("mobileControls");
     return (
@@ -211,6 +226,7 @@ class WorldHudRenderer {
     return { x: this.world.canvas.width - 20 * scaleX, y: 70 };
   }
 
+  /** Returns the control-hint position for overlay controls. */
   getOverlayGameControlHintsPosition() {
     const stage = document.getElementById("gameStage");
     const rightControls = document.querySelector("#mobileControls .rightControls");
@@ -220,6 +236,7 @@ class WorldHudRenderer {
     return this.calculateOverlayHintPosition(stage, rightControls, layout);
   }
 
+  /** Calculates control-hint coordinates from rendered control bounds. */
   calculateOverlayHintPosition(stage, rightControls, layout) {
     const stageRect = stage.getBoundingClientRect();
     const controlRect = rightControls.getBoundingClientRect();
@@ -236,6 +253,7 @@ class WorldHudRenderer {
     };
   }
 
+  /** Reads the configured inward touch-control extension. */
   getMobileTouchInwardExtension() {
     const controls = document.getElementById("mobileControls");
     if (!controls) return 0;
@@ -246,6 +264,7 @@ class WorldHudRenderer {
     return parseFloat(value) || 0;
   }
 
+  /** Calculates the left edge of right-aligned control hints. */
   getGameControlHintsLeftEdge(rightEdge) {
     const lines = [
       "⬅  Move left",
@@ -264,6 +283,7 @@ class WorldHudRenderer {
     return rightEdge - maxWidth;
   }
 
+  /** Draws the sound icon for the current HUD layout. */
   drawSoundIcon(mobileOverlayHud) {
     const world = this.world;
     const area = this.getSoundIconArea(mobileOverlayHud);
@@ -292,6 +312,7 @@ class WorldHudRenderer {
     return this.getMobileSoundIconArea(iconSize);
   }
 
+  /** Returns the mobile sound-icon hit area. */
   getMobileSoundIconArea(iconSize) {
     const stage = document.getElementById("gameStage");
     const leftControls = document.querySelector("#mobileControls .leftControls");
@@ -308,6 +329,7 @@ class WorldHudRenderer {
     );
   }
 
+  /** Calculates mobile sound-icon coordinates. */
   calculateMobileSoundIconArea(iconSize, stage, leftControls, layout) {
     const stageRect = stage.getBoundingClientRect();
     const controlRect = leftControls.getBoundingClientRect();
@@ -325,12 +347,14 @@ class WorldHudRenderer {
     };
   }
 
+  /** Handles clicks inside the sound-icon area. */
   handleSoundIconClick(x, y) {
     const area = this.getSoundIconArea();
     if (!this.isPointInsideArea(x, y, area)) return;
     this.toggleSound();
   }
 
+  /** Checks whether a point lies inside a square HUD area. */
   isPointInsideArea(x, y, area) {
     return (
       x >= area.x &&
@@ -340,6 +364,7 @@ class WorldHudRenderer {
     );
   }
 
+  /** Toggles mute state and synchronizes audio UI. */
   toggleSound() {
     if (
       typeof soundHub === "undefined" ||
@@ -355,6 +380,7 @@ class WorldHudRenderer {
     if (typeof syncAudioUIFromSoundHub === "function") syncAudioUIFromSoundHub();
   }
 
+  /** Restarts background music after unmuting when appropriate. */
   resumeMusicAfterUnmute(wasMuted) {
     if (
       wasMuted &&
