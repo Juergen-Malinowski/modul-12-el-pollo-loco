@@ -2,254 +2,228 @@
 
 El Pollo Loco is a browser-based jump-and-run game built with Vanilla JavaScript, HTML, CSS, and the Canvas API.
 
-The player controls Pepe through a scrolling desert level, collects coins and salsa bottles, defeats chickens, and finally fights the end boss. The game supports desktop keyboard controls and responsive touch controls for mobile landscape mode.
+The player controls Pepe through three increasingly demanding desert levels, collects coins and salsa bottles, defeats normal and small chickens, and fights an Endboss at the end of each level. The game supports desktop keyboard controls, responsive touch controls in mobile landscape mode, audio settings, pause/resume, Game Over, level transitions, Victory, and local highscore handling.
 
 ## Current gameplay flow
 
-The current production version still contains one playable level. The architecture has been refactored so that rendering, collisions, lifecycle management, HUD logic, and highscore handling are separated from the main `World` coordinator.
+The current development branch contains a complete three-level progression flow.
 
 ```mermaid
 flowchart TD
-    A[Start screen] -->|START| B[startGame]
-    B --> C[init]
-    C --> D[destroy previous World if present]
-    D --> E[initLevel]
-    E --> F[new World]
+    A[Start screen] -->|START| B[Level 1]
+    B --> C{Level 1 result}
+    C -->|Pepe dies| G[Game Over]
+    C -->|Endboss defeated| D[Level 2 transition]
 
-    F --> G[World.setWorld]
-    F --> H[World.run]
-    F --> I[World.draw]
+    D --> E[Level 2]
+    E --> F{Level 2 result}
+    F -->|Pepe dies| G
+    F -->|Endboss defeated| H[Level 3 transition]
 
-    H --> J[WorldCollisionManager]
-    H --> K[World throw checks]
+    H --> I[Level 3]
+    I --> J{Level 3 result}
+    J -->|Pepe dies| G
+    J -->|Endboss defeated| K[Final Victory]
 
-    I --> L[WorldRenderer]
-    L --> M[WorldHudRenderer]
-
-    J --> N[Gameplay]
-    K --> N
+    G --> L{Highscore qualified?}
+    L -->|Yes| M[Highscore entry]
+    L -->|No| N[Try again / Menu]
     M --> N
 
-    N --> O{Player state}
-
-    O -->|Character energy reaches 0| P[Character.playDeadAnimation]
-    P --> Q[World.startCoffinAnimation]
-    Q --> R[WorldGameStateManager]
-    R --> S[Game Over]
-    S -->|Try again| T[World.restartGame]
-    S -->|Menu| U[World.returnToMenu]
-
-    O -->|Endboss energy reaches 0| V[Endboss.die]
-    V --> W[World.freezeWorld]
-    W --> X[World.showVictoryScreen]
-    X --> Y[WorldHighscoreManager]
-    Y --> Z[WorldVictoryRenderer]
-    Z -->|Play again| T
-    Z -->|Menu| U
-
-    T --> B
-
-    U --> AA[World.destroy]
-    AA --> AB[WorldProcessManager cleanup]
-    AB --> A
+    K --> O[Victory score / Highscore]
+    O --> P[Play again / Menu]
 ```
 
-## Game startup
+Pepe's death has priority over boss completion. If Pepe and the Endboss die during the same combat sequence, the run always follows the Game Over path and cannot open the next-level dialog or Victory flow.
 
-The start button calls `startGame()` in `script.js`.
+## Three-level configuration
 
-`startGame()`:
+All level-specific balancing values are centralized in `levels/level-config.js`.
 
-- resets the global score for a fresh run;
-- resets the per-game highscore guard;
-- hides the start screen;
-- shows the game canvas;
-- calls `init()`;
-- enables mobile controls when applicable;
-- starts background music;
-- binds the global canvas sound handler.
+| Value | Level 1 | Level 2 | Level 3 |
+| --- | ---: | ---: | ---: |
+| World width | 2000 px | 2720 px | 3440 px |
+| Normal chickens | 7 | 10 | 13 |
+| Small chickens | 5 | 8 | 11 |
+| Ground bottles | 9 | 11 | 13 |
+| New start bottles | 6 | 5 | 4 |
+| Coins | 16 | 22 | 28 |
+| Endboss energy | 300 | 400 | 500 |
+| Endboss movement speed | 5.0 | 5.5 | 6.0 |
+| Endboss charge cooldown | 7000 ms | 6000 ms | 5000 ms |
+| Endboss hit cooldown | 400 ms | 350 ms | 300 ms |
 
-`init()` in `js/game.js` creates a clean game instance:
+Normal and small chicken movement speeds also increase through level-specific random speed ranges.
 
-1. Retrieves the canvas.
-2. Calls `world.destroy()` if an older World still exists.
-3. Calls `initLevel()`.
-4. Creates a new `World(canvas, keyboard)`.
-5. Stores the active instance in `window.world`.
+The background is extended dynamically to the configured end of the active level.
 
-This prevents an old World from continuing to run after restart or menu navigation.
+## Level creation
 
-## Level initialization
+`levels/level1.js` is currently the shared level factory despite its historic filename.
 
-`initLevel()` in `levels/level1.js` builds the current level from:
+For every configured level it creates:
 
-- `Chicken` enemies;
-- `LittleChicken` enemies;
-- one `Endboss`;
-- collectible salsa bottles;
-- collectible coins;
-- moving clouds;
-- layered background objects.
-
-The current repository still initializes `level1` only. The architecture is prepared for the planned multi-level extension, but the three-level gameplay itself is not implemented in this branch.
-
-## World architecture
-
-`World` is now primarily the coordinator between focused subsystems instead of containing all gameplay logic itself.
-
-The main `World` responsibilities are:
-
-| Function | Responsibility |
-| --- | --- |
-| `setWorld()` | Links the Character and enemies to the active World instance. |
-| `run()` | Starts the recurring collision and throw checks. |
-| `draw()` | Delegates frame rendering to `WorldRenderer`. |
-| `checkThrowObjects()` | Creates thrown bottles and applies the throw cooldown. |
-| `addScore()` | Updates the game score and displays temporary score feedback. |
-| `updateBottleBar()` | Updates the bottle status bar. |
-| `updateCoinBar()` | Updates the coin status bar. |
-| `setManagedTimeout()` | Registers delayed World-owned callbacks. |
-| `setManagedInterval()` | Registers recurring World-owned callbacks. |
-| `destroy()` | Stops rendering, timers, listeners, overlays, and game processes. |
-
-Public lifecycle methods such as `showVictoryScreen()`, `restartGame()`, `returnToMenu()`, `freezeWorld()`, and `stopAllGameProcesses()` remain available on `World` and delegate internally to the responsible manager.
-
-## Extracted World subsystems
-
-### WorldCollisionManager
-
-`WorldCollisionManager` handles gameplay collisions and collectible interactions:
-
-- Character versus Chicken and Little Chicken;
-- Character versus Endboss;
-- Character damage from living enemies;
-- bottle pickups;
-- coin pickups;
-- thrown bottle hits on normal enemies;
-- thrown bottle hits on the Endboss;
-- removal of defeated enemies after the configured delay.
-
-The existing gameplay scores and collision behavior are preserved.
-
-### WorldHudRenderer
-
-`WorldHudRenderer` owns the in-game HUD:
-
-- health, bottle, coin, and boss status bars;
-- collected bottle and coin values;
-- score rendering;
-- responsive score sizing;
-- game-control hints;
-- responsive mobile HUD layout;
-- sound icon rendering;
-- sound icon hit area and mute interaction.
-
-`World.getMobileHudLayout()` and `World.handleSoundIconClick()` remain compatibility delegates because they are used outside the renderer.
-
-### WorldRenderer
-
-`WorldRenderer` owns the main frame rendering path:
-
-- background layers;
+- the configured number of normal chickens;
+- the configured number of small chickens;
+- one Endboss;
+- the configured number of ground bottles;
+- the configured number of coins;
 - clouds;
-- collectibles;
-- Pepe;
-- enemies;
-- thrown bottles;
-- HUD composition;
-- coffin rendering;
-- Victory background;
-- Game Over background and buttons;
-- sprite mirroring;
-- scheduling the next animation frame.
+- layered desert backgrounds.
 
-`World.draw()` now delegates to this renderer.
+Normal enemies are distributed across separate horizontal spawn slots. Enemy types are shuffled, while each slot receives a randomized position inside its own area. This avoids large accidental enemy clusters at level start.
 
-### WorldGameStateManager
+## Level progression
 
-`WorldGameStateManager` coordinates terminal gameplay flow:
+Defeating the Endboss in Level 1 or Level 2:
 
-- coffin sequence;
-- Game Over screen;
-- Victory flow;
-- restart;
-- return to menu;
-- transition from Character or Endboss terminal states into the appropriate result flow.
+1. stops active gameplay;
+2. stores the remaining bottle inventory;
+3. calculates the current level-end bonus;
+4. freezes the finished World;
+5. opens the next-level dialog;
+6. creates a fresh World for the following level.
 
-### WorldProcessManager
+The accumulated score continues across levels.
 
-`WorldProcessManager` owns cleanup and shutdown operations:
+Unused bottles are carried into the next level and are added to that level's configured new start bottles.
 
-- boss-specific cleanup;
-- keyboard and touch-state reset;
-- menu UI restoration;
-- canvas sound-handler detachment;
-- stopping music and effects;
-- stopping remaining document audio;
-- freezing Character, enemies, clouds, and background objects;
-- stopping globally registered gameplay processes.
+Example:
 
-### WorldHighscoreManager
+```text
+remaining bottles from Level 1
++ Level 2 start bottles
+= Level 2 starting inventory
+```
 
-`WorldHighscoreManager` handles highscore-related flow:
+There is no artificial global bottle cap.
 
-- current Top-10 qualification;
-- loading stored highscore data;
-- reading the newest stored entry;
-- temporary qualification messages;
-- score blinking during the result flow;
-- Victory option interaction;
-- Victory click handling.
+## Bottle and coin HUD
 
-The current implementation still stores a maximum of 10 entries in `localStorage`.
+Bottle and coin resources use custom twenty-segment HUD bars.
 
-### WorldVictoryRenderer
+Each segment represents five percent of the active level resource range.
 
-`WorldVictoryRenderer` draws the current Victory result UI:
+The exact numeric counts remain visible beside the bars.
 
-- highscore result window;
-- column headers;
-- stored score rows;
-- highlighting and blinking of the newest entry;
-- Menu button;
-- Play again button.
+### Bottle bar
 
-The renderer reads highscore data through `WorldHighscoreManager`.
+The fixed maximum for the active level is calculated from:
 
-## Rendering and gameplay processes
+```text
+carried bottles
++ new start bottles
++ collectible ground bottles
+```
 
-### Rendering
+### Coin bar
 
-`World.draw()` delegates to `WorldRenderer.draw()`.
+The coin bar is scaled against the configured number of coins in the current level.
 
-The renderer separates each frame into:
+Coin collection starts from zero again when a new World is created for the next level.
 
-1. background and cloud layer;
-2. HUD layer;
-3. gameplay object layer;
-4. terminal overlays;
-5. sound icon;
-6. next `requestAnimationFrame()`.
+Health and Endboss energy still use the original image-based status bars.
 
-The active animation-frame ID is stored on `World` and cancelled by `World.destroy()`.
+## Player movement boundaries
 
-### Gameplay checks
+Pepe may move across the complete playable world while remaining fully visible.
 
-`World.run()` starts a registered interval that repeatedly calls:
+```text
+left boundary  = 0
+right boundary = levelEndX - Pepe.width
+```
 
-- `WorldCollisionManager.checkCollisions()`;
-- `World.checkThrowObjects()`.
+The camera is clamped to the playable level and no longer reveals technical background space beyond the configured world end.
 
-Gameplay intervals are registered through `SoundHub` so they can be stopped centrally when gameplay ends.
+## Chicken movement
 
-World-specific delayed and recurring actions use:
+Living chickens remain inside the current level until they are defeated or the level ends.
 
-- `setManagedTimeout()`;
-- `setManagedInterval()`;
-- `clearManagedTimeouts()`;
-- `clearManagedIntervals()`.
+When a chicken reaches either level boundary:
 
-This prevents callbacks from a discarded game instance from continuing after Restart or Return to Menu.
+- it turns around;
+- it stays completely inside the level;
+- it receives a new random movement speed from the current level configuration.
+
+This applies to both normal and small chickens.
+
+## Endboss movement and combat
+
+The Endboss can also move across the complete playable level while remaining fully visible.
+
+```text
+left boundary  = 0
+right boundary = levelEndX - Endboss.width
+```
+
+Normal body contact and the charge attack intentionally behave differently.
+
+### Normal Endboss contact
+
+Normal contact causes the established continuous contact damage while Pepe and the boss overlap.
+
+It does not automatically knock Pepe away. This preserves the gameplay option to move through the boss and reach the other side of the arena.
+
+### Charge attack
+
+A successful charge:
+
+- causes 100 damage;
+- launches Pepe vertically;
+- applies a horizontal boss knockback;
+- marks the movement as boss-caused so it cannot be interpreted as a stomp attack.
+
+Before Pepe is moved, the complete horizontal knockback target is calculated.
+
+The preferred direction is away from the boss. If that target would leave the playable level, the opposite direction is selected before any movement occurs.
+
+This prevents corner traps without producing a visible double knockback.
+
+### Boss stomp protection
+
+A boss-caused knockback cannot become an accidental stomp when Pepe falls back down.
+
+A genuine player-initiated stomp from above still damages the Endboss.
+
+## Ground bottle pickup collision
+
+Ground bottles use a dedicated pickup collision test.
+
+Pepe's configured collision offsets are used instead of the full 150-pixel sprite width, and both horizontal and vertical overlap are required.
+
+This prevents bottles from being collected before Pepe visually reaches them.
+
+Thrown-bottle projectile collision remains separate from pickup collision.
+
+## Pause system
+
+Active gameplay can be paused and resumed without rebuilding the World.
+
+### Controls
+
+| Input | Action |
+| --- | --- |
+| P | Pause / Resume |
+| PAUSED - RESUME HUD button | Resume |
+
+While paused:
+
+- Pepe movement stops;
+- gravity stops;
+- chickens stop moving and animating;
+- coin animation stops;
+- clouds stop;
+- thrown bottles stop;
+- collision checks stop;
+- Endboss movement and attacks stop;
+- active game audio is paused at its current playback position;
+- held gameplay input is cleared.
+
+The render loop remains active so the pause indicator stays visible and clickable.
+
+The visible pause button is positioned below the level indicator.
+
+Pause is disabled once terminal Boss-defeat, Game Over, or Victory handling has started.
 
 ## Player controls
 
@@ -262,9 +236,10 @@ This prevents callbacks from a discarded game instance from continuing after Res
 | Space | Jump |
 | Shift | Throw salsa bottle |
 | Up Arrow | Throw salsa bottle |
+| P | Pause / Resume |
 | Sound icon | Toggle mute |
 
-Keyboard state is stored in a `Keyboard` instance and read by the Character and World.
+The same pause instruction is shown in the Game Control menu and in the in-game control hints.
 
 ### Mobile landscape
 
@@ -280,133 +255,164 @@ Right side:
 - `RIGHT`
 - `THROW`
 
-The mobile control state is mapped onto the same Keyboard flags used by desktop input.
+The mobile control state maps onto the same Keyboard flags used by desktop input.
 
-Short transfer windows make it possible to slide between movement and action buttons without immediately interrupting movement.
-
-## Character control
-
-The `Character` class handles Pepe's movement and animation states.
-
-Important behavior:
-
-- `animate()` reads the active keyboard state and controls movement, jumping, idle states, hurt animation, and death detection;
-- `applyGravity()` controls vertical movement;
-- `playThrowAnimation()` plays the throw sequence;
-- `playDeadAnimation()` plays the death sequence and schedules the coffin transition;
-- `snapToGround()` stabilizes Pepe after vertical movement.
-
-If Pepe's energy reaches zero, the Character starts the death animation and transfers control to the Game Over flow through `World.startCoffinAnimation()`.
-
-## Collision and scoring flow
-
-Collision handling is delegated to `WorldCollisionManager`.
-
-Examples:
-
-- jumping onto a normal chicken defeats it;
-- touching a living enemy damages Pepe;
-- collecting bottles increases bottle inventory;
-- collecting coins increases the coin counter;
-- thrown bottles can defeat chickens;
-- thrown bottles damage the Endboss;
-- jumping onto the Endboss damages it and bounces Pepe away.
-
-The World remains the owner of score values and status bars, while the collision manager invokes the corresponding World methods when gameplay events occur.
+Short transfer windows allow the player to slide between movement and action controls without immediately interrupting movement.
 
 ## Game Over flow
 
-The Game Over path currently follows this sequence:
+When Pepe reaches zero energy:
 
-1. Pepe reaches zero energy.
-2. `Character.playDeadAnimation()` starts.
-3. `World.startCoffinAnimation()` delegates to `WorldGameStateManager`.
-4. The coffin animation completes.
-5. The Game Over screen is shown.
-6. The player chooses:
-   - **Try again** → `restartGame()`;
-   - **Menu** → `returnToMenu()`.
+1. Pepe is immediately marked as defeated;
+2. the death animation starts;
+3. boss/level-completion paths are blocked;
+4. the coffin sequence is shown;
+5. the Game Over screen opens;
+6. the current score is checked against the stored Top 10.
 
-`restartGame()` starts a fresh World without using `location.reload()`.
+If the score qualifies, the existing highscore name dialog is opened.
 
-The global and World score are reset before the next game starts.
+If the score does not qualify, the normal Game Over actions remain available directly:
 
-## Victory flow
+- **Try again**
+- **Menu**
 
-The current Victory path starts when the Endboss has no remaining energy.
+Restart is performed without `location.reload()`.
 
-1. `Endboss.die()` stops boss activity and plays the death animation.
-2. The World is frozen.
-3. 150 points are added for defeating the boss.
-4. `World.showVictoryScreen()` delegates to `WorldGameStateManager`.
-5. The current Victory bonus is calculated.
-6. `WorldHighscoreManager` evaluates the score.
-7. A qualifying score opens the player-name dialog.
-8. The saved entry is persisted in `localStorage`.
-9. `WorldVictoryRenderer` displays the result table and Victory actions.
-10. The player chooses:
-    - **Play again** → `restartGame()`;
-    - **Menu** → `returnToMenu()`.
+## Final Victory flow
 
-## Current Victory bonus
+Defeating the Level 3 Endboss starts the final Victory flow.
 
-The current single-level Victory bonus is calculated from remaining resources:
+The current implementation:
 
-- collected bottles × 3;
+- stops gameplay and audio;
+- adds the current end-of-level bonus;
+- evaluates the score for the local Top 10;
+- opens the player-name dialog for a qualifying score;
+- stores the entry in `localStorage`;
+- displays the Victory result interface;
+- offers Play again and Menu actions.
+
+The highscore system currently stores a maximum of 10 entries. Expansion to the planned Top 100 system is still pending.
+
+## Current scoring state
+
+The game already awards score for combat, collectibles, throws, and level completion.
+
+The final level-specific EP/score matrix has not yet been centralized. The current values are still distributed across the gameplay classes and will be replaced during the planned scoring refactor.
+
+The current end-of-level bonus calculation is:
+
+- remaining bottles × 3;
 - collected coins × 15;
 - remaining Character energy × 0.7, rounded.
 
-These values describe the current one-level version only and will be replaced by level-specific values during the planned three-level implementation.
+These values are temporary and are scheduled to become level-specific.
 
-## Highscore flow
+## World architecture
 
-The current highscore data is stored in browser `localStorage`.
+`World` coordinates focused subsystems rather than owning every gameplay responsibility directly.
 
-Important functions and owners:
+### WorldCollisionManager
 
-| Function | Owner | Responsibility |
-| --- | --- | --- |
-| `saveHighScoreEntry()` | `WorldHighscoreManager` | Checks whether the score qualifies for the current Top 10. |
-| `openHighscoreNameDialog()` | `script.js` | Opens the responsive player-name dialog. |
-| `submitHighscoreName()` | `script.js` | Validates the player name and prevents repeated submission. |
-| `storeHighscore()` | `script.js` | Sorts and stores the highscore list. |
-| `showHighscoreSavedOverlay()` | `script.js` | Shows the save confirmation dialog. |
-| `drawVictoryOptions()` | `WorldVictoryRenderer` | Draws the Victory result table and buttons. |
+Handles:
 
-The current implementation prevents the same highscore dialog from being handled more than once during one game session.
+- Character versus Chicken and Little Chicken;
+- Character versus Endboss;
+- stomp detection;
+- continuous enemy-contact damage;
+- boss knockback resolution;
+- bottle pickups;
+- coin pickups;
+- thrown-bottle hits;
+- delayed removal of defeated normal enemies.
 
-The most recently stored entry can be highlighted in the highscore display.
+### WorldHudRenderer
 
-## Game lifecycle cleanup
+Handles:
 
-A major design requirement is that Restart and Return to Menu work without a browser reload.
+- health, bottle, coin, and boss status displays;
+- twenty-segment bottle and coin bars;
+- numeric resource values;
+- score rendering;
+- active level label;
+- responsive game-control hints;
+- sound icon;
+- pause indicator and Resume hit area;
+- responsive mobile HUD positioning.
 
-`World.destroy()` performs the World-level cleanup:
+### WorldRenderer
 
-- sets `isRunning = false`;
-- stops globally registered gameplay processes;
-- clears World-managed timeouts;
-- clears World-managed intervals;
-- removes temporary highscore messages;
-- cancels the active `requestAnimationFrame`;
-- removes Game Over and Victory canvas listeners;
-- disables score blinking;
-- detaches Victory click handling.
+Handles the frame rendering path:
 
-`WorldProcessManager` handles the supporting cleanup:
+- background layers;
+- clouds;
+- collectibles;
+- Pepe;
+- enemies;
+- thrown bottles;
+- HUD;
+- coffin;
+- Victory and Game Over rendering;
+- sprite mirroring;
+- `requestAnimationFrame()` scheduling.
 
-- stops boss-specific processes;
-- stops music and effects;
-- stops remaining audio elements;
-- resets keyboard state;
-- resets mobile touch state;
-- removes gameplay-only mobile-control classes;
-- removes the global canvas sound handler;
-- freezes active moving objects when required;
-- restores the start-screen UI;
-- clears `window.world`.
+### WorldGameStateManager
 
-This keeps discarded game instances from leaving active timers, listeners, audio, or input state behind.
+Coordinates:
+
+- Pepe-death priority;
+- coffin sequence;
+- Game Over;
+- next-level versus final-Victory routing;
+- restart;
+- return to menu;
+- current level-end bonus.
+
+### WorldLevelManager
+
+Coordinates:
+
+- background extension;
+- successful level completion;
+- bottle carryover;
+- level transition dialogs.
+
+### WorldPauseManager
+
+Coordinates:
+
+- pause/resume state;
+- held-key reset;
+- active audio pausing;
+- audio resume.
+
+### WorldProcessManager
+
+Coordinates:
+
+- lifecycle cleanup;
+- boss cleanup;
+- input reset;
+- audio shutdown;
+- object freezing;
+- canvas listener cleanup;
+- start-screen restoration.
+
+### WorldHighscoreManager
+
+Coordinates:
+
+- current Top-10 qualification;
+- highscore data loading;
+- newest-entry tracking;
+- score blinking;
+- Victory interaction;
+- temporary highscore messages.
+
+### WorldVictoryRenderer
+
+Draws the final Victory result interface and stored score table.
 
 ## Audio management
 
@@ -422,35 +428,26 @@ This keeps discarded game instances from leaving active timers, listeners, audio
 - snoring audio;
 - boss audio cleanup.
 
-The mute and volume settings are stored in `localStorage`.
+Mute and volume settings are stored in `localStorage`.
 
-The sound icon uses the same central audio state on desktop and mobile layouts.
-
-## Shared color system
-
-Application colors are centralized in `variables.css` as CSS Custom Properties on `:root`.
-
-CSS uses these values through `var(--color-...)`.
-
-Canvas and JavaScript-rendered UI resolve the same variables through `getGameColor()`, so CSS and Canvas share one color source instead of duplicating hexadecimal, RGB, or named color values throughout the codebase.
+Pause temporarily pauses active playback without treating the game as muted.
 
 ## Responsive behavior
 
-The internal game canvas remains at its fixed logical game size while CSS scales the visible stage proportionally.
+The internal game canvas keeps its fixed logical dimensions while CSS scales the visible stage proportionally.
 
-The responsive implementation includes:
+The current responsive implementation includes:
 
 - proportional 3:2 stage scaling;
-- canvas pointer-coordinate conversion through `getCanvasCoordinates()`;
+- canvas pointer-coordinate conversion;
 - landscape touch controls;
-- portrait rotation overlay;
+- portrait orientation overlay;
 - responsive start menu;
-- responsive settings and highscore overlays;
-- Highscore name and confirmation dialogs sized relative to the viewport;
-- adaptive status-bar positioning;
-- responsive Score and control hints;
+- responsive settings, control, legal, and highscore overlays;
+- adaptive HUD positioning;
+- responsive score and control hints;
 - adaptive sound-icon placement;
-- touch controls that move inside or outside the game stage depending on viewport dimensions.
+- touch controls that can move inside or outside the stage depending on available viewport space.
 
 ## Important source files
 
@@ -459,43 +456,93 @@ The responsive implementation includes:
 | `index.html` | Static page structure, overlays, and script loading |
 | `variables.css` | Shared color variables |
 | `style.css` | Layout, responsive UI, overlays, and touch controls |
-| `script.js` | Menu UI, start flow, settings, orientation, and DOM highscore UI |
-| `js/game.js` | Game initialization, keyboard input, and mobile input |
-| `js/models-classes/world.class.js` | Main World orchestration and public gameplay interface |
-| `js/models-classes/world-collision-manager.class.js` | Collision and collectible handling |
-| `js/models-classes/world-hud-renderer.class.js` | HUD layout, score, controls, and sound icon |
-| `js/models-classes/world-renderer.class.js` | Scene rendering and terminal overlay rendering |
-| `js/models-classes/world-game-state-manager.class.js` | Game Over, Victory, restart, and menu flow |
-| `js/models-classes/world-process-manager.class.js` | Cleanup, audio shutdown, freezing, and menu reset |
-| `js/models-classes/world-highscore-manager.class.js` | Highscore qualification and Victory interaction flow |
-| `js/models-classes/world-victory-renderer.class.js` | Victory highscore table and action rendering |
-| `js/models-classes/character.class.js` | Pepe movement and animation |
-| `js/models-classes/endboss.class.js` | Endboss behavior, attacks, damage, and death flow |
-| `js/models-classes/chicken.class.js` | Normal chicken enemy |
-| `js/models-classes/little-chicken.class.js` | Small chicken enemy |
-| `js/models-classes/throwable-objects.class.js` | Collectible and thrown salsa bottles |
-| `js/models-classes/coin.class.js` | Collectible coin behavior |
+| `script.js` | Start/menu UI, settings, orientation, DOM overlays, and highscore UI |
 | `soundhub.js` | Audio and shared gameplay-process management |
-| `levels/level1.js` | Current level composition |
+| `js/game.js` | Game initialization, level progression state, keyboard input, and mobile input |
+| `levels/level-config.js` | Central three-level gameplay configuration |
+| `levels/level1.js` | Shared configured level factory |
+| `js/models-classes/world.class.js` | Main World orchestration |
+| `js/models-classes/world-collision-manager.class.js` | Collision, pickups, projectile hits, and boss knockback |
+| `js/models-classes/world-hud-renderer.class.js` | HUD, segmented resource bars, controls, sound, and pause UI |
+| `js/models-classes/world-renderer.class.js` | Scene and terminal-state rendering |
+| `js/models-classes/world-game-state-manager.class.js` | Game Over, level completion, Victory, restart, and menu flow |
+| `js/models-classes/world-level-manager.class.js` | Background extension and level transitions |
+| `js/models-classes/world-pause-manager.class.js` | Pause/resume and paused-audio state |
+| `js/models-classes/world-process-manager.class.js` | Cleanup, shutdown, freezing, and menu reset |
+| `js/models-classes/world-highscore-manager.class.js` | Highscore qualification and Victory interaction |
+| `js/models-classes/world-victory-renderer.class.js` | Victory score table and actions |
+| `js/models-classes/character.class.js` | Pepe movement, animation, death, and world boundaries |
+| `js/models-classes/endboss.class.js` | Endboss movement, charge, damage, and death flow |
+| `js/models-classes/chicken.class.js` | Normal chicken movement and boundary reversal |
+| `js/models-classes/little-chicken.class.js` | Small chicken movement and boundary reversal |
+| `js/models-classes/throwable-objects.class.js` | Ground and thrown salsa bottles |
+| `js/models-classes/coin.class.js` | Coin behavior |
 
-## Current project status
+## Current development status
 
-The current version includes:
+Completed or substantially completed:
 
-- one playable level;
-- responsive desktop and mobile-landscape gameplay;
-- keyboard and multi-touch controls;
-- responsive menu and overlay system;
-- audio controls with persistent mute and volume settings;
-- Game Over and Victory flows;
-- restart without page reload;
-- clean Return-to-Menu lifecycle;
-- local Top-10 highscore storage;
-- duplicate highscore-submit protection;
-- clean score reset for a fresh game;
-- responsive highscore dialogs;
-- centralized game colors;
-- separated collision, HUD, rendering, highscore, terminal-state, and cleanup responsibilities;
-- controlled timer, interval, listener, audio, and RAF cleanup.
+- stable game lifecycle without page reload;
+- responsive canvas and overlays;
+- responsive mobile controls;
+- architecture refactoring into dedicated World subsystems;
+- three-level configuration;
+- Level 1 → Level 2 → Level 3 transitions;
+- different world widths and gameplay quantities per level;
+- dynamic background extension;
+- full playable world boundaries;
+- randomized distributed chicken spawning;
+- chicken boundary reversal with new random speed;
+- bottle inventory carryover between levels;
+- twenty-segment bottle and coin HUD bars;
+- accurate ground-bottle pickup collision;
+- Pepe-death priority over simultaneous boss completion;
+- boss knockback protection against false stomps;
+- full-edge Pepe and Endboss movement;
+- safe pre-calculated Endboss charge knockback;
+- gameplay pause/resume with keyboard and HUD control.
 
-The architecture branch prepares the existing game for the planned three-level implementation. The level expansion itself, including level-specific balancing, score progression, carryover rules, transition dialogs, and the expanded highscore concept, is intentionally not part of the current implementation.
+## Planned next development steps
+
+The next major gameplay work starts with the remaining multi-level progression rules.
+
+1. Finalize health and coin behavior across level transitions.
+2. Centralize all level-specific EP/score values.
+3. Add the Special Jump / Stomp Combo system.
+4. Add the later chicken Scatter reaction.
+5. Finish the full three-level Endboss balancing and bonus model.
+6. Replace the current temporary end-of-level bonus with the final level-specific calculation.
+7. Expand the highscore system from Top 10 to Top 100 and unify Game Over / Victory presentation.
+8. Finalize three-level Game Over, restart, and Victory details.
+9. Complete final HUD and responsive tests.
+10. Enforce final code-quality requirements, including the Developer Akademie file-size and function-size rules.
+11. Audit all user-facing text and code documentation for one consistent language.
+12. Run final audio, cleanup, gameplay, and regression tests.
+13. Complete final documentation and merge the feature branch.
+
+## Developer Akademie compliance notes
+
+The project is being prepared against the current Developer Akademie checklist.
+
+Important final requirements include:
+
+- no console errors;
+- no unnecessary `console.log` output;
+- functional buttons and links;
+- local fonts and favicon;
+- landscape-only mobile gameplay with portrait rotation notice;
+- mobile touch controls only where appropriate;
+- no small-screen scrollbars;
+- descriptive and consistent filenames;
+- single-responsibility functions;
+- functions limited to approximately 14 commands;
+- source files targeted at a maximum of 400 LOC;
+- JSDoc documentation;
+- no browser reload for restart;
+- correct enemy hit detection and offsets;
+- correct status-bar updates;
+- no player movement after death;
+- complete sound and mute cleanup;
+- one consistent project language.
+
+The project currently uses English as the target language for UI text and technical documentation. Remaining mixed-language content will be corrected during the final cleanup.
