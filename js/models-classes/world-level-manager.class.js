@@ -45,9 +45,9 @@ class WorldLevelManager {
     });
   }
 
-  /** Returns whether the current implementation should open the next level. */
+  /** Returns whether another configured level follows the current one. */
   shouldTransitionToNextLevel() {
-    return this.world.currentLevel === 1;
+    return this.world.currentLevel < Object.keys(LEVEL_CONFIGS).length;
   }
 
   /**
