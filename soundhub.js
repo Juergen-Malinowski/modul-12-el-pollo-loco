@@ -74,25 +74,31 @@ class SoundHub {
 
     playEffect(audio) {
         if (typeof isGamePaused === "function" && isGamePaused()) return;
-        if (!this.isMuted && audio) {
-            try {
-                audio.currentTime = 0;
-                let playPromise = audio.play();
-                if (playPromise !== undefined) {
-                    playPromise.catch(err => { });
-                }
-            } catch (err) { }
-        }
+        if (this.isMuted || !audio) return;
+        this.playAudioBestEffort(audio, 0);
     }
 
     /** Plays the Special Jump sound after its silent intro section. */
     playSpecialJump() {
         if (typeof isGamePaused === "function" && isGamePaused()) return;
         if (this.isMuted || !this.soundSpecialJump) return;
+        this.playAudioBestEffort(this.soundSpecialJump, 0.8);
+    }
+
+    /** Starts an audio source while treating browser playback rejection as non-fatal. */
+    playAudioBestEffort(audio, startTime) {
         try {
-            this.soundSpecialJump.currentTime = 0.8;
-            this.soundSpecialJump.play().catch(function () { });
-        } catch (err) { }
+            audio.currentTime = startTime;
+            var playPromise = audio.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(function () {
+                    return false;
+                });
+            }
+            return true;
+        } catch (error) {
+            return false;
+        }
     }
 
     getAllEffects() {
@@ -123,7 +129,7 @@ class SoundHub {
         v = Math.min(Math.max(v, 0), 1);
         this.musicVolume = v;
         this.backgroundMusic.volume = v;
-        try { localStorage.setItem('audio_music_volume', v.toString()); } catch (err) { }
+        this.storeAudioSetting('audio_music_volume', v.toString());
     }
 
     setEffectsVolume(value) {
@@ -136,7 +142,7 @@ class SoundHub {
             effects[i].volume = v;
         }
 
-        try { localStorage.setItem('audio_effects_volume', v.toString()); } catch (err) { }
+        this.storeAudioSetting('audio_effects_volume', v.toString());
     }
 
     getMusicVolume() {
@@ -158,7 +164,17 @@ class SoundHub {
         for (var i = 0; i < effects.length; i++) {
             effects[i].muted = this.isMuted;
         }
-        try { localStorage.setItem('audio_muted', this.isMuted ? 'true' : 'false'); } catch (err) { }
+        this.storeAudioSetting('audio_muted', this.isMuted ? 'true' : 'false');
+    }
+
+    /** Stores one audio setting when browser storage is available. */
+    storeAudioSetting(key, value) {
+        try {
+            localStorage.setItem(key, value);
+            return true;
+        } catch (error) {
+            return false;
+        }
     }
 
     toggleMute() {
@@ -166,12 +182,14 @@ class SoundHub {
     }
 
     stopEffect(audio) {
+        if (!audio) return false;
         try {
-            if (audio) {
-                audio.pause();
-                audio.currentTime = 0;
-            }
-        } catch (e) { }
+            audio.pause();
+            audio.currentTime = 0;
+            return true;
+        } catch (error) {
+            return false;
+        }
     }
 
     stopAllEffects() {
@@ -270,21 +288,29 @@ class SoundHub {
      * Stops every audio source managed by this hub.
      */
     stopAllAudio() {
-        try {
-            this.stopBackgroundMusic();
-        } catch (e) { }
+        const hub = this;
+        this.runCleanupBestEffort(function () {
+            hub.stopBackgroundMusic();
+        });
+        this.runCleanupBestEffort(function () {
+            hub.stopAllEffects();
+        });
+        this.runCleanupBestEffort(function () {
+            hub.stopBossCharge();
+        });
+        this.runCleanupBestEffort(function () {
+            hub.stopSnoring();
+        });
+    }
 
+    /** Runs one cleanup step without blocking later cleanup steps on failure. */
+    runCleanupBestEffort(callback) {
         try {
-            this.stopAllEffects();
-        } catch (e) { }
-
-        try {
-            this.stopBossCharge();
-        } catch (e) { }
-
-        try {
-            this.stopSnoring();
-        } catch (e) { }
+            callback();
+            return true;
+        } catch (error) {
+            return false;
+        }
     }
 
     /**
@@ -330,8 +356,15 @@ class SoundHub {
 
         try {
             this.snoringAudio.currentTime = 0;
-            this.snoringAudio.play().catch(err => console.warn('Snoring audio could not start:', err));
-        } catch (e) { }
+            var playPromise = this.snoringAudio.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(function (error) {
+                    console.warn('Snoring audio could not start:', error);
+                });
+            }
+        } catch (error) {
+            console.warn('Snoring audio could not start:', error);
+        }
     }
 
     /**
