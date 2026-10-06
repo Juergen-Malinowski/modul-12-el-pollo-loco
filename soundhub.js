@@ -4,12 +4,24 @@
 class SoundHub {
 
     constructor() {
+        this.initializeBackgroundMusic();
+        this.initializeEffects();
+        this.initializeSoundState();
+        this.loadSettings();
+        this.musicVolume = this.backgroundMusic.volume;
+        this.initializeTimerRegistry();
+    }
 
+    /** Creates and configures the looping background music source. */
+    initializeBackgroundMusic() {
         this.backgroundMusic = new Audio('./assets/sound/background-music.mp3');
         this.backgroundMusic.loop = true;
         this.backgroundMusic.volume = 0.3;
         this.backgroundMusic.preload = 'auto';
+    }
 
+    /** Creates all shared gameplay effect sources. */
+    initializeEffects() {
         this.soundThrow = new Audio('./assets/sound/flying-bottle.mp3');
         this.soundCoin = new Audio('./assets/sound/coin-pling.mp3');
         this.soundHit = new Audio('./assets/sound/pepe-cry.mp3');
@@ -21,14 +33,17 @@ class SoundHub {
         this.soundBossCharge = new Audio('./assets/sound/thunder-attack.mp3');
         this.soundScatter = new Audio('./assets/sound/scatter-sound.mp3');
         this.soundSpecialJump = new Audio('./assets/sound/special-jump.mp3');
+    }
 
+    /** Initializes mutable audio state before persisted settings are applied. */
+    initializeSoundState() {
         this.lastHitSoundTime = 0;
         this.hitSoundCooldown = 2000;
         this.isMuted = false;
+    }
 
-        this.loadSettings();
-        this.musicVolume = this.backgroundMusic.volume;
-
+    /** Initializes the shared interval and timeout registries. */
+    initializeTimerRegistry() {
         this.activeIntervals = [];
         this.activeTimeouts = [];
     }
