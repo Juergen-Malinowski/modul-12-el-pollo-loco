@@ -348,21 +348,19 @@ The same pause instruction is shown in the Game Control menu and in the in-game 
 
 The responsive touch controls use Pointer Events and support simultaneous input.
 
-Left side:
+Both sides use the same vertical control order:
 
-- `LEFT`
-- `JUMP`
+- movement direction at the top;
+- `JUMP` in the middle;
+- `THROW` at the bottom.
 
-Right side:
+The left column starts with `LEFT`, while the right column starts with `RIGHT`. This allows movement to stay under one thumb while the other thumb can independently jump or throw.
 
-- `RIGHT`
-- `THROW`
+Both JUMP buttons map to the same Space input and both THROW buttons map to the same Shift input. Releasing one duplicate action button does not cancel the action while its counterpart is still held.
 
-The mobile control state maps onto the same Keyboard flags used by desktop input.
+Two quick JUMP presses within 500 ms use the same Special Jump detection as the desktop keyboard, including presses that alternate between the left and right JUMP buttons.
 
-Two quick JUMP taps within 500 ms use the same Special Jump detection as the desktop keyboard.
-
-Short transfer windows allow the player to slide between movement and action controls without immediately interrupting movement.
+Short transfer windows continue to allow the player to slide between movement and action controls without immediately interrupting movement.
 
 ## Game Over flow
 
@@ -624,7 +622,8 @@ The current responsive implementation includes:
 | `script.js` | Start/menu UI, settings, orientation, and general DOM overlays |
 | `js/highscore-system.js` | Top-100 storage, shared highscore DOM, name entry, highlighting, and result actions |
 | `soundhub.js` | Audio and shared gameplay-process management |
-| `js/game.js` | Game initialization, level progression state, keyboard input, and mobile input |
+| `js/game.js` | Game initialization, level progression state, and keyboard input |
+| `js/mobile-controls.js` | Symmetric touch controls, multi-pointer state, movement transfer windows, Jump, Throw, and Special Jump input |
 | `levels/level-config.js` | Central three-level gameplay configuration |
 | `levels/level1.js` | Shared configured level factory |
 | `js/models-classes/world.class.js` | Main World orchestration |
