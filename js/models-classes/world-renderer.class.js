@@ -126,25 +126,33 @@ class WorldRenderer {
    * Draws the rotating coffin and RIP label.
    */
   drawCoffin() {
-    const world = this.world;
-    const ctx = world.ctx;
-    const centerX = world.canvas.width / 2;
-    const centerY = world.canvas.height / 2;
+    const centerX = this.world.canvas.width / 2;
+    const centerY = this.world.canvas.height / 2;
     const coffinWidth = 250;
     const coffinHeight = 150;
+    this.drawRotatingCoffin(centerX, centerY, coffinWidth, coffinHeight);
+    this.drawCoffinLabel(centerX, centerY, coffinHeight);
+  }
 
-    ctx.save();
-    ctx.translate(centerX, centerY);
-    ctx.rotate((world.coffinRotation * Math.PI) / 180);
-    ctx.drawImage(
+  /** Draws the coffin sprite with its current rotation. */
+  drawRotatingCoffin(centerX, centerY, coffinWidth, coffinHeight) {
+    const world = this.world;
+    world.ctx.save();
+    world.ctx.translate(centerX, centerY);
+    world.ctx.rotate((world.coffinRotation * Math.PI) / 180);
+    world.ctx.drawImage(
       world.coffinImg,
       -coffinWidth / 2,
       -coffinHeight / 2,
       coffinWidth,
       coffinHeight,
     );
-    ctx.restore();
+    world.ctx.restore();
+  }
 
+  /** Draws the RIP label above the coffin. */
+  drawCoffinLabel(centerX, centerY, coffinHeight) {
+    const ctx = this.world.ctx;
     ctx.save();
     ctx.font = "bold 90px Zabars";
     ctx.fillStyle = getGameColor("--color-effect-bottle-pickup");
