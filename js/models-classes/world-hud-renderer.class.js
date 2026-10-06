@@ -188,6 +188,7 @@ class WorldHudRenderer {
       const layout = this.getScoreLayout(mobileOverlayHud);
       world.ctx.save();
       world.ctx.font = "bold " + layout.fontSize + "px Zabars";
+      world.ctx.letterSpacing = "2px";
       world.ctx.fillStyle = getGameColor("--color-ui-primary");
       world.ctx.textAlign = layout.textAlign;
       world.ctx.textBaseline = "top";
@@ -222,6 +223,7 @@ class WorldHudRenderer {
     const fontSize = 32;
     ctx.save();
     ctx.font = "bold " + fontSize + "px Zabars";
+    ctx.letterSpacing = "2px";
     const textWidth = ctx.measureText(text).width;
     ctx.restore();
 
@@ -233,11 +235,12 @@ class WorldHudRenderer {
   drawGameControlHints(ctx, mobileOverlayHud = false) {
     const mobileControlsActive = this.isMobileControlsActive();
     const position = this.getGameControlHintsPosition(mobileOverlayHud);
-    const fontSize = mobileControlsActive ? 24 : 16;
+    const fontSize = mobileControlsActive ? 24 : 18;
     const lineHeight = 30;
 
     ctx.save();
     ctx.font = "bold " + fontSize + "px Zabars";
+    ctx.letterSpacing = "2px";
     ctx.fillStyle = getGameColor("--color-text-dark");
     ctx.textAlign = "right";
     ctx.textBaseline = "top";
@@ -383,6 +386,7 @@ class WorldHudRenderer {
     ctx.fillRect(area.x, area.y, area.width, area.height);
     ctx.strokeRect(area.x, area.y, area.width, area.height);
     ctx.font = "bold 28px Zabars";
+    ctx.letterSpacing = "2px";
     ctx.fillStyle = getGameColor("--color-text-dark");
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
@@ -410,6 +414,7 @@ class WorldHudRenderer {
     const scoreLayout = this.getScoreLayout(mobileOverlayHud);
     world.ctx.save();
     world.ctx.font = "bold " + scoreLayout.fontSize + "px Zabars";
+    world.ctx.letterSpacing = "2px";
     world.ctx.fillStyle = getGameColor("--color-ui-primary");
     world.ctx.textAlign = "center";
     world.ctx.textBaseline = "top";
