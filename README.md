@@ -640,7 +640,8 @@ The current responsive implementation includes:
 | `js/models-classes/world-process-manager.class.js` | Cleanup, shutdown, freezing, and menu reset |
 | `js/models-classes/world-highscore-manager.class.js` | Top-100 qualification and Game Over / Victory routing |
 | `js/models-classes/character.class.js` | Pepe movement, animation, death, and world boundaries |
-| `js/models-classes/endboss.class.js` | Endboss state, movement, alert, charge, and damage flow |
+| `js/models-classes/endboss.class.js` | Endboss state, level configuration, damage state, and combat/lifecycle orchestration |
+| `js/models-classes/endboss-combat-manager.class.js` | Endboss movement, alert sequence, pursuit, charge scheduling, charge movement, and charge damage |
 | `js/models-classes/endboss-lifecycle-manager.class.js` | Endboss death sequence, terminal cleanup, timers, and boss-owned audio shutdown |
 | `js/models-classes/chicken.class.js` | Normal chicken movement and boundary reversal |
 | `js/models-classes/little-chicken.class.js` | Small chicken movement and boundary reversal |

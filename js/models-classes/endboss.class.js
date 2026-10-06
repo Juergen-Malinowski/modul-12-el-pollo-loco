@@ -96,6 +96,7 @@ class Endboss extends MovableObject {
         this.loadImages(this.imagesHurt);
         this.loadImages(this.imagesDead);
         this.lifecycleManager = new EndbossLifecycleManager(this);
+        this.combatManager = new EndbossCombatManager(this);
         this.animate();
         this.thunderAttack = new Audio('./assets/sound/thunder-attack.mp3'); this.thunderAttack.preload = 'auto';
     }
@@ -116,201 +117,49 @@ class Endboss extends MovableObject {
         this.alertX = Math.max(this.minX, this.x - levelConfig.bossAlertDistance);
     }
 
+    /** Delegates recurring boss movement updates to the combat manager. */
     animate() {
-
-        if (this.animateInterval) clearInterval(this.animateInterval);
-        this.animateInterval = soundHub.registerInterval(setInterval(() => {
-            if (typeof isGamePaused === "function" && isGamePaused()) return;
-            if (this.isDeadBoss || (this.world && this.world.gameOver)) {
-                clearInterval(this.animateInterval);
-                this.animateInterval = null;
-                return;
-            }
-            if (this.world && this.world.character) {
-                if (!this.isAlerted && this.world.character.x >= this.alertX) {
-                    this.triggerAlert();
-                }
-            }
-            if (this.isWalking && this.world && this.world.character && !this.isCharging) {
-                const pepe = this.world.character;
-                const levelRight = (this.world.level && typeof this.world.level.levelEndX === "number")
-                    ? (this.world.level.levelEndX - this.width)
-                    : this.maxX;
-                const leftBound = (typeof this.minX === "number") ? this.minX : 0;
-                const rightBound = Math.max(leftBound, Math.min(this.maxX, levelRight));
-
-                if (pepe.x < this.x) {
-                    this.otherDirection = false;
-                    this.x -= this.moveSpeed;
-                } else {
-                    this.otherDirection = true;
-                    this.x += this.moveSpeed;
-                }
-
-                if (this.x < leftBound) {
-                    this.x = leftBound;
-                    this.otherDirection = true;
-                } else if (this.x > rightBound) {
-                    this.x = rightBound;
-                    this.otherDirection = false;
-                }
-            }
-        }, 100));
+        this.combatManager.animate();
     }
 
     /** Counts accepted pre-fight bottle hits and alerts the boss at the threshold. */
     registerPreAlertBottleHit() {
-        if (this.isAlerted || this.isDeadBoss) return;
-        this.preAlertBottleHits++;
-        if (this.preAlertBottleHits >= this.bottleHitsToAlert) this.triggerAlert();
+        this.combatManager.registerPreAlertBottleHit();
     }
 
+    /** Delegates the alert sequence to the combat manager. */
     triggerAlert() {
-        if (this.isAlerted || this.isDeadBoss) return;
-        this.isAlerted = true;
-
-        var self = this;
-        this.screamInterval = soundHub.registerInterval(setInterval(() => {
-            if (typeof isGamePaused === "function" && isGamePaused()) return;
-
-            if (
-                !self.isDeadBoss &&
-                self.isAlerted &&
-                self.world &&
-                !self.world.gameOver
-            ) {
-                soundHub.playEffect(soundHub.soundBossStart);
-            } else {
-
-                if (this.world && typeof this.world.stopAllGameProcesses === "function") {
-                    this.world.stopAllGameProcesses();
-                }
-                clearInterval(self.screamInterval);
-                self.screamInterval = null;
-                if (typeof soundHub !== "undefined" && soundHub.soundBossStart) {
-                    soundHub.stopEffect(soundHub.soundBossStart);
-                }
-            }
-        }, 7000));
-
-        soundHub.playEffect(soundHub.soundBossStart);
-
-        this.playAlertAnimation(function () {
-
-            self.isWalking = true;
-            self.startWalkingAnimation();
-
-            self.performChargeAttack();
-
-            self.startChargeTimer();
-        });
+        this.combatManager.triggerAlert();
     }
 
+    /** Delegates the alert animation to the combat manager. */
     playAlertAnimation(onComplete) {
-        let i = 0;
-        const alertInterval = soundHub.registerInterval(setInterval(() => {
-            if (typeof isGamePaused === "function" && isGamePaused()) return;
-            if (i < this.imagesAlert.length) {
-                const path = this.imagesAlert[i];
-                this.img = this.imageCache[path];
-                i++;
-            } else {
-                clearInterval(alertInterval);
-                if (onComplete) onComplete();
-            }
-        }, 200));
+        this.combatManager.playAlertAnimation(onComplete);
     }
 
+    /** Delegates walking animation updates to the combat manager. */
     startWalkingAnimation() {
-        soundHub.registerInterval(setInterval(() => {
-            if (typeof isGamePaused === "function" && isGamePaused()) return;
-            if (this.isWalking && !this.isDeadBoss && !this.isCharging) {
-                this.playAnimation(this.imagesWalking);
-            }
-        }, 200));
+        this.combatManager.startWalkingAnimation();
     }
 
+    /** Delegates recurring charge scheduling to the combat manager. */
     startChargeTimer() {
-        if (this.chargeInterval) clearInterval(this.chargeInterval);
-
-        this.chargeInterval = soundHub.registerInterval(setInterval(() => {
-            if (typeof isGamePaused === "function" && isGamePaused()) return;
-            if (this.isDeadBoss) {
-                clearInterval(this.chargeInterval);
-                return;
-            }
-            if (this.isAlerted && !this.isCharging) {
-                this.performChargeAttack();
-            }
-        }, this.chargeCooldown));
+        this.combatManager.startChargeTimer();
     }
 
-    /**
-     * Charges toward Pepe and keeps the boss on the side where the charge ends.
-     */
+    /** Delegates one charge attack to the combat manager. */
     performChargeAttack() {
-        if (!this.world || !this.world.character) return;
-
-        this.isCharging = true;
-        const pepe = this.world.character;
-        const toRight = (pepe.x > this.x);
-        this.otherDirection = toRight;
-
-        soundHub.playEffect(soundHub.soundBossCharge);
-
-        const attackSpeed = this.chargeSpeed;
-        const targetDistance = this.chargeDistance;
-        let traveled = 0;
-
-        this.playAnimation(this.imagesThunderRun);
-
-        const moveInterval = soundHub.registerInterval(setInterval(() => {
-            if (typeof isGamePaused === "function" && isGamePaused()) return;
-            if (this.isDeadBoss) {
-                clearInterval(moveInterval);
-                this.isCharging = false;
-                return;
-            }
-
-            const reachedBoundary = this.moveChargeStep(toRight, attackSpeed);
-            traveled += Math.abs(attackSpeed);
-
-            if (
-                this.world.character.isColliding(this) &&
-                !this.isInHitRecovery()
-            ) {
-                this.handleChargeHit(moveInterval);
-                return;
-            }
-
-            if (traveled >= targetDistance || reachedBoundary) {
-                clearInterval(moveInterval);
-                this.isCharging = false;
-                this.world.addScore(this.world.levelConfig.score.bossChargeDodge);
-            }
-        }, 40));
+        this.combatManager.performChargeAttack();
     }
 
-    /** Applies charge damage and one pre-resolved safe knockback to Pepe. */
+    /** Delegates charge damage and knockback handling to the combat manager. */
     handleChargeHit(moveInterval) {
-        const character = this.world.character;
-        character.energie = Math.max(0, character.energie - this.chargeDamage);
-        const percent = character.energie / character.holeEnergie * 100;
-        this.world.statusBar.setPercentage(percent);
-        soundHub.playEffect(soundHub.soundHit);
-        if (!character.isDead()) this.world.collisionManager.applyBossAttackKnockback(this);
-        clearInterval(moveInterval);
-        this.isCharging = false;
+        this.combatManager.handleChargeHit(moveInterval);
     }
 
-    /** Moves one charge step and keeps the boss completely inside the level. */
+    /** Delegates one bounded charge movement step to the combat manager. */
     moveChargeStep(toRight, attackSpeed) {
-        const direction = toRight ? 1 : -1;
-        const nextX = this.x + attackSpeed * direction;
-        const leftBound = this.minX;
-        const rightBound = Math.min(this.maxX, this.world.level.levelEndX - this.width);
-        this.x = Math.max(leftBound, Math.min(rightBound, nextX));
-        return this.x === leftBound || this.x === rightBound;
+        return this.combatManager.moveChargeStep(toRight, attackSpeed);
     }
 
     /** Returns whether the boss is inside its level-specific post-hit recovery. */
