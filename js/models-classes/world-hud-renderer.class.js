@@ -24,9 +24,9 @@ class WorldHudRenderer {
     const world = this.world;
     this.setStatusBarLayout(mobileOverlayHud);
     world.addToMap(world.statusBar);
+    world.addToMap(world.bossBar);
     this.drawSegmentedResourceBar(world.bottleBar, this.bottleIcon, "--color-status-bottle");
     this.drawSegmentedResourceBar(world.coinBar, this.coinIcon, "--color-status-coin");
-    world.addToMap(world.bossBar);
     this.drawStatusValues(mobileOverlayHud);
   }
 
@@ -112,7 +112,7 @@ class WorldHudRenderer {
   /** Applies desktop or mobile status-bar positions. */
   setStatusBarLayout(mobileOverlayHud) {
     const world = this.world;
-    const bars = [world.statusBar, world.bottleBar, world.coinBar, world.bossBar];
+    const bars = [world.statusBar, world.bossBar, world.bottleBar, world.coinBar];
     if (!mobileOverlayHud) {
       this.setDesktopStatusBarLayout(bars);
       return;
@@ -164,7 +164,12 @@ class WorldHudRenderer {
   /** Returns the bottle counter position. */
   getBottleValuePosition(mobileOverlayHud) {
     const bottleBar = this.world.bottleBar;
-    if (!mobileOverlayHud) return { x: 175, y: 117 };
+    if (!mobileOverlayHud) {
+      return {
+        x: bottleBar.x + bottleBar.width + 15,
+        y: bottleBar.y + bottleBar.heigth * 0.94,
+      };
+    }
     return {
       x: bottleBar.x + bottleBar.width + 5,
       y: bottleBar.y + bottleBar.heigth * 0.75,
@@ -174,7 +179,12 @@ class WorldHudRenderer {
   /** Returns the coin counter position. */
   getCoinValuePosition(mobileOverlayHud) {
     const coinBar = this.world.coinBar;
-    if (!mobileOverlayHud) return { x: 175, y: 175 };
+    if (!mobileOverlayHud) {
+      return {
+        x: coinBar.x + coinBar.width + 15,
+        y: coinBar.y + coinBar.heigth * 0.94,
+      };
+    }
     return {
       x: coinBar.x + coinBar.width + 5,
       y: coinBar.y + coinBar.heigth * 0.75,
@@ -201,7 +211,8 @@ class WorldHudRenderer {
   /** Returns responsive score positioning and font size. */
   getScoreLayout(mobileOverlayHud) {
     if (!mobileOverlayHud) {
-      return { x: 570, y: 22, fontSize: 40, textAlign: "left" };
+      const rightEdge = this.getRightAlignedGameControlHintsPosition().x;
+      return { x: rightEdge, y: 22, fontSize: 40, textAlign: "right" };
     }
 
     const hintPosition = this.getGameControlHintsPosition(true);
