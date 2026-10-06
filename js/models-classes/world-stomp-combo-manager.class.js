@@ -24,10 +24,8 @@ class WorldStompComboManager {
   /** Returns the exponentially increasing bonus for the current stomp count. */
   getComboBonus() {
     const exponent = this.stompCount - 2;
-    return (
-      STOMP_COMBO_CONFIG.startBonus *
-      Math.pow(STOMP_COMBO_CONFIG.multiplier, exponent)
-    );
+    return STOMP_COMBO_CONFIG.startBonus *
+      Math.pow(STOMP_COMBO_CONFIG.multiplier, exponent);
   }
 
   /** Checks chicken density once when a new airborne combo begins. */
@@ -44,21 +42,23 @@ class WorldStompComboManager {
     const enemies = this.world.level.enemies;
     const nearby = [];
     for (let i = 0; i < enemies.length; i++) {
-      const enemy = enemies[i];
-      if (!this.isLivingChicken(enemy)) continue;
-      if (this.getDistanceFromCharacter(enemy) <= CHICKEN_SCATTER_CONFIG.nearbyRadius) {
-        nearby.push(enemy);
+      if (this.isLivingChicken(enemies[i]) && this.isChickenNearby(enemies[i])) {
+        nearby.push(enemies[i]);
       }
     }
     return nearby;
   }
 
+  /** Returns whether one chicken is inside the configured scatter radius. */
+  isChickenNearby(chicken) {
+    return this.getDistanceFromCharacter(chicken) <=
+      CHICKEN_SCATTER_CONFIG.nearbyRadius;
+  }
+
   /** Returns whether an enemy is a living normal or small chicken. */
   isLivingChicken(enemy) {
-    return (
-      (enemy instanceof Chicken || enemy instanceof LittleChicken) &&
-      !enemy.isDeadChicken
-    );
+    return (enemy instanceof Chicken || enemy instanceof LittleChicken) &&
+      !enemy.isDeadChicken;
   }
 
   /** Returns horizontal center distance between Pepe and one chicken. */
@@ -69,41 +69,76 @@ class WorldStompComboManager {
     return Math.abs(characterCenter - chickenCenter);
   }
 
-  /** Starts one visible escape movement for each nearby surviving chicken. */
+  /** Starts randomized escape behavior for each nearby surviving chicken. */
   scatterNearbyChickens(chickens, stompedEnemy) {
+    let scatterStarted = false;
     for (let i = 0; i < chickens.length; i++) {
-      const chicken = chickens[i];
-      if (chicken === stompedEnemy) continue;
-      const plan = this.createScatterPlan(chicken);
-      chicken.startScatter(
-        plan.targetX,
-        plan.direction,
-        CHICKEN_SCATTER_CONFIG.movementSpeed,
-      );
+      if (chickens[i] === stompedEnemy) continue;
+      this.startChickenScatter(chickens[i]);
+      scatterStarted = true;
     }
+    if (scatterStarted) soundHub.playEffect(soundHub.soundScatter);
   }
 
-  /** Creates a boundary-aware random scatter target for one chicken. */
+  /** Starts one chicken with its independently randomized scatter plan. */
+  startChickenScatter(chicken) {
+    const plan = this.createScatterPlan(chicken);
+    chicken.startScatter(
+      plan.targetX,
+      plan.direction,
+      plan.speed,
+      plan.hopSpeed,
+      CHICKEN_SCATTER_CONFIG.hopGravity,
+    );
+  }
+
+  /** Creates a boundary-aware random scatter plan for one chicken. */
   createScatterPlan(chicken) {
     const distance = this.getRandomScatterDistance(chicken);
-    let direction = Math.random() < 0.5 ? -1 : 1;
-    direction = this.resolveScatterDirection(chicken, direction, distance);
+    let direction = this.getRandomScatterDirection(chicken);
+    direction = this.resolveScatterDirection(chicken, direction);
     return {
       direction: direction,
       targetX: this.getScatterTargetX(chicken, direction, distance),
+      speed: this.getRandomScatterSpeed(),
+      hopSpeed: this.getRandomHopSpeed(),
     };
+  }
+
+  /** Randomly keeps or reverses the chicken's current walking direction. */
+  getRandomScatterDirection(chicken) {
+    const currentDirection = chicken.otherDirection ? 1 : -1;
+    if (Math.random() < CHICKEN_SCATTER_CONFIG.reverseChance) {
+      return -currentDirection;
+    }
+    return currentDirection;
   }
 
   /** Returns a random flee distance based on the individual chicken width. */
   getRandomScatterDistance(chicken) {
     const config = CHICKEN_SCATTER_CONFIG;
-    const factorRange = config.maxDistanceFactor - config.minDistanceFactor;
-    const factor = config.minDistanceFactor + Math.random() * factorRange;
+    const range = config.maxDistanceFactor - config.minDistanceFactor;
+    const factor = config.minDistanceFactor + Math.random() * range;
     return chicken.width * factor;
   }
 
-  /** Switches direction when the selected side cannot provide minimum space. */
-  resolveScatterDirection(chicken, direction, distance) {
+  /** Returns a varied horizontal scatter speed. */
+  getRandomScatterSpeed() {
+    const config = CHICKEN_SCATTER_CONFIG;
+    const range = config.maxMovementSpeed - config.minMovementSpeed;
+    return config.minMovementSpeed + Math.random() * range;
+  }
+
+  /** Randomly assigns a short panic hop to part of the scattering group. */
+  getRandomHopSpeed() {
+    const config = CHICKEN_SCATTER_CONFIG;
+    if (Math.random() >= config.hopChance) return 0;
+    const range = config.maxHopSpeed - config.minHopSpeed;
+    return config.minHopSpeed + Math.random() * range;
+  }
+
+  /** Switches direction when the selected side lacks minimum escape space. */
+  resolveScatterDirection(chicken, direction) {
     const minDistance = chicken.width * CHICKEN_SCATTER_CONFIG.minDistanceFactor;
     const preferredSpace = this.getAvailableScatterSpace(chicken, direction);
     if (preferredSpace >= minDistance) return direction;
@@ -121,7 +156,7 @@ class WorldStompComboManager {
   /** Resolves the target without allowing the chicken to leave the level. */
   getScatterTargetX(chicken, direction, distance) {
     const available = Math.max(0, this.getAvailableScatterSpace(chicken, direction));
-    const actualDistance = Math.min(distance, available);
+    const actualDistance = Math.min(distance, Math.max(0, available - 1));
     return chicken.x + actualDistance * direction;
   }
 
