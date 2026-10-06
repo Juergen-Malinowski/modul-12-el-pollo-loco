@@ -102,91 +102,130 @@ class Character extends MovableObject {
         this.animate();
     }
 
+    /** Starts Pepe's movement and sprite-animation loops. */
     animate() {
         if (this.isThrowing) return;
+        this.startMovementLoop();
+        this.startAnimationLoop();
+    }
 
-        soundHub.registerInterval(setInterval(() => {
-            if (typeof isGamePaused === "function" && isGamePaused()) return;
-            if (this.isDeadAnimationPlaying) {
-                return;
-            }
-
-            if (this.isSpecialJumping) {
-                this.updateCameraPosition();
-                return;
-            }
-
-            if (this.world.keyboard.RIGHT && this.x < this.getRightBoundary()) {
-                this.moveRightWithinLevel();
-                this.otherDirection = false;
-                this.lastActionTime = Date.now();
-                soundHub.stopSnoring();
-            }
-
-            if (this.world.keyboard.LEFT && this.x > this.getLeftBoundary()) {
-                this.moveLeftWithinLevel();
-                this.otherDirection = true;
-                this.lastActionTime = Date.now();
-                soundHub.stopSnoring();
-            }
-
-            if (this.world.keyboard.SPACE && !this.isAboveGround()) {
-                this.isBossJumpAttack = true;
-                soundHub.playEffect(soundHub.soundJumping);
-                this.speedY = 45;
-                this.lastActionTime = Date.now();
-                soundHub.stopSnoring();
-            }
-
-            if (!this.isAboveGround() && this.speedY <= 0) {
-                this.snapToGround();
-            }
-
-            this.updateCameraPosition();
+    /** Starts the recurring movement and camera update loop. */
+    startMovementLoop() {
+        const character = this;
+        soundHub.registerInterval(setInterval(function () {
+            character.updateMovementState();
         }, 100));
+    }
 
-        soundHub.registerInterval(setInterval(() => {
-            if (typeof isGamePaused === "function" && isGamePaused()) return;
-            if (this.isDead() && !this.isDeadAnimationPlaying) {
-                this.isDeadAnimationPlaying = true;
-                this.world.gameStateManager.markPlayerDefeated();
-                soundHub.stopSnoring();
-                this.playDeadAnimation();
-                return;
-            }
+    /** Processes one movement-loop update without changing animation frames. */
+    updateMovementState() {
+        if (typeof isGamePaused === "function" && isGamePaused()) return;
+        if (this.isDeadAnimationPlaying) return;
+        if (this.isSpecialJumping) {
+            this.updateCameraPosition();
+            return;
+        }
+        this.handleHorizontalMovement();
+        this.handleJumpInput();
+        this.snapToGround();
+        this.updateCameraPosition();
+    }
 
-            if (this.isDeadAnimationPlaying) {
-                return;
-            }
+    /** Applies held left and right movement inputs. */
+    handleHorizontalMovement() {
+        if (this.world.keyboard.RIGHT && this.x < this.getRightBoundary()) {
+            this.moveRightWithinLevel();
+            this.otherDirection = false;
+            this.registerMovementAction();
+        }
+        if (this.world.keyboard.LEFT && this.x > this.getLeftBoundary()) {
+            this.moveLeftWithinLevel();
+            this.otherDirection = true;
+            this.registerMovementAction();
+        }
+    }
 
-            if (this.isAboveGround()) {
-                this.playAnimation(this.imagesJumping);
-            } else if (this.isHurt()) {
-                soundHub.stopSnoring();
-                this.lastActionTime = Date.now();
-                this.playAnimation(this.imagesHurt);
-                return;
-            } else if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
-                this.playAnimation(this.imagesWalking);
-            } else {
+    /** Refreshes activity time and stops idle snoring after movement. */
+    registerMovementAction() {
+        this.lastActionTime = Date.now();
+        soundHub.stopSnoring();
+    }
 
-                const idleTime = (Date.now() - this.lastActionTime) / 1000;
+    /** Starts a normal jump when the jump key is held on the ground. */
+    handleJumpInput() {
+        if (!this.world.keyboard.SPACE || this.isAboveGround()) return;
+        this.isBossJumpAttack = true;
+        soundHub.playEffect(soundHub.soundJumping);
+        this.speedY = 45;
+        this.lastActionTime = Date.now();
+        soundHub.stopSnoring();
+    }
 
-                if (idleTime < 3) {
-                    this.playAnimation(this.imagesWating);
-                    soundHub.stopSnoring();
-                } else if (idleTime >= 5) {
-                    this.playAnimation(this.imagesLongWaiting);
-
-                    if (!soundHub.snoringAudio || soundHub.snoringAudio.paused) {
-                        soundHub.playSnoring();
-                    }
-                } else {
-
-                    soundHub.stopSnoring();
-                }
-            }
+    /** Starts the recurring sprite-animation state loop. */
+    startAnimationLoop() {
+        const character = this;
+        soundHub.registerInterval(setInterval(function () {
+            character.updateAnimationState();
         }, 150));
+    }
+
+    /** Selects the active death, air, hurt, walking, or idle animation. */
+    updateAnimationState() {
+        if (typeof isGamePaused === "function" && isGamePaused()) return;
+        if (this.startDeathAnimationIfNeeded()) return;
+        if (this.isDeadAnimationPlaying) return;
+        if (this.isAboveGround()) {
+            this.playAnimation(this.imagesJumping);
+            return;
+        }
+        if (this.playHurtAnimationIfNeeded()) return;
+        if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
+            this.playAnimation(this.imagesWalking);
+            return;
+        }
+        this.playIdleAnimation();
+    }
+
+    /** Starts Pepe's death animation once when his energy reaches zero. */
+    startDeathAnimationIfNeeded() {
+        if (!this.isDead() || this.isDeadAnimationPlaying) return false;
+        this.isDeadAnimationPlaying = true;
+        this.world.gameStateManager.markPlayerDefeated();
+        soundHub.stopSnoring();
+        this.playDeadAnimation();
+        return true;
+    }
+
+    /** Plays the hurt animation when Pepe is currently injured. */
+    playHurtAnimationIfNeeded() {
+        if (!this.isHurt()) return false;
+        soundHub.stopSnoring();
+        this.lastActionTime = Date.now();
+        this.playAnimation(this.imagesHurt);
+        return true;
+    }
+
+    /** Selects short idle, long idle, or the transition between them. */
+    playIdleAnimation() {
+        const idleTime = (Date.now() - this.lastActionTime) / 1000;
+        if (idleTime < 3) {
+            this.playAnimation(this.imagesWating);
+            soundHub.stopSnoring();
+            return;
+        }
+        if (idleTime >= 5) {
+            this.playLongIdleAnimation();
+            return;
+        }
+        soundHub.stopSnoring();
+    }
+
+    /** Plays long idle frames and starts snoring only when needed. */
+    playLongIdleAnimation() {
+        this.playAnimation(this.imagesLongWaiting);
+        if (!soundHub.snoringAudio || soundHub.snoringAudio.paused) {
+            soundHub.playSnoring();
+        }
     }
 
     /**
@@ -276,6 +315,7 @@ class Character extends MovableObject {
         }
     }
 
+    /** Resets airborne combat state after Pepe returns to the ground. */
     snapToGround() {
         if (this.speedY <= 0 && this.y > 130 && !this.isAboveGround()) {
             this.y = 130;
@@ -290,6 +330,7 @@ class Character extends MovableObject {
         }
     }
 
+    /** Stops Pepe's idle snoring sound. */
     stopSnoringSound() {
         soundHub.stopSnoring();
     }
