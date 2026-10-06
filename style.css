@@ -410,39 +410,80 @@ button:hover {
   padding-right: 6px;
 }
 
-#closeHint {
-  font-size: clamp(0.9rem, calc(0.7rem + 0.8vh), 1.4rem);
-  color: var(--color-text-dark);
-  margin-top: clamp(6px, 1.5vh, 20px);
-  flex: 0 0 auto;
+#highscoreContent {
+  scrollbar-width: thin;
 }
 
-.blinkHighlight {
+.highscoreList {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(2px, 0.6vh, 8px);
+  width: 100%;
+}
+
+.highscoreRow {
+  display: grid;
+  grid-template-columns: minmax(44px, 0.45fr) minmax(0, 2fr) minmax(90px, 1fr);
+  gap: clamp(6px, 1.5vw, 22px);
+  align-items: center;
+  padding: clamp(2px, 0.5vh, 7px) clamp(5px, 1vw, 14px);
+  border-radius: 8px;
+}
+
+.highscoreRank {
+  text-align: right;
+}
+
+.highscoreName {
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.highscoreScore {
+  text-align: right;
+}
+
+.highscoreRow.isNew {
   font-weight: bold;
-  color: var(--color-accent-danger);
+  animation: highscoreNewEntryBlink 1s steps(2, start) infinite;
 }
 
-#closeHint {
-  display: inline-block;
-  align-self: center;
-  width: fit-content;
+@keyframes highscoreNewEntryBlink {
+  0%, 49% {
+    color: var(--color-accent-danger);
+    background-color: transparent;
+  }
+
+  50%, 100% {
+    color: var(--color-text-dark);
+    background-color: var(--color-ui-primary);
+  }
+}
+
+#highscoreActions {
+  display: flex;
+  justify-content: center;
+  gap: clamp(8px, 2vw, 28px);
+  flex: 0 0 auto;
+  margin-top: clamp(6px, 1.5vh, 20px);
+}
+
+.highscoreActionButton {
   background-color: var(--color-ui-primary);
   color: var(--color-text-dark);
   border: 2px solid var(--color-text-dark);
-  border-radius: 10px;
-  padding: clamp(4px, 0.9vh, 12px) clamp(14px, 2.4vw, 36px);
-  margin-top: clamp(6px, 1.8vh, 30px);
+  border-radius: clamp(8px, 1vh, 16px);
+  padding: clamp(4px, 1vh, 14px) clamp(14px, 2.4vw, 36px);
   cursor: pointer;
   font-family: "Zabars", Arial, Helvetica, sans-serif;
-  font-size: clamp(0.95rem, calc(0.65rem + 1.15vh), 1.9rem);
-  transition:
-    transform 0.2s ease-in-out,
-    background-color 0.2s ease-in-out;
+  font-size: clamp(0.95rem, calc(0.55rem + 1.5vh), 2rem);
 }
 
-#closeHint:hover {
+.highscoreActionButton:hover {
   background-color: var(--color-ui-primary-hover);
-  transform: scale(1.2);
+  transform: scale(1.08);
 }
 
 /* Impressum overlay */
@@ -607,14 +648,6 @@ body.main_grafik .href_grafik:hover {
   list-style-type: none;
   padding: 0;
   margin: 10px 0 0 0;
-}
-
-.hsList {
-  counter-reset: item;
-}
-
-.hsList li {
-  margin: 6px 0;
 }
 
 /* Canvas initial state */
@@ -809,7 +842,6 @@ canvas {
   transform: scale(1.2);
 }
 
-#closeHint,
 #closeAudioHint,
 #closeGameControlHint,
 #closeImpressumHint {

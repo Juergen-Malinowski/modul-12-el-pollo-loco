@@ -75,7 +75,7 @@ class WorldGameStateManager {
   openGameOverHighscore() {
     const manager = this.world.highscoreManager;
     if (!manager || !manager.qualifiesForHighscore()) return;
-    this.world.saveHighScoreEntry();
+    this.world.saveHighScoreEntry("gameover");
   }
 
   /** Calculates Game Over button hit areas. */
@@ -175,9 +175,8 @@ class WorldGameStateManager {
     world.gameOver = true;
     world.keyboard = new Keyboard();
 
-    world.setManagedTimeout(() => {
-      world.saveHighScoreEntry();
-      world.showVictoryOptions();
+    world.setManagedTimeout(function () {
+      if (world.highscoreManager) world.highscoreManager.openVictoryHighscoreFlow();
     }, 2000);
     world.startScoreBlink();
   }

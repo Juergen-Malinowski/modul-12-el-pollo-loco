@@ -22,25 +22,33 @@ class WorldHighscoreManager {
     }, 500);
   }
 
-  /** Returns whether the current score qualifies for the stored TOP-10. */
+  /** Returns whether the current score qualifies for the stored Top 100. */
   qualifiesForHighscore() {
     const highScores = this.loadHighscores();
-    if (highScores.length < 10) return true;
+    const limit = typeof getHighscoreLimit === "function" ? getHighscoreLimit() : 100;
+    if (highScores.length < limit) return true;
     return this.world.score > this.getMinimumQualifyingScore(highScores);
   }
 
-  /**
-   * Checks whether the current score qualifies for the stored TOP-10.
-   */
-  saveHighScoreEntry() {
+  /** Opens name entry when the current score qualifies for the Top 100. */
+  saveHighScoreEntry(context) {
     if (!this.qualifiesForHighscore()) {
-      this.showHighscoreMessage("Not enough for the TOP-10 !");
+      if (context === "victory") this.showVictoryOptions();
+      else this.showHighscoreMessage("Not enough for the TOP 100!");
       return;
     }
-
     if (typeof openHighscoreNameDialog === "function") {
-      openHighscoreNameDialog(this.world.score);
+      openHighscoreNameDialog(this.world.score, context);
     }
+  }
+
+  /** Routes final Victory into qualification or the shared highscore view. */
+  openVictoryHighscoreFlow() {
+    if (this.qualifiesForHighscore()) {
+      this.saveHighScoreEntry("victory");
+      return;
+    }
+    this.showVictoryOptions();
   }
 
   /**
@@ -49,6 +57,7 @@ class WorldHighscoreManager {
    * @returns {Array} Stored highscore entries.
    */
   loadHighscores() {
+    if (typeof readHighscores === "function") return readHighscores();
     try {
       const list = JSON.parse(localStorage.getItem("highScoreTable") || "[]");
       return Array.isArray(list) ? list : [];
@@ -63,6 +72,9 @@ class WorldHighscoreManager {
    * @returns {object|null} Most recent highscore entry.
    */
   loadNewestHighscoreEntry() {
+    if (typeof readNewestHighscoreEntry === "function") {
+      return readNewestHighscoreEntry();
+    }
     try {
       return JSON.parse(localStorage.getItem("newHighscoreEntry") || "null");
     } catch (error) {
@@ -77,9 +89,10 @@ class WorldHighscoreManager {
    * @returns {number} Minimum qualifying score.
    */
   getMinimumQualifyingScore(highScores) {
-    if (highScores.length < 10) return 0;
+    const limit = typeof getHighscoreLimit === "function" ? getHighscoreLimit() : 100;
+    if (highScores.length < limit) return 0;
     const sortedScores = [...highScores].sort((a, b) => b.score - a.score);
-    return sortedScores[sortedScores.length - 1].score;
+    return sortedScores[limit - 1].score;
   }
 
   /**
@@ -125,13 +138,10 @@ class WorldHighscoreManager {
    */
   showVictoryOptions() {
     const world = this.world;
-    if (world.showVictoryOptionsOverlay) return;
-
     world.silenceAllAudio();
     this.stopVictoryBossAudio();
-    world.showVictoryOptionsOverlay = true;
-    this.setVictoryAreas();
-    this.bindVictoryClickHandler();
+    world.showVictoryOptionsOverlay = false;
+    if (typeof openHighscore === "function") openHighscore("victory");
   }
 
   /**

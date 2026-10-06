@@ -386,7 +386,7 @@ class World {
   startScoreBlink() { this.highscoreManager.startScoreBlink(); }
 
   /** Delegates highscore qualification to the highscore manager. */
-  saveHighScoreEntry() { this.highscoreManager.saveHighScoreEntry(); }
+  saveHighScoreEntry(context) { this.highscoreManager.saveHighScoreEntry(context); }
 
   /** Delegates temporary highscore messages to the highscore manager. */
   showHighscoreMessage(text) { this.highscoreManager.showHighscoreMessage(text); }
