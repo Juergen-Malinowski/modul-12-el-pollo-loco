@@ -150,15 +150,13 @@ class Character extends MovableObject {
                 return;
             }
 
-            if (this.isHurt()) {
+            if (this.isAboveGround()) {
+                this.playAnimation(this.imagesJumping);
+            } else if (this.isHurt()) {
                 soundHub.stopSnoring();
                 this.lastActionTime = Date.now();
                 this.playAnimation(this.imagesHurt);
                 return;
-            }
-
-            if (this.isAboveGround()) {
-                this.playAnimation(this.imagesJumping);
             } else if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
                 this.playAnimation(this.imagesWalking);
             } else {
