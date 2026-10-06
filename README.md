@@ -702,7 +702,9 @@ The remaining work now focuses on final progression, presentation, architecture,
 4. Enforce the remaining Developer Akademie function-size and file-size requirements.
 5. Audit all user-facing text and code documentation for one consistent language.
 6. Run final audio, cleanup, gameplay, and regression tests.
-7. Complete final documentation and merge the finished feature branch.
+7. Review all release-relevant legal and attribution content: Legal Notice / Impressum, Privacy Policy, non-commercial project notices, external links, and complete Credits / Thanks for all used graphics, music, and sound effects.
+8. Prepare the production release for the All-Inkl FTP server and perform a live-site regression check for asset paths, audio, responsive behavior, favicon, legal pages, links, and HTTPS delivery.
+9. Complete final documentation and merge the finished feature branch.
 
 ## Developer Akademie compliance notes
 
