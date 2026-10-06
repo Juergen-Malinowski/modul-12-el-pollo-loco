@@ -7,9 +7,13 @@ class MovableObject extends DrawableObjects {
     otherDirection = false;
     speedY = 0;
     acceleration = 4;
+    isScattering = false;
     scatterTargetX = null;
     scatterDirection = 0;
     scatterSpeed = 0;
+    scatterGroundY = 0;
+    scatterVerticalSpeed = 0;
+    scatterGravity = 0;
 
     energie = 100;
     lastHit = 0;
@@ -171,28 +175,55 @@ class MovableObject extends DrawableObjects {
     }
 
     /**
-     * Starts a temporary visible horizontal escape movement.
+     * Starts one randomized scatter movement with an optional panic hop.
      *
      * @param {number} targetX - Horizontal position where scatter movement ends.
      * @param {number} direction - Horizontal movement direction, -1 or 1.
-     * @param {number} speed - Temporary scatter movement speed.
+     * @param {number} speed - Temporary horizontal scatter speed.
+     * @param {number} hopSpeed - Initial upward hop speed, or zero for no hop.
+     * @param {number} gravity - Vertical scatter gravity.
      */
-    startScatter(targetX, direction, speed) {
+    startScatter(targetX, direction, speed, hopSpeed, gravity) {
+        this.isScattering = true;
         this.scatterTargetX = targetX;
         this.scatterDirection = direction;
         this.scatterSpeed = speed;
+        this.scatterGroundY = this.y;
+        this.scatterVerticalSpeed = hopSpeed;
+        this.scatterGravity = gravity;
+        this.otherDirection = direction > 0;
     }
 
-    /** Moves one scatter step and reports whether scatter currently owns movement. */
+    /** Moves one scatter frame and reports whether scatter owns movement. */
     moveScatterStep() {
-        if (this.scatterTargetX === null) return false;
+        if (!this.isScattering) return false;
+        this.moveScatterHorizontal();
+        this.moveScatterVertical();
+        if (this.isScatterComplete()) this.finishScatter();
+        return true;
+    }
+
+    /** Advances the horizontal flee movement toward its boundary-safe target. */
+    moveScatterHorizontal() {
+        if (this.scatterTargetX === null) return;
         const nextX = this.x + this.scatterSpeed * this.scatterDirection;
         if (this.hasReachedScatterTarget(nextX)) {
-            this.finishScatter();
-            return true;
+            this.x = this.scatterTargetX;
+            this.scatterTargetX = null;
+            return;
         }
         this.x = nextX;
-        return true;
+    }
+
+    /** Applies the optional short panic hop while scatter remains active. */
+    moveScatterVertical() {
+        if (this.scatterVerticalSpeed === 0 && this.y >= this.scatterGroundY) return;
+        this.y -= this.scatterVerticalSpeed;
+        this.scatterVerticalSpeed -= this.scatterGravity;
+        if (this.y >= this.scatterGroundY) {
+            this.y = this.scatterGroundY;
+            this.scatterVerticalSpeed = 0;
+        }
     }
 
     /** Returns whether the next movement step reaches or passes the scatter target. */
@@ -201,13 +232,24 @@ class MovableObject extends DrawableObjects {
         return nextX <= this.scatterTargetX;
     }
 
-    /** Finishes scatter and preserves its direction for normal chicken movement. */
+    /** Returns whether horizontal escape and the optional hop are complete. */
+    isScatterComplete() {
+        return (
+            this.scatterTargetX === null &&
+            this.scatterVerticalSpeed === 0 &&
+            this.y >= this.scatterGroundY
+        );
+    }
+
+    /** Finishes scatter and resumes normal movement in the escape direction. */
     finishScatter() {
-        this.x = this.scatterTargetX;
-        this.otherDirection = this.scatterDirection > 0;
+        this.y = this.scatterGroundY;
+        this.isScattering = false;
         this.scatterTargetX = null;
         this.scatterDirection = 0;
         this.scatterSpeed = 0;
+        this.scatterVerticalSpeed = 0;
+        this.scatterGravity = 0;
         if (typeof this.setRandomSpeed === "function") this.setRandomSpeed();
     }
 
