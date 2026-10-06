@@ -13,70 +13,96 @@ class StatusBar extends DrawableObjects {
      */
     constructor(type = 'health') {
         super();
+        var config = this.getStatusBarConfig(type);
+        this.applyStatusBarConfig(config);
+    }
 
-        var defaultPercentage = 100;
+    /** Returns the configuration for the requested status bar type. */
+    getStatusBarConfig(type) {
+        if (type === 'health') return this.getHealthConfig();
+        if (type === 'bottle') return this.getBottleConfig();
+        if (type === 'coins') return this.getCoinConfig();
+        if (type === 'endboss') return this.getEndbossConfig();
+        return { images: [], x: undefined, y: undefined, defaultPercentage: 100 };
+    }
 
-        if (type === 'health') {
-            this.images = [
+    /** Returns the health status bar configuration. */
+    getHealthConfig() {
+        return {
+            images: [
                 './assets/img/7_statusbars/1_statusbar/2_statusbar_health/green/100.png',
                 './assets/img/7_statusbars/1_statusbar/2_statusbar_health/green/80.png',
                 './assets/img/7_statusbars/1_statusbar/2_statusbar_health/green/60.png',
                 './assets/img/7_statusbars/1_statusbar/2_statusbar_health/green/40.png',
                 './assets/img/7_statusbars/1_statusbar/2_statusbar_health/orange/20.png',
                 './assets/img/7_statusbars/1_statusbar/2_statusbar_health/orange/0.png'
-            ];
-            this.x = 10;
-            this.y = 10;
-            defaultPercentage = 100;
-        }
+            ],
+            x: 10,
+            y: 10,
+            defaultPercentage: 100
+        };
+    }
 
-        if (type === 'bottle') {
-            this.images = [
+    /** Returns the bottle status bar configuration. */
+    getBottleConfig() {
+        return {
+            images: [
                 './assets/img/7_statusbars/1_statusbar/3_statusbar_bottle/blue/100.png',
                 './assets/img/7_statusbars/1_statusbar/3_statusbar_bottle/blue/80.png',
                 './assets/img/7_statusbars/1_statusbar/3_statusbar_bottle/blue/60.png',
                 './assets/img/7_statusbars/1_statusbar/3_statusbar_bottle/blue/40.png',
                 './assets/img/7_statusbars/1_statusbar/3_statusbar_bottle/blue/20.png',
                 './assets/img/7_statusbars/1_statusbar/3_statusbar_bottle/blue/0.png'
-            ];
-            this.x = 10;
-            this.y = 70;
-            defaultPercentage = 0;
-        }
+            ],
+            x: 10,
+            y: 70,
+            defaultPercentage: 0
+        };
+    }
 
-        if (type === 'coins') {
-            this.images = [
+    /** Returns the coin status bar configuration. */
+    getCoinConfig() {
+        return {
+            images: [
                 './assets/img/7_statusbars/1_statusbar/1_statusbar_coin/orange/100.png',
                 './assets/img/7_statusbars/1_statusbar/1_statusbar_coin/orange/80.png',
                 './assets/img/7_statusbars/1_statusbar/1_statusbar_coin/orange/60.png',
                 './assets/img/7_statusbars/1_statusbar/1_statusbar_coin/orange/40.png',
                 './assets/img/7_statusbars/1_statusbar/1_statusbar_coin/orange/20.png',
                 './assets/img/7_statusbars/1_statusbar/1_statusbar_coin/orange/0.png'
-            ];
-            this.x = 10;
-            this.y = 130;
-            defaultPercentage = 0;
-        }
+            ],
+            x: 10,
+            y: 130,
+            defaultPercentage: 0
+        };
+    }
 
-        if (type === 'endboss') {
-            this.images = [
+    /** Returns the Endboss status bar configuration. */
+    getEndbossConfig() {
+        return {
+            images: [
                 './assets/img/7_statusbars/2_statusbar_endboss/green/green100.png',
                 './assets/img/7_statusbars/2_statusbar_endboss/green/green80.png',
                 './assets/img/7_statusbars/2_statusbar_endboss/green/green60.png',
                 './assets/img/7_statusbars/2_statusbar_endboss/green/green40.png',
                 './assets/img/7_statusbars/2_statusbar_endboss/green/green20.png',
                 './assets/img/7_statusbars/2_statusbar_endboss/green/green0.png'
-            ];
-            this.x = 10;
-            this.y = 190;
-            defaultPercentage = 100;
-        }
+            ],
+            x: 10,
+            y: 190,
+            defaultPercentage: 100
+        };
+    }
 
+    /** Applies dimensions, position, images, and initial percentage. */
+    applyStatusBarConfig(config) {
+        this.images = config.images;
+        this.x = config.x;
+        this.y = config.y;
         this.width = 150;
         this.heigth = 50;
-
         this.loadImages(this.images);
-        this.setPercentage(defaultPercentage);
+        this.setPercentage(config.defaultPercentage);
     }
 
     /**
