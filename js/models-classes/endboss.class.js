@@ -19,6 +19,7 @@ class Endboss extends MovableObject {
     chargeCooldown = 7000;
     chargeSpeed = 20;
     chargeDistance = 600;
+    chargeDamage = 100;
 
     lastHitTime = 0;
     hitCooldownMs = 400;
@@ -102,6 +103,9 @@ class Endboss extends MovableObject {
         this.energieBoss = levelConfig.bossEnergy;
         this.moveSpeed = levelConfig.bossMoveSpeed;
         this.chargeCooldown = levelConfig.bossChargeCooldown;
+        this.chargeSpeed = levelConfig.bossChargeSpeed;
+        this.chargeDistance = levelConfig.bossChargeDistance;
+        this.chargeDamage = levelConfig.bossChargeDamage;
         this.hitCooldownMs = levelConfig.bossHitCooldown;
         this.minX = levelConfig.bossMinX;
         this.maxX = levelConfig.levelEndX - this.width;
@@ -277,7 +281,7 @@ class Endboss extends MovableObject {
     /** Applies charge damage and one pre-resolved safe knockback to Pepe. */
     handleChargeHit(moveInterval) {
         const character = this.world.character;
-        character.energie = Math.max(0, character.energie - 100);
+        character.energie = Math.max(0, character.energie - this.chargeDamage);
         const percent = character.energie / character.holeEnergie * 100;
         this.world.statusBar.setPercentage(percent);
         soundHub.playEffect(soundHub.soundHit);
