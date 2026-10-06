@@ -19,6 +19,7 @@ class SoundHub {
         this.soundBottlePickup = new Audio('./assets/sound/plopp.mp3');
         this.soundBossStart = new Audio('./assets/sound/great-Chicken-Cry.mp3');
         this.soundBossCharge = new Audio('./assets/sound/thunder-attack.mp3');
+        this.soundScatter = new Audio('./assets/sound/scatter-sound.mp3');
 
         this.lastHitSoundTime = 0;
         this.hitSoundCooldown = 2000;
@@ -79,6 +80,7 @@ class SoundHub {
             this.soundBottlePickup,
             this.soundBossStart,
             this.soundBossCharge,
+            this.soundScatter,
         ];
 
         if (this.snoringAudio) {
