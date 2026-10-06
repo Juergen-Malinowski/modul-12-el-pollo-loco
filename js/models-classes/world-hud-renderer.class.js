@@ -16,6 +16,22 @@ class WorldHudRenderer {
     );
   }
 
+  /** Returns the shared mobile HUD dimensions. */
+  getMobileHudLayout() {
+    const edge = 10;
+    const barWidth = 140;
+    const barHeight = 46;
+    const rowTop = 6;
+    const rowHeight = 54;
+    return {
+      edge: edge,
+      barWidth: barWidth,
+      barHeight: barHeight,
+      barY: rowTop + (rowHeight - barHeight) / 2,
+      bottom: rowTop + rowHeight,
+    };
+  }
+
   /** Draws status bars and their numeric values. */
   drawStatusHud(mobileOverlayHud) {
     this.statusRenderer.drawStatusHud(mobileOverlayHud);
