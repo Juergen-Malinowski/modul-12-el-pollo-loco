@@ -91,6 +91,9 @@ class WorldHudRenderer {
 
   /** Draws the individual control-hint lines. */
   drawGameControlHintLines(ctx, position, lineHeight) {
+    const pauseHint = this.isMobileControlsActive()
+      ? "Ⅱ  Pause / Resume"
+      : "P  Pause / Resume";
     ctx.fillText("⬅  Move left", position.x, position.y);
     ctx.fillText("➡  Move right", position.x, position.y + lineHeight);
     ctx.fillText(
@@ -99,7 +102,7 @@ class WorldHudRenderer {
       position.y + lineHeight * 2,
     );
     ctx.fillText("SPACE  Jump", position.x, position.y + lineHeight * 3);
-    ctx.fillText("P  Pause / Resume", position.x, position.y + lineHeight * 4);
+    ctx.fillText(pauseHint, position.x, position.y + lineHeight * 4);
   }
 
   /** Checks whether landscape touch controls are active. */
@@ -178,12 +181,15 @@ class WorldHudRenderer {
 
   /** Calculates the left edge of right-aligned control hints. */
   getGameControlHintsLeftEdge(rightEdge) {
+    const pauseHint = this.isMobileControlsActive()
+      ? "Ⅱ  Pause / Resume"
+      : "P  Pause / Resume";
     const lines = [
       "⬅  Move left",
       "➡  Move right",
       "SHIFT  or  ⬆  Throw bottle",
       "SPACE  Jump",
-      "P  Pause / Resume",
+      pauseHint,
     ];
     const fontSize = this.isMobileControlsActive() ? 24 : 16;
     const ctx = this.world.ctx;
@@ -212,20 +218,43 @@ class WorldHudRenderer {
     );
     world.ctx.restore();
     this.drawLevelIndicator(area, mobileOverlayHud);
-    this.drawPauseButton(area);
+    this.drawPauseButton(area, mobileOverlayHud);
   }
 
-  /** Draws the visible pause indicator and resume button. */
-  drawPauseButton(soundArea) {
+  /** Draws the mobile pause control or the desktop resume button. */
+  drawPauseButton(soundArea, mobileOverlayHud) {
+    if (this.isMobileControlsActive()) {
+      this.drawMobilePauseButton(soundArea);
+      return;
+    }
     if (!this.world.isPaused) return;
-    const area = this.getPauseButtonArea(soundArea);
+    this.drawDesktopPauseButton(soundArea);
+  }
+
+  /** Draws the compact mobile pause or resume control. */
+  drawMobilePauseButton(soundArea) {
+    const area = this.getMobilePauseButtonArea(soundArea);
     const ctx = this.world.ctx;
     ctx.save();
-    ctx.fillStyle = getGameColor("--color-ui-primary");
-    ctx.strokeStyle = getGameColor("--color-border-dark");
-    ctx.lineWidth = 3;
-    ctx.fillRect(area.x, area.y, area.width, area.height);
-    ctx.strokeRect(area.x, area.y, area.width, area.height);
+    this.drawPauseButtonBackground(ctx, area);
+    ctx.font = "bold 30px Zabars";
+    ctx.fillStyle = getGameColor("--color-text-dark");
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(
+      this.world.isPaused ? "▶" : "Ⅱ",
+      area.x + area.width / 2,
+      area.y + area.height / 2,
+    );
+    ctx.restore();
+  }
+
+  /** Draws the large desktop resume control while gameplay is paused. */
+  drawDesktopPauseButton(soundArea) {
+    const area = this.getDesktopPauseButtonArea(soundArea);
+    const ctx = this.world.ctx;
+    ctx.save();
+    this.drawPauseButtonBackground(ctx, area);
     ctx.font = "bold 28px Zabars";
     ctx.letterSpacing = "2px";
     ctx.fillStyle = getGameColor("--color-text-dark");
@@ -235,8 +264,37 @@ class WorldHudRenderer {
     ctx.restore();
   }
 
-  /** Returns the pause button area below the level indicator. */
+  /** Draws the shared pause-button background and border. */
+  drawPauseButtonBackground(ctx, area) {
+    ctx.fillStyle = getGameColor("--color-ui-primary");
+    ctx.strokeStyle = getGameColor("--color-border-dark");
+    ctx.lineWidth = 3;
+    ctx.fillRect(area.x, area.y, area.width, area.height);
+    ctx.strokeRect(area.x, area.y, area.width, area.height);
+  }
+
+  /** Returns the active pause-button hit area. */
   getPauseButtonArea(soundArea = this.getSoundIconArea()) {
+    if (this.isMobileControlsActive()) {
+      return this.getMobilePauseButtonArea(soundArea);
+    }
+    return this.getDesktopPauseButtonArea(soundArea);
+  }
+
+  /** Returns the compact mobile pause-button area beside the sound icon. */
+  getMobilePauseButtonArea(soundArea) {
+    const width = 42;
+    const height = 38;
+    return {
+      x: soundArea.x + soundArea.size + 12,
+      y: soundArea.y + (soundArea.size - height) / 2,
+      width: width,
+      height: height,
+    };
+  }
+
+  /** Returns the desktop resume-button area below the level indicator. */
+  getDesktopPauseButtonArea(soundArea) {
     const width = 220;
     const height = 44;
     return {
@@ -323,9 +381,10 @@ class WorldHudRenderer {
     this.handleSoundIconClick(x, y);
   }
 
-  /** Resumes gameplay when the visible pause button is clicked. */
+  /** Toggles pause when the active Canvas pause control is clicked. */
   handlePauseButtonClick(x, y) {
-    if (!this.world.isPaused) return false;
+    const mobilePauseAvailable = this.isMobileControlsActive();
+    if (!mobilePauseAvailable && !this.world.isPaused) return false;
     const area = this.getPauseButtonArea();
     if (!this.isPointInsideRect(x, y, area)) return false;
     this.world.togglePause();
