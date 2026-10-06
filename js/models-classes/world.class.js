@@ -39,6 +39,7 @@ class World {
   managedIntervals = new Set();
   collisionManager;
   stompComboManager;
+  batFlightManager;
   hudRenderer;
   gameStateManager;
   levelManager;
@@ -57,6 +58,7 @@ class World {
     this.draw();
     this.run();
     this.initializeResourceState();
+    this.startInitialBatFlight();
   }
 
   /** Stores the dependencies and level metadata required by this World. */
@@ -73,6 +75,7 @@ class World {
   initializeManagers() {
     this.collisionManager = new WorldCollisionManager(this);
     this.stompComboManager = new WorldStompComboManager(this);
+    this.batFlightManager = new WorldBatFlightManager(this);
     this.hudRenderer = new WorldHudRenderer(this);
     this.processManager = new WorldProcessManager(this);
     this.pauseManager = new WorldPauseManager(this);
@@ -80,6 +83,11 @@ class World {
     this.levelManager = new WorldLevelManager(this);
     this.highscoreManager = new WorldHighscoreManager(this);
     this.renderer = new WorldRenderer(this);
+  }
+
+  /** Starts the one automatic Bat flight when Level 1 begins. */
+  startInitialBatFlight() {
+    if (this.currentLevel === 1) this.batFlightManager.startFlight();
   }
 
   /** Assigns terminal-state image sources. */

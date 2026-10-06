@@ -33,6 +33,7 @@ class SoundHub {
         this.soundBossCharge = new Audio('./assets/sound/thunder-attack.mp3');
         this.soundScatter = new Audio('./assets/sound/scatter-sound.mp3');
         this.soundSpecialJump = new Audio('./assets/sound/special-jump.mp3');
+        this.soundBat = new Audio('./assets/sound/bat-sound.mp3');
     }
 
     /** Initializes mutable audio state before persisted settings are applied. */
@@ -114,6 +115,7 @@ class SoundHub {
             this.soundBossCharge,
             this.soundScatter,
             this.soundSpecialJump,
+            this.soundBat,
         ];
 
         if (this.snoringAudio) {

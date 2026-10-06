@@ -3,6 +3,16 @@ const STOMP_COMBO_CONFIG = Object.freeze({
   multiplier: 2,
 });
 
+const BAT_FLIGHT_CONFIG = Object.freeze({
+  width: 120,
+  height: 80,
+  baseSpeed: 135,
+  maxSpeedMultiplier: 1.5,
+  frameDuration: 140,
+  startY: 8,
+  characterGap: 8,
+});
+
 const CHICKEN_SCATTER_CONFIG = Object.freeze({
   nearbyRadius: 400,
   minimumNearbyChickens: 5,

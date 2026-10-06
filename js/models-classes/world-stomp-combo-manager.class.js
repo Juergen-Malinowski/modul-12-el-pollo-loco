@@ -77,7 +77,9 @@ class WorldStompComboManager {
       this.startChickenScatter(chickens[i]);
       scatterStarted = true;
     }
-    if (scatterStarted) soundHub.playEffect(soundHub.soundScatter);
+    if (!scatterStarted) return;
+    soundHub.playEffect(soundHub.soundScatter);
+    this.world.batFlightManager.startFlight();
   }
 
   /** Starts one chicken with its independently randomized scatter plan. */

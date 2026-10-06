@@ -18,6 +18,7 @@ class WorldRenderer {
     const mobileOverlayHud = world.hudRenderer.isMobileOverlayHud();
     this.drawHudLayer(mobileOverlayHud);
     this.drawGameplayLayer();
+    this.drawBatFlight();
     world.hudRenderer.drawSoundIcon(mobileOverlayHud);
     this.drawTerminalOverlays();
     this.scheduleNextFrame();
@@ -57,6 +58,20 @@ class WorldRenderer {
     this.addObjectsToMap(world.level.enemies);
     this.addObjectsToMap(world.throwableObjects);
     world.ctx.translate(-world.cameraX, 0);
+  }
+
+  /** Updates and draws the screen-space Bat flight attraction. */
+  drawBatFlight() {
+    const manager = this.world.batFlightManager;
+    manager.update();
+    if (!manager.isDrawable()) return;
+    this.world.ctx.drawImage(
+      manager.getCurrentImage(),
+      manager.x,
+      manager.y,
+      manager.width,
+      manager.height,
+    );
   }
 
   /** Draws the temporary bottle pickup feedback above Pepe. */
