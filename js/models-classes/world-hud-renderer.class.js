@@ -154,11 +154,34 @@ class WorldHudRenderer {
     world.ctx.font = mobileOverlayHud ? "bold 28px Zabars" : "bold 36px Zabars";
     world.ctx.fillStyle = getGameColor("--color-text-light");
     world.ctx.textAlign = "left";
+    const healthPosition = this.getLifeValuePosition(world.statusBar, mobileOverlayHud);
+    const bossPosition = this.getLifeValuePosition(world.bossBar, mobileOverlayHud);
     const bottlePosition = this.getBottleValuePosition(mobileOverlayHud);
     const coinPosition = this.getCoinValuePosition(mobileOverlayHud);
+    world.ctx.fillText(world.character.energie + "", healthPosition.x, healthPosition.y);
+    world.ctx.fillText(this.getBossHealth() + "", bossPosition.x, bossPosition.y);
     world.ctx.fillText(world.collectedBottles + "", bottlePosition.x, bottlePosition.y);
     world.ctx.fillText(world.collectedCoins + "", coinPosition.x, coinPosition.y);
     world.ctx.restore();
+  }
+
+  /** Returns the numeric position beside one life bar. */
+  getLifeValuePosition(bar, mobileOverlayHud) {
+    return {
+      x: bar.x + bar.width + (mobileOverlayHud ? 5 : 15),
+      y: bar.y + bar.heigth * (mobileOverlayHud ? 0.75 : 0.94),
+    };
+  }
+
+  /** Returns the remaining Endboss health. */
+  getBossHealth() {
+    const enemies = this.world.level.enemies;
+    for (let i = 0; i < enemies.length; i++) {
+      if (enemies[i] instanceof Endboss) {
+        return Math.max(0, enemies[i].energieBoss);
+      }
+    }
+    return 0;
   }
 
   /** Returns the bottle counter position. */
