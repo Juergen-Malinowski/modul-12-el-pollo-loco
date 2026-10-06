@@ -59,6 +59,7 @@ class World {
     this.level = levelInstance;
     this.levelConfig = levelConfig;
     this.currentLevel = levelConfig.number;
+    this.initializeCharacterHealth();
     this.initializeBottleInventory();
     this.collisionManager = new WorldCollisionManager(this);
     this.stompComboManager = new WorldStompComboManager(this);
@@ -91,6 +92,14 @@ class World {
     }.bind(this);
     this.canvas.addEventListener("mousedown", this.canvasVictoryHandlerBound);
 
+  }
+
+  /** Initializes Pepe with the configured full health for the current level. */
+  initializeCharacterHealth() {
+    this.character.holeEnergie = this.levelConfig.characterEnergy;
+    this.character.energie = this.levelConfig.characterEnergy;
+    this.percentage = 100;
+    this.statusBar.setPercentage(this.percentage);
   }
 
   /** Initializes the current bottle inventory and its fixed level maximum. */
