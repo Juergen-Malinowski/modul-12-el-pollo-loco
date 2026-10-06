@@ -183,6 +183,7 @@ class WorldRenderer {
     ctx.save();
     ctx.lineWidth = 4;
     ctx.font = "bold 36px Zabars";
+    ctx.letterSpacing = "2px";
     ctx.textBaseline = "middle";
     ctx.textAlign = "center";
     this.drawGameOverButton(ctx, world.menuButtonArea, "Menu");

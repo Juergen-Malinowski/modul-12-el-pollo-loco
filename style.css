@@ -864,6 +864,7 @@ canvas {
 #highscoreNameBox h2 {
   margin: 0 0 clamp(6px, 2.4vh, 38px);
   font-size: clamp(1.2rem, 5.5vh, 5.5rem);
+  letter-spacing: 2px;
   color: var(--color-accent-gold);
 }
 
@@ -951,6 +952,7 @@ canvas {
 #levelTransitionBox h2 {
   margin: 0 0 clamp(6px, 2.5vh, 40px);
   font-size: clamp(1.2rem, 5.5vh, 5.5rem);
+  letter-spacing: 2px;
   color: var(--color-accent-gold);
 }
 

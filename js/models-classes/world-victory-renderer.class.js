@@ -124,6 +124,7 @@ class WorldVictoryRenderer {
     ctx.save();
     ctx.lineWidth = 3;
     ctx.font = "bold 32px Zabars";
+    ctx.letterSpacing = "2px";
     ctx.textBaseline = "middle";
     ctx.textAlign = "center";
     this.drawVictoryButton(ctx, world.victoryMenuButtonArea, "Menu");
