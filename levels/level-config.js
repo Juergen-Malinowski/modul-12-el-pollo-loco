@@ -8,7 +8,13 @@ const CHICKEN_SCATTER_CONFIG = Object.freeze({
   minimumNearbyChickens: 5,
   minDistanceFactor: 0.5,
   maxDistanceFactor: 3,
-  movementSpeed: 8,
+  minMovementSpeed: 0.9,
+  maxMovementSpeed: 1.5,
+  reverseChance: 0.55,
+  hopChance: 0.5,
+  minHopSpeed: 4.5,
+  maxHopSpeed: 6.5,
+  hopGravity: 0.35,
 });
 
 const LEVEL_CONFIGS = Object.freeze({
