@@ -653,6 +653,7 @@ Completed or substantially completed:
 - stable game lifecycle without page reload;
 - responsive canvas and overlays;
 - responsive mobile controls;
+- concise Help overlay for key gameplay mechanics;
 - architecture refactoring into dedicated World subsystems;
 - three-level configuration;
 - Level 1 → Level 2 → Level 3 transitions;

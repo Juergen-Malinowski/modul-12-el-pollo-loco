@@ -118,7 +118,8 @@ class WorldHudRenderer {
       position.y + lineHeight * 2,
     );
     ctx.fillText("SPACE  Jump", position.x, position.y + lineHeight * 3);
-    ctx.fillText(pauseHint, position.x, position.y + lineHeight * 4);
+    ctx.fillText("SPACE x2  Special Jump", position.x, position.y + lineHeight * 4);
+    ctx.fillText(pauseHint, position.x, position.y + lineHeight * 5);
   }
 
   /** Checks whether landscape touch controls are active. */
@@ -205,6 +206,7 @@ class WorldHudRenderer {
       "➡  Move right",
       "SHIFT  or  ⬆  Throw bottle",
       "SPACE  Jump",
+      "SPACE x2  Special Jump",
       pauseHint,
     ];
     const fontSize = this.isMobileControlsActive() ? 24 : 16;

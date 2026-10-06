@@ -35,6 +35,9 @@
           <button class="menuButton" onclick="openAudioSettings()">
             AUDIO
           </button>
+          <button class="menuButton" onclick="openHelp()">
+            HELP
+          </button>
           <button class="menuButton" onclick="openImpressum()">
             LEGAL NOTICE & CREDITS
           </button>
@@ -135,6 +138,36 @@
           </div>
 
           <p id="closeAudioHint" onclick="closeAudioSettings()">
+            Click to close
+          </p>
+        </div>
+      </div>
+
+      <div id="helpOverlay" onclick="closeHelp()">
+        <div id="helpBox" onclick="event.stopPropagation()">
+          <h2>HELP</h2>
+          <div id="helpText">
+            <p>Jump into a group of chickens<br />and watch them scatter!</p>
+            <p>
+              During a Boss Fight, press JUMP<br />
+              twice quickly to perform a<br />
+              Special Jump and escape.
+            </p>
+            <p>
+              Watch out!<br />
+              The Boss Chicken may charge<br />
+              when you get too close.
+            </p>
+            <p>
+              Defeat chickens by throwing<br />
+              bottles or jumping on them.
+            </p>
+            <p>
+              Attack the Boss Chicken<br />
+              with bottles or by jumping on it.
+            </p>
+          </div>
+          <p id="closeHelpHint" onclick="closeHelp()">
             Click to close
           </p>
         </div>

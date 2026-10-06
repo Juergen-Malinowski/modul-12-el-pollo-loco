@@ -183,6 +183,16 @@ function closeGameControl() {
   document.getElementById("gameControlOverlay").style.display = "none";
 }
 
+/** Opens the gameplay help overlay. */
+function openHelp() {
+  document.getElementById("helpOverlay").style.display = "flex";
+}
+
+/** Closes the gameplay help overlay. */
+function closeHelp() {
+  document.getElementById("helpOverlay").style.display = "none";
+}
+
 /**
  * Applies the selected music volume and refreshes the audio UI.
  * @param {string|number} value - Slider value between 0 and 1.
