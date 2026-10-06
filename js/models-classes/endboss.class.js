@@ -95,6 +95,7 @@ class Endboss extends MovableObject {
         this.loadImages(this.imagesThunderRun);
         this.loadImages(this.imagesHurt);
         this.loadImages(this.imagesDead);
+        this.lifecycleManager = new EndbossLifecycleManager(this);
         this.animate();
         this.thunderAttack = new Audio('./assets/sound/thunder-attack.mp3'); this.thunderAttack.preload = 'auto';
     }
@@ -341,206 +342,39 @@ class Endboss extends MovableObject {
         return true;
     }
 
+    /** Delegates the boss death sequence to the lifecycle manager. */
     die() {
-        if (this.isDeadBoss) return;
-        if (this.world && typeof this.world.stopAllGameProcesses === "function") {
-            this.world.stopAllGameProcesses();
-        }
-        this.stopAllBossSounds();
-        this.isDeadBoss = true;
-        this.isWalking = false;
-        this.isAlerted = false;
-        this.isCharging = false;
-
-        if (this.chargeInterval) clearInterval(this.chargeInterval);
-
-        let i = 0;
-        const deathInterval = soundHub.registerInterval(setInterval(() => {
-            if (typeof isGamePaused === "function" && isGamePaused()) return;
-            if (i < this.imagesDead.length) {
-                this.img = this.imageCache[this.imagesDead[i]];
-                i++;
-            } else {
-                clearInterval(deathInterval);
-                const lastFrame = this.imageCache[this.imagesDead[this.imagesDead.length - 1]];
-                if (lastFrame) this.img = lastFrame;
-                this.stopBossAudioAndTimers();
-                this.stopAllAnimations();
-                if (this.world) {
-                    this.world.setManagedTimeout(() => {
-                        if (typeof this.world.freezeWorld === "function") {
-                            this.world.freezeWorld();
-                        }
-                        this.world.addScore(this.world.levelConfig.score.bossKill);
-                        this.world.handleBossDefeat();
-                    }, 1000);
-                }
-            }
-        }, 250));
-        this.stopThunderAttackSound();
+        this.lifecycleManager.die();
     }
 
+    /** Delegates animation shutdown to the lifecycle manager. */
     stopAllAnimations() {
-        this.isWalking = false;
-        this.isAlerted = false;
-        this.isHurtBoss = false;
-        this.speed = 0;
-        this.acceleration = 0;
-        this.stopAllBossSounds();
+        this.lifecycleManager.stopAllAnimations();
     }
 
-    /**
-     * Stops boss-specific timers and audio during terminal game states.
-     */
+    /** Delegates terminal timer and audio cleanup to the lifecycle manager. */
     stopBossAudioAndTimers() {
-    try {
-
-        if (this.world && typeof this.world.stopAllGameProcesses === "function") {
-            this.world.stopAllGameProcesses();
-        }
-
-        if (this.screamInterval) {
-            clearInterval(this.screamInterval);
-            this.screamInterval = null;
-        }
-        if (this.thunderAttackTimer) {
-            clearInterval(this.thunderAttackTimer);
-            this.thunderAttackTimer = null;
-        }
-        if (this.thunderRunAnimInterval) {
-            clearInterval(this.thunderRunAnimInterval);
-            this.thunderRunAnimInterval = null;
-        }
-        if (this.walkAnimInterval) {
-            clearInterval(this.walkAnimInterval);
-            this.walkAnimInterval = null;
-        }
-
-        if (typeof soundHub !== "undefined" && soundHub) {
-            if (soundHub.soundBossStart) {
-                soundHub.stopEffect(soundHub.soundBossStart);
-            }
-            if (soundHub.soundBossCharge) {
-                soundHub.stopEffect(soundHub.soundBossCharge);
-            }
-
-            if (typeof soundHub.stopAllAudio === "function") {
-                soundHub.stopAllAudio();
-            }
-        }
-    } catch (e) {
-        console.warn("Failed to stop boss audio and timers:", e);
+        this.lifecycleManager.stopBossAudioAndTimers();
     }
-}
 
-    /**
-     * Stops recurring boss timers and currently playing boss sounds.
-     */
+    /** Delegates recurring boss-sound cleanup to the lifecycle manager. */
     stopAllBossSounds() {
-
-        if (this.screamInterval) {
-            clearInterval(this.screamInterval);
-            this.screamInterval = null;
-        }
-        if (this.chargeInterval) {
-            clearInterval(this.chargeInterval);
-            this.chargeInterval = null;
-        }
-
-        try {
-            if (soundHub && !soundHub.isMuted) {
-                const effects = soundHub.getAllEffects();
-                for (let i = 0; i < effects.length; i++) {
-                    if (effects[i] && !effects[i].paused) {
-                        effects[i].pause();
-                        effects[i].currentTime = 0;
-                    }
-                }
-            }
-        } catch (err) { }
-        this.stopThunderAttackSound();
+        this.lifecycleManager.stopAllBossSounds();
     }
 
-    /**
-     * Stops the boss-owned thunder attack audio instance.
-     */
+    /** Delegates thunder-attack audio cleanup to the lifecycle manager. */
     stopThunderAttackSound() {
-        try {
-            if (this.thunderAttack) {
-                this.thunderAttack.pause();
-                this.thunderAttack.currentTime = 0;
-            }
-        } catch (e) { }
+        this.lifecycleManager.stopThunderAttackSound();
     }
 
-    /**
-     * Resets boss state and stops boss activity after the player loses.
-     */
+    /** Delegates Game Over boss cleanup to the lifecycle manager. */
     onGameOverCleanup() {
-        try {
-            this.isAlerted = false;
-            this.isWalking = false;
-            this.isHurtBoss = false;
-            this.isCharging = false;
-            this.isDeadBoss = true;
-
-            if (this.world && typeof this.world.stopAllGameProcesses === "function") {
-                this.world.stopAllGameProcesses();
-            }
-            if (this.animateInterval) {
-                clearInterval(this.animateInterval);
-                this.animateInterval = null;
-            }
-            if (this.screamInterval) {
-                clearInterval(this.screamInterval);
-                this.screamInterval = null;
-            }
-            if (this.chargeInterval) {
-                clearInterval(this.chargeInterval);
-                this.chargeInterval = null;
-            }
-            this.stopAllBossSounds();
-            this.stopBossAudioAndTimers();
-
-            if (typeof soundHub !== "undefined") {
-                soundHub.stopEffect(soundHub.soundBossStart);
-                soundHub.stopEffect(soundHub.soundBossCharge);
-            }
-        } catch (e) { };
-        if (this.screamInterval) {
-            clearInterval(this.screamInterval);
-            this.screamInterval = null;
-        };
-        if (typeof soundHub !== "undefined") {
-            soundHub.stopEffect(soundHub.soundBossStart);
-            soundHub.stopEffect(soundHub.soundBossCharge);
-        };
-        this.stopThunderAttackSound();
+        this.lifecycleManager.onGameOverCleanup();
     }
 
-    /**
-     * Performs an idempotent hard stop before a World is restarted or discarded.
-     */
+    /** Delegates restart/disposal cleanup to the lifecycle manager. */
     forceStopBossAudio() {
-        try {
-
-            if (this.screamInterval) { clearInterval(this.screamInterval); this.screamInterval = null; }
-            if (this.chargeInterval) { clearInterval(this.chargeInterval); this.chargeInterval = null; }
-            if (this.animateInterval) { clearInterval(this.animateInterval); this.animateInterval = null; }
-
-            this.isAlerted = false;
-            this.isWalking = false;
-            this.isCharging = false;
-            this.isDeadBoss = true;
-
-            this.stopThunderAttackSound();
-
-            if (typeof soundHub !== "undefined" && typeof soundHub.stopBossCharge === "function") {
-                soundHub.stopBossCharge();
-            }
-
-        } catch (e) {
-            console.warn("Failed to stop boss audio completely:", e);
-        }
+        this.lifecycleManager.forceStopBossAudio();
     }
+
 }
