@@ -66,9 +66,6 @@ class WorldRenderer {
     const world = this.world;
     if (world.showCoffin) this.drawCoffin();
     if (world.showYouWin) this.drawVictoryBackground();
-    if (world.showYouWin && world.showVictoryOptionsOverlay) {
-      world.drawVictoryOptions(world.ctx);
-    }
     if (world.showGameOver) this.drawGameOverScreen();
   }
 

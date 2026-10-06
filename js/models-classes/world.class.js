@@ -32,14 +32,8 @@ class World {
   coffinImg = new Image();
   coffinSpin = null;
 
-  showVictoryOptionsOverlay = false;
-  victoryWindowRect = null;
-  victoryMenuButtonArea = null;
-  victoryPlayAgainButtonArea = null;
-  victoryClickHandlerBound = null;
   animationFrameId = null;
   isRunning = true;
-  canvasVictoryHandlerBound = null;
   gameOverClickHandlerBound = null;
   managedTimeouts = new Set();
   managedIntervals = new Set();
@@ -81,17 +75,6 @@ class World {
     this.score = score;
     this.updateBottleBar();
     this.updateCoinBar();
-
-    this.canvasVictoryHandlerBound = function () {
-      if (this.gameOver && !this.showGameOver) {
-
-        if (this.showYouWin) {
-          this.showVictoryOptions();
-        }
-      }
-    }.bind(this);
-    this.canvas.addEventListener("mousedown", this.canvasVictoryHandlerBound);
-
   }
 
   /** Initializes Pepe with the configured full health for the current level. */
@@ -194,11 +177,6 @@ class World {
       this.animationFrameId = null;
     }
 
-    if (this.canvas && this.canvasVictoryHandlerBound) {
-      this.canvas.removeEventListener("mousedown", this.canvasVictoryHandlerBound);
-      this.canvasVictoryHandlerBound = null;
-    }
-
     if (this.canvas && this.gameOverClickHandlerBound) {
       this.canvas.removeEventListener("mousedown", this.gameOverClickHandlerBound);
       this.gameOverClickHandlerBound = null;
@@ -206,8 +184,6 @@ class World {
 
     this.scoreBlinkInterval = null;
     this.blinkActive = false;
-
-    this.detachVictoryClickHandler();
   }
 
   /** Starts recurring collision and throw checks. */
@@ -390,18 +366,6 @@ class World {
 
   /** Delegates temporary highscore messages to the highscore manager. */
   showHighscoreMessage(text) { this.highscoreManager.showHighscoreMessage(text); }
-
-  /** Delegates Victory options to the highscore manager. */
-  showVictoryOptions() { this.highscoreManager.showVictoryOptions(); }
-
-  /** Delegates Victory result rendering to the highscore manager. */
-  drawVictoryOptions(ctx) { this.highscoreManager.drawVictoryOptions(ctx); }
-
-  /** Delegates rectangular hit testing to the highscore manager. */
-  isPointInArea(x, y, area) { return this.highscoreManager.isPointInArea(x, y, area); }
-
-  /** Delegates Victory listener cleanup to the highscore manager. */
-  detachVictoryClickHandler() { this.highscoreManager.detachVictoryClickHandler(); }
 
   /** Delegates a clean restart to the game-state manager. */
   restartGame() { this.gameStateManager.restartGame(); }

@@ -576,7 +576,7 @@ Coordinates:
 - shared name entry and save confirmation;
 - context-specific Close, Play again, and Menu actions.
 
-The previous Canvas-specific Victory highscore table is no longer used as the active highscore presentation.
+The previous Canvas-specific Victory highscore implementation has been removed in favor of the shared DOM presentation.
 
 ## Audio management
 
@@ -638,7 +638,6 @@ The current responsive implementation includes:
 | `js/models-classes/world-pause-manager.class.js` | Pause/resume and paused-audio state |
 | `js/models-classes/world-process-manager.class.js` | Cleanup, shutdown, freezing, and menu reset |
 | `js/models-classes/world-highscore-manager.class.js` | Top-100 qualification and Game Over / Victory routing |
-| `js/models-classes/world-victory-renderer.class.js` | Legacy Canvas Victory table renderer retained in the codebase but no longer used for the active highscore view |
 | `js/models-classes/character.class.js` | Pepe movement, animation, death, and world boundaries |
 | `js/models-classes/endboss.class.js` | Endboss movement, charge, damage, and death flow |
 | `js/models-classes/chicken.class.js` | Normal chicken movement and boundary reversal |

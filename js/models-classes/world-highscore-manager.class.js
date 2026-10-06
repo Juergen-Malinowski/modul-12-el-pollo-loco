@@ -1,10 +1,9 @@
 /**
- * Handles highscore qualification and the current Victory result overlay.
+ * Handles highscore qualification and terminal highscore routing.
  */
 class WorldHighscoreManager {
   constructor(world) {
     this.world = world;
-    this.victoryRenderer = new WorldVictoryRenderer(world, this);
   }
 
   /**
@@ -133,14 +132,11 @@ class WorldHighscoreManager {
       "0 0 15px " + getGameColor("--color-shadow-medium");
   }
 
-  /**
-   * Opens the Victory result overlay and binds its actions.
-   */
+  /** Opens the shared DOM highscore after final Victory. */
   showVictoryOptions() {
     const world = this.world;
     world.silenceAllAudio();
     this.stopVictoryBossAudio();
-    world.showVictoryOptionsOverlay = false;
     if (typeof openHighscore === "function") openHighscore("victory");
   }
 
@@ -178,134 +174,4 @@ class WorldHighscoreManager {
     });
   }
 
-  /**
-   * Calculates the Victory window and button hit areas.
-   */
-  setVictoryAreas() {
-    const world = this.world;
-    const canvasWidth = world.canvas.width;
-    const canvasHeight = world.canvas.height;
-    const windowWidth = Math.floor(canvasWidth * 0.7);
-    const windowHeight = Math.floor(canvasHeight * 0.72);
-    const windowX = Math.floor((canvasWidth - windowWidth) / 2);
-    const windowY = Math.floor((canvasHeight - windowHeight) / 2);
-
-    world.victoryWindowRect = {
-      x: windowX,
-      y: windowY,
-      width: windowWidth,
-      height: windowHeight,
-    };
-    this.setVictoryButtonAreas(windowX, windowY, windowWidth, windowHeight);
-  }
-
-  /**
-   * Calculates the Victory menu and replay button areas.
-   */
-  setVictoryButtonAreas(windowX, windowY, windowWidth, windowHeight) {
-    const world = this.world;
-    const buttonWidth = 220;
-    const buttonHeight = 45;
-    const spacing = 40;
-    const buttonY = windowY + windowHeight + 10;
-    const centerX = Math.floor(world.canvas.width / 2);
-
-    world.victoryMenuButtonArea = {
-      x: centerX - buttonWidth - spacing,
-      y: buttonY,
-      width: buttonWidth,
-      height: buttonHeight,
-    };
-    world.victoryPlayAgainButtonArea = {
-      x: centerX + spacing,
-      y: buttonY,
-      width: buttonWidth,
-      height: buttonHeight,
-    };
-  }
-
-  /**
-   * Binds the Victory overlay click handler.
-   */
-  bindVictoryClickHandler() {
-    const world = this.world;
-    world.victoryClickHandlerBound = (event) => {
-      const point = getCanvasCoordinates(event, world.canvas);
-      this.handleVictoryClick(point.x, point.y);
-    };
-    world.canvas.addEventListener("mousedown", world.victoryClickHandlerBound);
-  }
-
-  /**
-   * Routes Victory overlay clicks to replay or menu actions.
-   *
-   * @param {number} x - Canvas x coordinate.
-   * @param {number} y - Canvas y coordinate.
-   */
-  handleVictoryClick(x, y) {
-    const world = this.world;
-
-    if (this.isPointInArea(x, y, world.victoryPlayAgainButtonArea)) {
-      this.closeVictoryOverlay();
-      world.restartGame();
-      return;
-    }
-    if (this.isPointInArea(x, y, world.victoryMenuButtonArea)) {
-      this.closeVictoryOverlay();
-      world.returnToMenu();
-      return;
-    }
-    if (!this.isPointInArea(x, y, world.victoryWindowRect)) {
-      this.closeVictoryOverlay();
-      world.returnToMenu();
-    }
-  }
-
-  /**
-   * Closes the Victory options overlay and removes its listener.
-   */
-  closeVictoryOverlay() {
-    this.detachVictoryClickHandler();
-    this.world.showVictoryOptionsOverlay = false;
-  }
-
-  /**
-   * Draws the current Victory highscore window and action buttons.
-   *
-   * @param {CanvasRenderingContext2D} ctx - Game canvas context.
-   */
-  drawVictoryOptions(ctx) {
-    this.victoryRenderer.drawVictoryOptions(ctx);
-  }
-
-  /**
-   * Tests whether a point lies inside a rectangular area.
-   *
-   * @returns {boolean} Whether the point is inside the area.
-   */
-  isPointInArea(x, y, area) {
-    if (!area) return false;
-    return (
-      x >= area.x &&
-      x <= area.x + area.width &&
-      y >= area.y &&
-      y <= area.y + area.height
-    );
-  }
-
-  /**
-   * Removes the Victory canvas listener.
-   */
-  detachVictoryClickHandler() {
-    const world = this.world;
-    if (!world.victoryClickHandlerBound) return;
-
-    try {
-      world.canvas.removeEventListener(
-        "mousedown",
-        world.victoryClickHandlerBound,
-      );
-      world.victoryClickHandlerBound = null;
-    } catch (error) {}
-  }
 }
