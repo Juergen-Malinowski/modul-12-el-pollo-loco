@@ -33,6 +33,7 @@ class WorldCollisionManager {
       this.handleBossContact(enemy);
       return;
     }
+    if (enemy.isScattering) return;
     if (!enemy.isDeadChicken) this.damageCharacter();
   }
 
