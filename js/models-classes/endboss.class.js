@@ -23,6 +23,8 @@ class Endboss extends MovableObject {
 
     lastHitTime = 0;
     hitCooldownMs = 400;
+    preAlertBottleHits = 0;
+    bottleHitsToAlert = 3;
 
     offset = { top: 50, buttom: 10, left: 20, right: 20 };
 
@@ -155,8 +157,15 @@ class Endboss extends MovableObject {
         }, 100));
     }
 
-    triggerAlert() {
+    /** Counts accepted pre-fight bottle hits and alerts the boss at the threshold. */
+    registerPreAlertBottleHit() {
+        if (this.isAlerted || this.isDeadBoss) return;
+        this.preAlertBottleHits++;
+        if (this.preAlertBottleHits >= this.bottleHitsToAlert) this.triggerAlert();
+    }
 
+    triggerAlert() {
+        if (this.isAlerted || this.isDeadBoss) return;
         this.isAlerted = true;
 
         var self = this;

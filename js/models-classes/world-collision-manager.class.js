@@ -288,6 +288,7 @@ class WorldCollisionManager {
       const hitApplied = boss.wasHit();
       if (hitApplied) {
         this.world.addScore(this.world.levelConfig.score.bossBottleHit);
+        boss.registerPreAlertBottleHit();
       }
       break;
     }
