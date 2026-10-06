@@ -48,8 +48,12 @@ All level-specific balancing values are centralized in `levels/level-config.js`.
 | Ground bottles | 9 | 11 | 13 |
 | New start bottles | 6 | 5 | 4 |
 | Coins | 16 | 22 | 28 |
+| Pepe energy | 300 | 350 | 400 |
 | Endboss energy | 300 | 400 | 500 |
 | Endboss movement speed | 5.0 | 5.5 | 6.0 |
+| Endboss charge speed | 20 | 22 | 24 |
+| Endboss charge distance | 600 px | 650 px | 700 px |
+| Endboss charge damage | 100 | 100 | 100 |
 | Endboss charge cooldown | 7000 ms | 6000 ms | 5000 ms |
 | Endboss hit cooldown | 400 ms | 350 ms | 300 ms |
 
@@ -122,7 +126,9 @@ The coin bar is scaled against the configured number of coins in the current lev
 
 Coin collection starts from zero again when a new World is created for the next level.
 
-Health and Endboss energy still use the original image-based status bars.
+Health and Endboss energy continue to use the image-based status bars, but their exact remaining energy values are now displayed numerically beside the bars.
+
+The combat HUD keeps the order Health, Endboss, Bottles, Coins so the most important fight information remains grouped together.
 
 ## Player movement boundaries
 
@@ -147,6 +153,48 @@ When a chicken reaches either level boundary:
 
 This applies to both normal and small chickens.
 
+## Airborne stomp combo
+
+Consecutive Chicken stomps during the same airborne sequence can build an unlimited stomp combo.
+
+The first stomp awards only the normal enemy score. Every additional stomp before Pepe touches the ground adds an exponentially increasing combo bonus:
+
+```text
+second stomp  +20
+third stomp   +40
+fourth stomp  +80
+fifth stomp   +160
+...
+```
+
+The configured combo multiplier is `2`.
+
+The normal Chicken or Little Chicken stomp score is always added in addition to the combo bonus.
+
+The combo resets when Pepe returns to the ground, dies, restarts, or enters the next level. Taking damage alone does not reset the combo.
+
+Bottle kills and Endboss stomps are excluded from this combo system.
+
+## Chicken Scatter reaction
+
+A dense Chicken group can react to the beginning of a stomp combo by scattering.
+
+The reaction is triggered when the first stomp finds at least five living normal or small chickens within a 400-pixel radius.
+
+The stomped Chicken counts toward the density check but does not flee itself.
+
+Scattering chickens:
+
+- choose randomized escape distances based on their own sprite width;
+- may reverse direction before fleeing;
+- receive randomized movement speeds;
+- have a chance to perform a panic hop;
+- remain inside the playable level;
+- cannot damage Pepe while they are actively scattering;
+- resume normal movement after the scatter movement ends.
+
+The complete group reaction uses one dedicated scatter sound effect.
+
 ## Endboss movement and combat
 
 The Endboss can also move across the complete playable level while remaining fully visible.
@@ -160,11 +208,15 @@ Normal body contact and the charge attack intentionally behave differently.
 
 ### Normal Endboss contact
 
-Normal contact causes the established continuous contact damage while Pepe and the boss overlap.
+Normal contact causes continuous contact damage only while Pepe has ground contact and overlaps the boss.
 
-It does not automatically knock Pepe away. This preserves the gameplay option to move through the boss and reach the other side of the arena.
+As soon as Pepe is airborne, normal body overlap no longer causes this continuous contact damage. This allows a deliberate jump attack from close range without continuously losing health during the ascent.
+
+Normal contact does not automatically knock Pepe away, so the player can still move through the boss and reach the other side of the arena.
 
 ### Charge attack
+
+Charge pressure increases across the three levels through speed and range, while charge damage remains fixed at 100.
 
 A successful charge:
 
@@ -179,11 +231,55 @@ The preferred direction is away from the boss. If that target would leave the pl
 
 This prevents corner traps without producing a visible double knockback.
 
-### Boss stomp protection
+### Boss stomp and recovery rules
 
 A boss-caused knockback cannot become an accidental stomp when Pepe falls back down.
 
-A genuine player-initiated stomp from above still damages the Endboss.
+A genuine player-initiated jump remains a valid boss attack even while Pepe is inside his Hurt animation period. Boss-facing direction is irrelevant to stomp damage.
+
+After an accepted hit, the Endboss enters a short level-specific recovery period:
+
+- Level 1: 400 ms;
+- Level 2: 350 ms;
+- Level 3: 300 ms.
+
+During this shared recovery window, the Endboss cannot receive another hit and cannot damage Pepe through normal contact or charge collision.
+
+### Pre-fight bottle activation
+
+Pepe can still attack the visible Endboss with long-range bottle throws before crossing the normal proximity trigger.
+
+Accepted bottle hits are counted while the boss is still inactive. The third accepted pre-fight bottle hit starts the same alert and attack sequence that would normally be triggered by reaching the configured alert position.
+
+### Boss-fight Special Jump
+
+Pepe has a dedicated escape move during an active Endboss fight.
+
+Two separate Jump inputs within 500 ms trigger the Special Jump. The same input timing works with desktop keyboard input, touch controls, and pen input through Pointer Events.
+
+The horizontal range is derived directly from the active boss charge distance:
+
+```text
+Special Jump distance = boss charge distance + 2 × Pepe sprite width
+```
+
+With Pepe's current 150-pixel sprite width this results in:
+
+| Level | Special Jump distance |
+| --- | ---: |
+| Level 1 | 900 px |
+| Level 2 | 950 px |
+| Level 3 | 1000 px |
+
+The Special Jump always starts away from the Endboss.
+
+If the flight reaches a level boundary, Pepe reflects from the boundary and continues across the arena without increasing the original total travel budget. The landing calculation aims to keep at least 100 pixels of free space between Pepe's and the Endboss's collision areas.
+
+The visual flight uses a long curved trajectory. Pepe rotates head-first along the rising arc, returns upright near the apex, follows the descending arc feet-first, and straightens again before landing.
+
+Enemy collisions are ignored during the Special Jump itself. The move therefore cannot damage the Endboss or chickens while Pepe is travelling through the air. If the final landing position happens to overlap a living normal Chicken or Little Chicken, that landing is resolved as a regular stomp hit.
+
+The move uses a dedicated Special Jump sound effect.
 
 ## Ground bottle pickup collision
 
@@ -234,6 +330,7 @@ Pause is disabled once terminal Boss-defeat, Game Over, or Victory handling has 
 | Left Arrow | Move left |
 | Right Arrow | Move right |
 | Space | Jump |
+| Space twice within 500 ms | Special Jump during active Boss fight |
 | Shift | Throw salsa bottle |
 | Up Arrow | Throw salsa bottle |
 | P | Pause / Resume |
@@ -256,6 +353,8 @@ Right side:
 - `THROW`
 
 The mobile control state maps onto the same Keyboard flags used by desktop input.
+
+Two quick JUMP taps within 500 ms use the same Special Jump detection as the desktop keyboard.
 
 Short transfer windows allow the player to slide between movement and action controls without immediately interrupting movement.
 
@@ -297,17 +396,31 @@ The highscore system currently stores a maximum of 10 entries. Expansion to the 
 
 ## Current scoring state
 
-The game already awards score for combat, collectibles, throws, and level completion.
+All current combat, collectible, throw, boss, and level-end score values are centralized inside each level configuration.
 
-The final level-specific EP/score matrix has not yet been centralized. The current values are still distributed across the gameplay classes and will be replaced during the planned scoring refactor.
+| Score event | Level 1 | Level 2 | Level 3 |
+| --- | ---: | ---: | ---: |
+| Chicken stomp | 15 | 20 | 25 |
+| Little Chicken stomp | 20 | 25 | 30 |
+| Chicken bottle kill | 25 | 30 | 35 |
+| Little Chicken bottle kill | 40 | 50 | 60 |
+| Coin pickup | 5 | 8 | 12 |
+| Bottle pickup | 2 | 5 | 8 |
+| Bottle throw | 3 | 5 | 8 |
+| Endboss stomp | 75 | 100 | 125 |
+| Endboss bottle hit | 40 | 50 | 60 |
+| Successful boss charge dodge | 150 | 220 | 300 |
+| Endboss kill | 300 | 500 | 1000 |
 
-The current end-of-level bonus calculation is:
+The end-of-level bonus is also level-specific:
 
-- remaining bottles × 3;
-- collected coins × 15;
-- remaining Character energy × 0.7, rounded.
+| Bonus multiplier | Level 1 | Level 2 | Level 3 |
+| --- | ---: | ---: | ---: |
+| Remaining bottle | ×5 | ×10 | ×25 |
+| Collected coin | ×15 | ×20 | ×30 |
+| Remaining Pepe energy | ×0.7 | ×0.8 | ×1.2 |
 
-These values are temporary and are scheduled to become level-specific.
+The accumulated score continues across all three levels.
 
 ## World architecture
 
@@ -327,13 +440,39 @@ Handles:
 - thrown-bottle hits;
 - delayed removal of defeated normal enemies.
 
+### WorldStompComboManager
+
+Coordinates:
+
+- airborne stomp-combo progression;
+- exponential combo bonuses;
+- combo reset rules;
+- dense Chicken-group detection;
+- randomized Scatter movement;
+- optional panic hops;
+- Scatter sound triggering.
+
+### WorldSpecialJumpManager
+
+Coordinates:
+
+- double-Jump input timing;
+- active-boss eligibility;
+- level-scaled escape distance;
+- boss-relative jump direction;
+- boundary reflection;
+- safe landing distance;
+- curved flight movement;
+- Special Jump rotation;
+- final Chicken landing checks.
+
 ### WorldHudRenderer
 
 Handles:
 
 - health, bottle, coin, and boss status displays;
 - twenty-segment bottle and coin bars;
-- numeric resource values;
+- numeric health, boss-energy, bottle, and coin values;
 - score rendering;
 - active level label;
 - responsive game-control hints;
@@ -355,6 +494,7 @@ Handles the frame rendering path:
 - coffin;
 - Victory and Game Over rendering;
 - sprite mirroring;
+- Special Jump sprite rotation;
 - `requestAnimationFrame()` scheduling.
 
 ### WorldGameStateManager
@@ -426,7 +566,8 @@ Draws the final Victory result interface and stored score table.
 - gameplay timeout registration;
 - global audio cleanup;
 - snoring audio;
-- boss audio cleanup.
+- boss audio cleanup;
+- Scatter and Special Jump effects.
 
 Mute and volume settings are stored in `localStorage`.
 
@@ -463,6 +604,8 @@ The current responsive implementation includes:
 | `levels/level1.js` | Shared configured level factory |
 | `js/models-classes/world.class.js` | Main World orchestration |
 | `js/models-classes/world-collision-manager.class.js` | Collision, pickups, projectile hits, and boss knockback |
+| `js/models-classes/world-stomp-combo-manager.class.js` | Stomp combos, Chicken Scatter behavior, and Scatter movement |
+| `js/models-classes/world-special-jump-manager.class.js` | Boss-fight Special Jump timing, trajectory, edge reflection, and landing |
 | `js/models-classes/world-hud-renderer.class.js` | HUD, segmented resource bars, controls, sound, and pause UI |
 | `js/models-classes/world-renderer.class.js` | Scene and terminal-state rendering |
 | `js/models-classes/world-game-state-manager.class.js` | Game Over, level completion, Victory, restart, and menu flow |
@@ -500,25 +643,32 @@ Completed or substantially completed:
 - boss knockback protection against false stomps;
 - full-edge Pepe and Endboss movement;
 - safe pre-calculated Endboss charge knockback;
-- gameplay pause/resume with keyboard and HUD control.
+- level-specific Pepe health and Endboss charge pressure;
+- numeric Pepe and Endboss health values in the HUD;
+- centralized level-specific score and bonus configuration;
+- airborne stomp-combo scoring;
+- randomized Chicken Scatter reactions with panic hops and dedicated sound;
+- boss recovery with symmetric temporary damage protection;
+- grounded-only normal Endboss contact damage;
+- Endboss activation after three accepted pre-fight bottle hits;
+- boss-fight Special Jump with double-input detection, curved flight, edge reflection, and safe landing logic;
+- gameplay pause/resume with keyboard and HUD control;
+- Game Over highscore confirmation followed by the stored highscore overview.
 
 ## Planned next development steps
 
-The next major gameplay work starts with the remaining multi-level progression rules.
+The remaining work now focuses on final progression, presentation, architecture, and release quality.
 
-1. Finalize health and coin behavior across level transitions.
-2. Centralize all level-specific EP/score values.
-3. Add the Special Jump / Stomp Combo system.
-4. Add the later chicken Scatter reaction.
-5. Finish the full three-level Endboss balancing and bonus model.
-6. Replace the current temporary end-of-level bonus with the final level-specific calculation.
-7. Expand the highscore system from Top 10 to Top 100 and unify Game Over / Victory presentation.
-8. Finalize three-level Game Over, restart, and Victory details.
-9. Complete final HUD and responsive tests.
-10. Enforce final code-quality requirements, including the Developer Akademie file-size and function-size rules.
-11. Audit all user-facing text and code documentation for one consistent language.
-12. Run final audio, cleanup, gameplay, and regression tests.
-13. Complete final documentation and merge the feature branch.
+1. Complete final regression testing of the three-level Endboss system and Special Jump.
+2. Finalize the level-end bonus presentation and balancing.
+3. Expand the highscore system from Top 10 to Top 100 and unify Game Over / Victory presentation.
+4. Finalize three-level Game Over, restart, and Victory details.
+5. Complete final HUD and responsive tests.
+6. Refactor oversized source files while preserving the completed gameplay behavior.
+7. Enforce the remaining Developer Akademie function-size and file-size requirements.
+8. Audit all user-facing text and code documentation for one consistent language.
+9. Run final audio, cleanup, gameplay, and regression tests.
+10. Complete final documentation and merge the finished feature branch.
 
 ## Developer Akademie compliance notes
 
