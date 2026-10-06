@@ -40,7 +40,14 @@ class WorldCollisionManager {
   /** Resolves normal Endboss contact without interfering with charge hits. */
   handleBossContact(enemy) {
     if (enemy.isDeadBoss || enemy.isCharging || enemy.isInHitRecovery()) return;
+    if (!this.hasCharacterGroundContact()) return;
     this.damageCharacter();
+  }
+
+  /** Returns whether Pepe currently has ground contact. */
+  hasCharacterGroundContact() {
+    const character = this.world.character;
+    return !character.isAboveGround() && character.speedY <= 0;
   }
 
   /** Checks whether the Character lands on an enemy from above. */
