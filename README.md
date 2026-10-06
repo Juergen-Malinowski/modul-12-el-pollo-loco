@@ -25,13 +25,19 @@ flowchart TD
     J -->|Pepe dies| G
     J -->|Endboss defeated| K[Final Victory]
 
-    G --> L{Highscore qualified?}
-    L -->|Yes| M[Highscore entry]
+    G --> L{Top 100 qualified?}
+    L -->|Yes| M[Name entry]
+    M --> Q[Saved confirmation]
+    Q --> R[Top 100 list]
     L -->|No| N[Try again / Menu]
-    M --> N
+    R --> N
 
-    K --> O[Victory score / Highscore]
-    O --> P[Play again / Menu]
+    K --> O{Top 100 qualified?}
+    O -->|Yes| S[Name entry]
+    S --> T[Saved confirmation]
+    T --> U[Top 100 list]
+    O -->|No| U
+    U --> P[Play again / Menu]
 ```
 
 Pepe's death has priority over boss completion. If Pepe and the Endboss die during the same combat sequence, the run always follows the Game Over path and cannot open the next-level dialog or Victory flow.
@@ -367,9 +373,11 @@ When Pepe reaches zero energy:
 3. boss/level-completion paths are blocked;
 4. the coffin sequence is shown;
 5. the Game Over screen opens;
-6. the current score is checked against the stored Top 10.
+6. the current score is checked against the stored Top 100.
 
-If the score qualifies, the existing highscore name dialog is opened.
+If the score qualifies, the shared highscore name dialog is opened. After saving, a confirmation is shown and the shared Top-100 list opens with the exact new placement highlighted and scrolled into view.
+
+If name entry is cancelled, the score is not stored and the normal Game Over screen remains active.
 
 If the score does not qualify, the normal Game Over actions remain available directly:
 
@@ -386,13 +394,16 @@ The current implementation:
 
 - stops gameplay and audio;
 - adds the current end-of-level bonus;
-- evaluates the score for the local Top 10;
-- opens the player-name dialog for a qualifying score;
-- stores the entry in `localStorage`;
-- displays the Victory result interface;
-- offers Play again and Menu actions.
+- evaluates the score for the local Top 100;
+- opens the shared player-name dialog for a qualifying score;
+- stores qualifying entries in `localStorage`;
+- opens the same scrollable Top-100 DOM view used by the start menu and Game Over flow;
+- highlights the exact newly stored entry by its unique ID;
+- automatically scrolls the list to the new placement;
+- continues to the Top-100 view without storing when name entry is cancelled;
+- offers Play again and Menu actions directly below the Victory highscore list.
 
-The highscore system currently stores a maximum of 10 entries. Expansion to the planned Top 100 system is still pending.
+The Top-100 qualification rule is strict when the table is full: a new score must be higher than the current rank-100 score.
 
 ## Current scoring state
 
@@ -543,16 +554,29 @@ Coordinates:
 
 Coordinates:
 
-- current Top-10 qualification;
+- Top-100 qualification;
 - highscore data loading;
 - newest-entry tracking;
-- score blinking;
-- Victory interaction;
+- Game Over and Victory highscore routing;
+- Victory audio cleanup;
 - temporary highscore messages.
 
-### WorldVictoryRenderer
+### Shared DOM highscore system
 
-Draws the final Victory result interface and stored score table.
+`js/highscore-system.js` coordinates:
+
+- versioned highscore storage initialization;
+- one-time removal of obsolete pre-Top-100 test data;
+- storage of up to 100 entries;
+- unique entry IDs and creation timestamps;
+- deterministic ranking;
+- shared menu, Game Over, and Victory rendering;
+- exact newest-entry highlighting;
+- automatic scrolling to a new placement;
+- shared name entry and save confirmation;
+- context-specific Close, Play again, and Menu actions.
+
+The previous Canvas-specific Victory highscore table is no longer used as the active highscore presentation.
 
 ## Audio management
 
@@ -597,7 +621,8 @@ The current responsive implementation includes:
 | `index.html` | Static page structure, overlays, and script loading |
 | `variables.css` | Shared color variables |
 | `style.css` | Layout, responsive UI, overlays, and touch controls |
-| `script.js` | Start/menu UI, settings, orientation, DOM overlays, and highscore UI |
+| `script.js` | Start/menu UI, settings, orientation, and general DOM overlays |
+| `js/highscore-system.js` | Top-100 storage, shared highscore DOM, name entry, highlighting, and result actions |
 | `soundhub.js` | Audio and shared gameplay-process management |
 | `js/game.js` | Game initialization, level progression state, keyboard input, and mobile input |
 | `levels/level-config.js` | Central three-level gameplay configuration |
@@ -612,8 +637,8 @@ The current responsive implementation includes:
 | `js/models-classes/world-level-manager.class.js` | Background extension and level transitions |
 | `js/models-classes/world-pause-manager.class.js` | Pause/resume and paused-audio state |
 | `js/models-classes/world-process-manager.class.js` | Cleanup, shutdown, freezing, and menu reset |
-| `js/models-classes/world-highscore-manager.class.js` | Highscore qualification and Victory interaction |
-| `js/models-classes/world-victory-renderer.class.js` | Victory score table and actions |
+| `js/models-classes/world-highscore-manager.class.js` | Top-100 qualification and Game Over / Victory routing |
+| `js/models-classes/world-victory-renderer.class.js` | Legacy Canvas Victory table renderer retained in the codebase but no longer used for the active highscore view |
 | `js/models-classes/character.class.js` | Pepe movement, animation, death, and world boundaries |
 | `js/models-classes/endboss.class.js` | Endboss movement, charge, damage, and death flow |
 | `js/models-classes/chicken.class.js` | Normal chicken movement and boundary reversal |
@@ -653,22 +678,23 @@ Completed or substantially completed:
 - Endboss activation after three accepted pre-fight bottle hits;
 - boss-fight Special Jump with double-input detection, curved flight, edge reflection, and safe landing logic;
 - gameplay pause/resume with keyboard and HUD control;
-- Game Over highscore confirmation followed by the stored highscore overview.
+- unified Top-100 highscore system for menu, Game Over, and Victory;
+- unique highscore-entry IDs with exact newest-placement highlighting;
+- automatic scrolling to a newly stored Top-100 position;
+- Game Over highscore confirmation followed by the shared stored highscore overview;
+- Victory Top-100 presentation with Play again and Menu actions.
 
 ## Planned next development steps
 
 The remaining work now focuses on final progression, presentation, architecture, and release quality.
 
-1. Complete final regression testing of the three-level Endboss system and Special Jump.
-2. Finalize the level-end bonus presentation and balancing.
-3. Expand the highscore system from Top 10 to Top 100 and unify Game Over / Victory presentation.
-4. Finalize three-level Game Over, restart, and Victory details.
-5. Complete final HUD and responsive tests.
-6. Refactor oversized source files while preserving the completed gameplay behavior.
-7. Enforce the remaining Developer Akademie function-size and file-size requirements.
-8. Audit all user-facing text and code documentation for one consistent language.
-9. Run final audio, cleanup, gameplay, and regression tests.
-10. Complete final documentation and merge the finished feature branch.
+1. Finalize three-level Game Over, restart, and Victory details.
+2. Complete final HUD and responsive tests.
+3. Refactor oversized source files while preserving the completed gameplay behavior.
+4. Enforce the remaining Developer Akademie function-size and file-size requirements.
+5. Audit all user-facing text and code documentation for one consistent language.
+6. Run final audio, cleanup, gameplay, and regression tests.
+7. Complete final documentation and merge the finished feature branch.
 
 ## Developer Akademie compliance notes
 
