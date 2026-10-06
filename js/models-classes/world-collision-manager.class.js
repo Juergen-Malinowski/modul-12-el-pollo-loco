@@ -39,14 +39,17 @@ class WorldCollisionManager {
 
   /** Resolves normal Endboss contact without interfering with charge hits. */
   handleBossContact(enemy) {
-    if (enemy.isDeadBoss || enemy.isCharging) return;
+    if (enemy.isDeadBoss || enemy.isCharging || enemy.isInHitRecovery()) return;
     this.damageCharacter();
   }
 
   /** Checks whether the Character lands on an enemy from above. */
   isStompCollision(enemy) {
     const character = this.world.character;
-    if (enemy instanceof Endboss && character.isBossKnockback) return false;
+    if (
+      enemy instanceof Endboss &&
+      (!character.isBossJumpAttack || character.isBossKnockback)
+    ) return false;
     const characterBottom =
       character.y +
       character.heigth -
@@ -97,9 +100,13 @@ class WorldCollisionManager {
 
   /** Applies damage and bounce behavior for an Endboss stomp. */
   handleBossStomp(enemy) {
-    soundHub.playEffect(soundHub.soundChickenHit);
-    enemy.wasHit();
-    this.world.addScore(this.world.levelConfig.score.bossStomp);
+    const character = this.world.character;
+    const hitApplied = enemy.wasHit();
+    character.isBossJumpAttack = false;
+    if (hitApplied) {
+      soundHub.playEffect(soundHub.soundChickenHit);
+      this.world.addScore(this.world.levelConfig.score.bossStomp);
+    }
     this.bounceCharacterOffBoss(enemy);
   }
 
@@ -109,6 +116,7 @@ class WorldCollisionManager {
     const direction = this.getBossBounceDirection(enemy);
     character.speedY = 50;
     character.x += 300 * direction;
+    character.isBossJumpAttack = false;
     character.isBouncingOffBoss = true;
     this.world.setManagedTimeout(() => this.finishBossBounce(), 500);
   }
@@ -125,6 +133,7 @@ class WorldCollisionManager {
     const character = this.world.character;
     const targetX = this.getSafeBossKnockbackTarget(enemy, 300);
     character.isBossKnockback = true;
+    character.isBossJumpAttack = false;
     character.speedY = 25;
     character.x = targetX;
   }
@@ -269,8 +278,10 @@ class WorldCollisionManager {
       const bottle = this.world.throwableObjects[i];
       if (!this.isBottleHitTarget(bottle, boss)) continue;
       this.world.throwableObjects.splice(i, 1);
-      boss.wasHit();
-      this.world.addScore(this.world.levelConfig.score.bossBottleHit);
+      const hitApplied = boss.wasHit();
+      if (hitApplied) {
+        this.world.addScore(this.world.levelConfig.score.bossBottleHit);
+      }
       break;
     }
   }

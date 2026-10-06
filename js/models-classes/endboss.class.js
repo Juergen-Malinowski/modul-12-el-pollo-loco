@@ -265,7 +265,10 @@ class Endboss extends MovableObject {
             const reachedBoundary = this.moveChargeStep(toRight, attackSpeed);
             traveled += Math.abs(attackSpeed);
 
-            if (this.world.character.isColliding(this)) {
+            if (
+                this.world.character.isColliding(this) &&
+                !this.isInHitRecovery()
+            ) {
                 this.handleChargeHit(moveInterval);
                 return;
             }
@@ -300,12 +303,16 @@ class Endboss extends MovableObject {
         return this.x === leftBound || this.x === rightBound;
     }
 
-    wasHit() {
-        if (this.isDeadBoss) return;
+    /** Returns whether the boss is inside its level-specific post-hit recovery. */
+    isInHitRecovery() {
+        return Date.now() - this.lastHitTime < this.hitCooldownMs;
+    }
 
-        let now = Date.now();
-        if (now - this.lastHitTime < this.hitCooldownMs) return;
-        this.lastHitTime = now;
+    /** Applies one boss hit and reports whether damage was accepted. */
+    wasHit() {
+        if (this.isDeadBoss || this.isInHitRecovery()) return false;
+
+        this.lastHitTime = Date.now();
 
         this.energieBoss -= 60;
 
@@ -322,6 +329,7 @@ class Endboss extends MovableObject {
         if (this.energieBoss <= 0) {
             this.die();
         }
+        return true;
     }
 
     die() {

@@ -13,6 +13,7 @@ class Character extends MovableObject {
     holeEnergie = 300;
     isDeadAnimationPlaying = false;
     isBossKnockback = false;
+    isBossJumpAttack = false;
 
     offset = {
         top: 130,
@@ -123,6 +124,7 @@ class Character extends MovableObject {
             }
 
             if (this.world.keyboard.SPACE && !this.isAboveGround()) {
+                this.isBossJumpAttack = true;
                 soundHub.playEffect(soundHub.soundJumping);
                 this.speedY = 45;
                 this.lastActionTime = Date.now();
@@ -272,6 +274,7 @@ class Character extends MovableObject {
             this.y = 130;
             this.speedY = 0;
             this.isBossKnockback = false;
+            this.isBossJumpAttack = false;
             if (this.world && this.world.stompComboManager) {
                 this.world.stompComboManager.reset();
             }
