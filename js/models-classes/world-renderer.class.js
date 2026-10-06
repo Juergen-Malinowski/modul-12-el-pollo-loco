@@ -226,11 +226,28 @@ class WorldRenderer {
    * @param {DrawableObject} movableObject - Object to draw.
    */
   addToMap(movableObject) {
+    if (movableObject instanceof Character && movableObject.isSpecialJumping) {
+      this.drawSpecialJumpCharacter(movableObject);
+      return;
+    }
     if (movableObject.otherDirection) {
       this.flipImage(movableObject);
       return;
     }
     movableObject.draw(this.world.ctx);
+  }
+
+  /** Draws Pepe rotated around his center during a Special Jump. */
+  drawSpecialJumpCharacter(character) {
+    const ctx = this.world.ctx;
+    ctx.save();
+    ctx.translate(character.x + character.width / 2,
+      character.y + character.heigth / 2);
+    ctx.rotate(character.specialJumpRotation);
+    if (character.otherDirection) ctx.scale(-1, 1);
+    ctx.drawImage(character.img, -character.width / 2,
+      -character.heigth / 2, character.width, character.heigth);
+    ctx.restore();
   }
 
   /**

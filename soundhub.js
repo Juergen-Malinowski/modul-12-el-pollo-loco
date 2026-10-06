@@ -20,6 +20,7 @@ class SoundHub {
         this.soundBossStart = new Audio('./assets/sound/great-Chicken-Cry.mp3');
         this.soundBossCharge = new Audio('./assets/sound/thunder-attack.mp3');
         this.soundScatter = new Audio('./assets/sound/scatter-sound.mp3');
+        this.soundSpecialJump = new Audio('./assets/sound/special-jump.mp3');
 
         this.lastHitSoundTime = 0;
         this.hitSoundCooldown = 2000;
@@ -69,6 +70,16 @@ class SoundHub {
         }
     }
 
+    /** Plays the Special Jump sound after its silent intro section. */
+    playSpecialJump() {
+        if (typeof isGamePaused === "function" && isGamePaused()) return;
+        if (this.isMuted || !this.soundSpecialJump) return;
+        try {
+            this.soundSpecialJump.currentTime = 0.8;
+            this.soundSpecialJump.play().catch(function () { });
+        } catch (err) { }
+    }
+
     getAllEffects() {
         const list = [
             this.soundThrow,
@@ -81,6 +92,7 @@ class SoundHub {
             this.soundBossStart,
             this.soundBossCharge,
             this.soundScatter,
+            this.soundSpecialJump,
         ];
 
         if (this.snoringAudio) {

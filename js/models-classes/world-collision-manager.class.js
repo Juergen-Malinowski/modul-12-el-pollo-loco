@@ -28,6 +28,7 @@ class WorldCollisionManager {
   /** Resolves one enemy collision with the Character. */
   handleEnemyCollision(enemy) {
     if (!this.world.character.isColliding(enemy)) return;
+    if (this.world.character.isSpecialJumping) return;
     if (this.isStompCollision(enemy) && this.resolveStompCollision(enemy)) return;
     if (enemy instanceof Endboss) {
       this.handleBossContact(enemy);
@@ -138,6 +139,9 @@ class WorldCollisionManager {
   /** Applies one boss-caused knockback after its safe target was resolved. */
   applyBossAttackKnockback(enemy) {
     const character = this.world.character;
+    if (character.isSpecialJumping && this.world.specialJumpManager) {
+      this.world.specialJumpManager.cancel();
+    }
     const targetX = this.getSafeBossKnockbackTarget(enemy, 300);
     character.isBossKnockback = true;
     character.isBossJumpAttack = false;

@@ -14,6 +14,8 @@ class Character extends MovableObject {
     isDeadAnimationPlaying = false;
     isBossKnockback = false;
     isBossJumpAttack = false;
+    isSpecialJumping = false;
+    specialJumpRotation = 0;
 
     offset = {
         top: 130,
@@ -106,6 +108,11 @@ class Character extends MovableObject {
         soundHub.registerInterval(setInterval(() => {
             if (typeof isGamePaused === "function" && isGamePaused()) return;
             if (this.isDeadAnimationPlaying) {
+                return;
+            }
+
+            if (this.isSpecialJumping) {
+                this.updateCameraPosition();
                 return;
             }
 
@@ -275,6 +282,8 @@ class Character extends MovableObject {
             this.speedY = 0;
             this.isBossKnockback = false;
             this.isBossJumpAttack = false;
+            this.isSpecialJumping = false;
+            this.specialJumpRotation = 0;
             if (this.world && this.world.stompComboManager) {
                 this.world.stompComboManager.reset();
             }

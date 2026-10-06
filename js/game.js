@@ -76,6 +76,7 @@ function init() {
   const levelConfig = getCurrentLevelConfig();
   initLevel(levelConfig);
   world = new World(canvas, keyboard, level1, levelConfig);
+  world.specialJumpManager = new WorldSpecialJumpManager(world);
   window.world = world;
 }
 
@@ -100,6 +101,7 @@ window.addEventListener("keydown", function (e) {
       break;
     case " ":
       keyboard.SPACE = true;
+      if (!e.repeat) registerJumpPress();
       break;
     case "Shift":
       keyboard.SHIFT = true;
@@ -138,6 +140,12 @@ window.addEventListener("keyup", (e) => {
       break;
   }
 });
+
+/** Routes one physical Jump press to the active Special Jump detector. */
+function registerJumpPress() {
+  if (!window.world || !window.world.specialJumpManager) return;
+  window.world.specialJumpManager.registerJumpPress();
+}
 
 const MOBILE_RUN_TO_ACTION_DELAY = 250;
 const MOBILE_ACTION_TO_RUN_DELAY = 150;
@@ -291,6 +299,7 @@ function releaseMovementControl(side) {
 function pressActionControl(side) {
   side.actionPressed = true;
   keyboard[side.actionKey] = true;
+  if (side.actionKey === "SPACE") registerJumpPress();
 
   if (side.transferPending) {
     confirmMovementTransfer(side);
