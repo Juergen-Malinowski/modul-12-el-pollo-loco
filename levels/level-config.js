@@ -1,3 +1,8 @@
+const STOMP_COMBO_CONFIG = Object.freeze({
+  startBonus: 20,
+  multiplier: 2,
+});
+
 const LEVEL_CONFIGS = Object.freeze({
   1: Object.freeze({
     number: 1,

@@ -274,6 +274,9 @@ class Character extends MovableObject {
             this.y = 130;
             this.speedY = 0;
             this.isBossKnockback = false;
+            if (this.world && this.world.stompComboManager) {
+                this.world.stompComboManager.reset();
+            }
         }
     }
 

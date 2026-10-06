@@ -8,6 +8,7 @@ class WorldGameStateManager {
 
   /** Marks Pepe's death as the authoritative terminal state for this level. */
   markPlayerDefeated() {
+    this.world.stompComboManager.reset();
     this.world.playerDefeated = true;
     this.world.gameOver = true;
   }
@@ -262,6 +263,7 @@ class WorldGameStateManager {
     world.showGameOver = false;
     world.gameOver = false;
     world.showCoffin = false;
+    world.stompComboManager.reset();
     world.score = 0;
     world.blinkActive = false;
     world.blinkVisible = true;

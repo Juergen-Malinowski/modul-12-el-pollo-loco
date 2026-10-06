@@ -44,6 +44,7 @@ class World {
   managedTimeouts = new Set();
   managedIntervals = new Set();
   collisionManager;
+  stompComboManager;
   hudRenderer;
   gameStateManager;
   levelManager;
@@ -60,6 +61,7 @@ class World {
     this.currentLevel = levelConfig.number;
     this.initializeBottleInventory();
     this.collisionManager = new WorldCollisionManager(this);
+    this.stompComboManager = new WorldStompComboManager(this);
     this.hudRenderer = new WorldHudRenderer(this);
     this.processManager = new WorldProcessManager(this);
     this.pauseManager = new WorldPauseManager(this);

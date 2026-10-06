@@ -80,7 +80,8 @@ class WorldCollisionManager {
     const points = enemy instanceof LittleChicken
       ? scoreConfig.littleChickenStomp
       : scoreConfig.chickenStomp;
-    world.addScore(points);
+    const comboBonus = world.stompComboManager.registerStomp();
+    world.addScore(points + comboBonus);
     this.removeEnemyLater(enemy);
     soundHub.playEffect(soundHub.soundChickenMud);
   }
