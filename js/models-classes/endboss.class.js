@@ -269,7 +269,7 @@ class Endboss extends MovableObject {
             if (traveled >= targetDistance || reachedBoundary) {
                 clearInterval(moveInterval);
                 this.isCharging = false;
-                this.world.addScore(70);
+                this.world.addScore(this.world.levelConfig.score.bossChargeDodge);
             }
         }, 40));
     }
@@ -350,7 +350,7 @@ class Endboss extends MovableObject {
                         if (typeof this.world.freezeWorld === "function") {
                             this.world.freezeWorld();
                         }
-                        this.world.addScore(150);
+                        this.world.addScore(this.world.levelConfig.score.bossKill);
                         this.world.handleBossDefeat();
                     }, 1000);
                 }

@@ -276,7 +276,7 @@ class World {
 
       this.throwableObjects.push(bottle);
       soundHub.playEffect(soundHub.soundThrow);
-      this.addScore(3);
+      this.addScore(this.levelConfig.score.bottleThrow);
       this.character.playThrowAnimation();
       this.character.lastActionTime = Date.now();
     }

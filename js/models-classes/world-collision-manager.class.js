@@ -76,7 +76,11 @@ class WorldCollisionManager {
       enemy.y + (enemy.offset ? enemy.offset.top : 0) - world.character.heigth;
     soundHub.playEffect(soundHub.soundChickenHit);
     enemy.die();
-    world.addScore(enemy instanceof LittleChicken ? 15 : 20);
+    const scoreConfig = world.levelConfig.score;
+    const points = enemy instanceof LittleChicken
+      ? scoreConfig.littleChickenStomp
+      : scoreConfig.chickenStomp;
+    world.addScore(points);
     this.removeEnemyLater(enemy);
     soundHub.playEffect(soundHub.soundChickenMud);
   }
@@ -93,7 +97,7 @@ class WorldCollisionManager {
   handleBossStomp(enemy) {
     soundHub.playEffect(soundHub.soundChickenHit);
     enemy.wasHit();
-    this.world.addScore(65);
+    this.world.addScore(this.world.levelConfig.score.bossStomp);
     this.bounceCharacterOffBoss(enemy);
   }
 
@@ -195,7 +199,7 @@ class WorldCollisionManager {
     world.level.bottles.splice(index, 1);
     world.collectedBottles++;
     world.updateBottleBar();
-    world.addScore(2);
+    world.addScore(world.levelConfig.score.bottlePickup);
     world.showBottlePickupEffect();
   }
 
@@ -215,7 +219,7 @@ class WorldCollisionManager {
     world.level.coins.splice(index, 1);
     world.collectedCoins++;
     world.updateCoinBar();
-    world.addScore(3);
+    world.addScore(world.levelConfig.score.coinPickup);
   }
 
   /** Checks thrown bottles against normal enemies. */
@@ -246,7 +250,11 @@ class WorldCollisionManager {
   handleBottleChickenHit(enemy, bottleIndex) {
     soundHub.playEffect(soundHub.soundChickenHit);
     enemy.die();
-    this.world.addScore(20);
+    const scoreConfig = this.world.levelConfig.score;
+    const points = enemy instanceof LittleChicken
+      ? scoreConfig.littleChickenBottleKill
+      : scoreConfig.chickenBottleKill;
+    this.world.addScore(points);
     this.world.throwableObjects.splice(bottleIndex, 1);
     this.removeEnemyLater(enemy);
   }
@@ -260,7 +268,7 @@ class WorldCollisionManager {
       if (!this.isBottleHitTarget(bottle, boss)) continue;
       this.world.throwableObjects.splice(i, 1);
       boss.wasHit();
-      this.world.addScore(40);
+      this.world.addScore(this.world.levelConfig.score.bossBottleHit);
       break;
     }
   }

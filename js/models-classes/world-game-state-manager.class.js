@@ -188,9 +188,14 @@ class WorldGameStateManager {
    */
   calculateVictoryBonus() {
     const world = this.world;
-    const bottleBonus = world.collectedBottles * 3;
-    const coinBonus = world.collectedCoins * 15;
-    const healthBonus = Math.max(0, Math.round(world.character.energie * 0.7));
+    const scoreConfig = world.levelConfig.score;
+    const bottleBonus =
+      world.collectedBottles * scoreConfig.remainingBottleMultiplier;
+    const coinBonus = world.collectedCoins * scoreConfig.coinEndMultiplier;
+    const healthBonus = Math.max(
+      0,
+      Math.round(world.character.energie * scoreConfig.remainingHealthMultiplier),
+    );
     return bottleBonus + coinBonus + healthBonus;
   }
 
