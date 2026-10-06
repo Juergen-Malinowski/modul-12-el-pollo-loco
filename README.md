@@ -631,7 +631,8 @@ The current responsive implementation includes:
 | `js/models-classes/world-collision-manager.class.js` | Collision, pickups, projectile hits, and boss knockback |
 | `js/models-classes/world-stomp-combo-manager.class.js` | Stomp combos, Chicken Scatter behavior, and Scatter movement |
 | `js/models-classes/world-special-jump-manager.class.js` | Boss-fight Special Jump timing, trajectory, edge reflection, and landing |
-| `js/models-classes/world-hud-renderer.class.js` | HUD, segmented resource bars, controls, sound, and pause UI |
+| `js/models-classes/world-status-hud-renderer.class.js` | Health, boss, bottle, coin, segmented resource bars, and numeric status values |
+| `js/models-classes/world-hud-renderer.class.js` | Score, control hints, sound, level indicator, pause UI, and HUD interaction |
 | `js/models-classes/world-renderer.class.js` | Scene and terminal-state rendering |
 | `js/models-classes/world-game-state-manager.class.js` | Game Over, level completion, Victory, restart, and menu flow |
 | `js/models-classes/world-level-manager.class.js` | Background extension and level transitions |
