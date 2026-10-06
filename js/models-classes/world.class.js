@@ -47,14 +47,30 @@ class World {
   renderer;
 
   constructor(canvas, keyboard, levelInstance, levelConfig) {
+    this.initializeDependencies(canvas, keyboard, levelInstance, levelConfig);
+    this.initializeCharacterHealth();
+    this.initializeBottleInventory();
+    this.initializeManagers();
+    this.initializeResultImages();
+    this.setWorld();
+    this.levelManager.applyLevelSetup();
+    this.draw();
+    this.run();
+    this.initializeResourceState();
+  }
+
+  /** Stores the dependencies and level metadata required by this World. */
+  initializeDependencies(canvas, keyboard, levelInstance, levelConfig) {
     this.ctx = canvas.getContext("2d");
     this.canvas = canvas;
     this.keyboard = keyboard;
     this.level = levelInstance;
     this.levelConfig = levelConfig;
     this.currentLevel = levelConfig.number;
-    this.initializeCharacterHealth();
-    this.initializeBottleInventory();
+  }
+
+  /** Creates manager and renderer instances owned by this World. */
+  initializeManagers() {
     this.collisionManager = new WorldCollisionManager(this);
     this.stompComboManager = new WorldStompComboManager(this);
     this.hudRenderer = new WorldHudRenderer(this);
@@ -64,14 +80,18 @@ class World {
     this.levelManager = new WorldLevelManager(this);
     this.highscoreManager = new WorldHighscoreManager(this);
     this.renderer = new WorldRenderer(this);
+  }
+
+  /** Assigns terminal-state image sources. */
+  initializeResultImages() {
     this.coffinImg.src = "./assets/img/2_charakter_pepe/5_dead/coffin.png";
     this.youWinImg.src = "./assets/img/0_you_won_you_lost/You Win A.png";
     this.gameOverImg.src =
       "./assets/img/9_intro_outro_bildschirm/game_over/game over.png";
-    this.setWorld();
-    this.levelManager.applyLevelSetup();
-    this.draw();
-    this.run();
+  }
+
+  /** Restores the accumulated score and initializes resource bars. */
+  initializeResourceState() {
     this.score = score;
     this.updateBottleBar();
     this.updateCoinBar();
@@ -198,44 +218,16 @@ class World {
     );
   }
 
-  /** Draws the temporary bottle pickup feedback. */
+  /** Delegates temporary bottle pickup feedback to the renderer. */
   showBottlePickupEffect() {
-    const x = this.character.x + this.character.width / 2;
-    const y = this.character.y - 50;
-    const ctx = this.ctx;
-    let opacity = 1;
-    const step = 50;
-    const interval = this.setManagedInterval(() => {
-      ctx.save();
-      ctx.font = "bold 30px Zabars";
-      ctx.globalAlpha = opacity;
-      ctx.fillStyle = getGameColor("--color-effect-bottle-pickup");
-      ctx.fillText("+1", x - this.cameraX, y);
-      ctx.restore();
-      opacity -= 0.2;
-      if (opacity <= 0) this.clearManagedInterval(interval);
-    }, step);
+    this.renderer.showBottlePickupEffect();
   }
 
   /** Adds score points and displays temporary score feedback. */
   addScore(points) {
     this.score += points;
     score = this.score;
-    const ctx = this.ctx;
-    const x = this.character.x + this.character.width / 2;
-    const y = this.character.y - 80;
-    let opacity = 1;
-    const step = 50;
-    const interval = this.setManagedInterval(() => {
-      ctx.save();
-      ctx.font = "bold 25px Zabars";
-      ctx.globalAlpha = opacity;
-      ctx.fillStyle = getGameColor("--color-text-light");
-      ctx.fillText(`+${points} Pts`, x - this.cameraX, y);
-      ctx.restore();
-      opacity -= 0.2;
-      if (opacity <= 0) this.clearManagedInterval(interval);
-    }, step);
+    this.renderer.showScoreFeedback(points);
   }
 
   /** Creates thrown bottles when the current input and cooldown allow it. */

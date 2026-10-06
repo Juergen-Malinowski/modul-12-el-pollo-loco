@@ -627,14 +627,14 @@ The current responsive implementation includes:
 | `js/mobile-controls.js` | Symmetric touch controls, multi-pointer state, movement transfer windows, Jump, Throw, and Special Jump input |
 | `levels/level-config.js` | Central three-level gameplay configuration |
 | `levels/level1.js` | Shared configured level factory |
-| `js/models-classes/world.class.js` | Main World orchestration |
+| `js/models-classes/world.class.js` | Main World initialization, state, resource orchestration, and manager delegation |
 | `js/models-classes/world-collision-manager.class.js` | Collision, pickups, projectile hits, and boss knockback |
 | `js/models-classes/world-stomp-combo-manager.class.js` | Stomp combos, Chicken Scatter behavior, and Scatter movement |
 | `js/models-classes/world-special-jump-manager.class.js` | Boss-fight Special Jump timing, trajectory, edge reflection, and landing |
 | `js/models-classes/world-status-hud-renderer.class.js` | Health, boss, bottle, coin, segmented resource bars, and numeric status values |
 | `js/models-classes/world-pause-hud-renderer.class.js` | Desktop resume UI, mobile Canvas pause control, hit areas, and pause interaction |
 | `js/models-classes/world-hud-renderer.class.js` | Score, control hints, sound, level indicator, shared mobile HUD geometry, and HUD interaction routing |
-| `js/models-classes/world-renderer.class.js` | Scene and terminal-state rendering |
+| `js/models-classes/world-renderer.class.js` | Scene, temporary gameplay feedback, object, and terminal-state rendering |
 | `js/models-classes/world-game-state-manager.class.js` | Game Over, level completion, Victory, restart, and menu flow |
 | `js/models-classes/world-level-manager.class.js` | Background extension and level transitions |
 | `js/models-classes/world-pause-manager.class.js` | Pause/resume and paused-audio state |

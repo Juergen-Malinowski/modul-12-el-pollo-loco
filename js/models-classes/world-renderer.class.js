@@ -59,6 +59,59 @@ class WorldRenderer {
     world.ctx.translate(-world.cameraX, 0);
   }
 
+  /** Draws the temporary bottle pickup feedback above Pepe. */
+  showBottlePickupEffect() {
+    const world = this.world;
+    this.startTemporaryFeedback(
+      "+1",
+      world.character.y - 50,
+      30,
+      "--color-effect-bottle-pickup",
+    );
+  }
+
+  /** Draws temporary score feedback above Pepe. */
+  showScoreFeedback(points) {
+    const world = this.world;
+    this.startTemporaryFeedback(
+      "+" + points + " Pts",
+      world.character.y - 80,
+      25,
+      "--color-text-light",
+    );
+  }
+
+  /** Starts one fading text feedback effect at Pepe's current position. */
+  startTemporaryFeedback(text, y, fontSize, colorVariable) {
+    const world = this.world;
+    const x = world.character.x + world.character.width / 2;
+    const renderer = this;
+    let opacity = 1;
+    const interval = world.setManagedInterval(function () {
+      opacity = renderer.drawTemporaryFeedback(
+        text,
+        x,
+        y,
+        fontSize,
+        colorVariable,
+        opacity,
+      );
+      if (opacity <= 0) world.clearManagedInterval(interval);
+    }, 50);
+  }
+
+  /** Draws one feedback frame and returns the next opacity value. */
+  drawTemporaryFeedback(text, x, y, fontSize, colorVariable, opacity) {
+    const world = this.world;
+    world.ctx.save();
+    world.ctx.font = "bold " + fontSize + "px Zabars";
+    world.ctx.globalAlpha = opacity;
+    world.ctx.fillStyle = getGameColor(colorVariable);
+    world.ctx.fillText(text, x - world.cameraX, y);
+    world.ctx.restore();
+    return opacity - 0.2;
+  }
+
   /**
    * Draws active Game Over or Victory overlays.
    */
