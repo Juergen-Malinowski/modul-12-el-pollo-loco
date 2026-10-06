@@ -619,7 +619,8 @@ The current responsive implementation includes:
 | `index.html` | Static page structure, overlays, and script loading |
 | `variables.css` | Shared color variables |
 | `style.css` | Layout, responsive UI, overlays, and touch controls |
-| `script.js` | Start/menu UI, settings, orientation, and general DOM overlays |
+| `js/responsive-ui.js` | Touch-control placement, viewport orientation handling, fullscreen rotation request, and responsive UI listeners |
+| `script.js` | Start/menu UI, settings, general DOM overlays, and Canvas HUD click binding |
 | `js/highscore-system.js` | Top-100 storage, shared highscore DOM, name entry, highlighting, and result actions |
 | `soundhub.js` | Audio and shared gameplay-process management |
 | `js/game.js` | Game initialization, level progression state, and keyboard input |
