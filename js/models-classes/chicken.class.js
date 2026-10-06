@@ -54,6 +54,10 @@ class Chicken extends MovableObject {
 
     /** Moves the chicken and reverses it at the playable level boundaries. */
     moveWithinLevel() {
+        if (this.moveScatterStep()) {
+            this.keepInsideLevel();
+            return;
+        }
         if (this.otherDirection) {
             this.moveRight();
         } else {

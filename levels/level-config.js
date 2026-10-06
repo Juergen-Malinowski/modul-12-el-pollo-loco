@@ -3,6 +3,14 @@ const STOMP_COMBO_CONFIG = Object.freeze({
   multiplier: 2,
 });
 
+const CHICKEN_SCATTER_CONFIG = Object.freeze({
+  nearbyRadius: 400,
+  minimumNearbyChickens: 5,
+  minDistanceFactor: 0.5,
+  maxDistanceFactor: 3,
+  movementSpeed: 8,
+});
+
 const LEVEL_CONFIGS = Object.freeze({
   1: Object.freeze({
     number: 1,

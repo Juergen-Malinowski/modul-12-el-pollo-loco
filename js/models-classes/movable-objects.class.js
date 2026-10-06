@@ -7,6 +7,9 @@ class MovableObject extends DrawableObjects {
     otherDirection = false;
     speedY = 0;
     acceleration = 4;
+    scatterTargetX = null;
+    scatterDirection = 0;
+    scatterSpeed = 0;
 
     energie = 100;
     lastHit = 0;
@@ -165,6 +168,47 @@ class MovableObject extends DrawableObjects {
         ) {
             this.stopSnoringSound();
         }
+    }
+
+    /**
+     * Starts a temporary visible horizontal escape movement.
+     *
+     * @param {number} targetX - Horizontal position where scatter movement ends.
+     * @param {number} direction - Horizontal movement direction, -1 or 1.
+     * @param {number} speed - Temporary scatter movement speed.
+     */
+    startScatter(targetX, direction, speed) {
+        this.scatterTargetX = targetX;
+        this.scatterDirection = direction;
+        this.scatterSpeed = speed;
+    }
+
+    /** Moves one scatter step and reports whether scatter currently owns movement. */
+    moveScatterStep() {
+        if (this.scatterTargetX === null) return false;
+        const nextX = this.x + this.scatterSpeed * this.scatterDirection;
+        if (this.hasReachedScatterTarget(nextX)) {
+            this.finishScatter();
+            return true;
+        }
+        this.x = nextX;
+        return true;
+    }
+
+    /** Returns whether the next movement step reaches or passes the scatter target. */
+    hasReachedScatterTarget(nextX) {
+        if (this.scatterDirection > 0) return nextX >= this.scatterTargetX;
+        return nextX <= this.scatterTargetX;
+    }
+
+    /** Finishes scatter and preserves its direction for normal chicken movement. */
+    finishScatter() {
+        this.x = this.scatterTargetX;
+        this.otherDirection = this.scatterDirection > 0;
+        this.scatterTargetX = null;
+        this.scatterDirection = 0;
+        this.scatterSpeed = 0;
+        if (typeof this.setRandomSpeed === "function") this.setRandomSpeed();
     }
 
     /**

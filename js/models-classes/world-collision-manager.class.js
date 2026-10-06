@@ -75,12 +75,12 @@ class WorldCollisionManager {
     world.character.y =
       enemy.y + (enemy.offset ? enemy.offset.top : 0) - world.character.heigth;
     soundHub.playEffect(soundHub.soundChickenHit);
+    const comboBonus = world.stompComboManager.registerStomp(enemy);
     enemy.die();
     const scoreConfig = world.levelConfig.score;
     const points = enemy instanceof LittleChicken
       ? scoreConfig.littleChickenStomp
       : scoreConfig.chickenStomp;
-    const comboBonus = world.stompComboManager.registerStomp();
     world.addScore(points + comboBonus);
     this.removeEnemyLater(enemy);
     soundHub.playEffect(soundHub.soundChickenMud);

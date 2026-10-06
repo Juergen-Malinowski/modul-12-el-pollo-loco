@@ -54,6 +54,10 @@ class LittleChicken extends MovableObject {
 
     /** Moves the small chicken and reverses it at the playable level boundaries. */
     moveWithinLevel() {
+        if (this.moveScatterStep()) {
+            this.keepInsideLevel();
+            return;
+        }
         if (this.otherDirection) {
             this.moveRight();
         } else {
