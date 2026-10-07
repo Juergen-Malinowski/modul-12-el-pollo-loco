@@ -290,6 +290,7 @@ class EndbossCombatManager {
         const percent = character.energie / character.holeEnergie * 100;
         boss.world.statusBar.setPercentage(percent);
         soundHub.playEffect(soundHub.soundHit);
+        character.startDeathAnimationIfNeeded();
         if (!character.isDead()) boss.world.collisionManager.applyBossAttackKnockback(boss);
         clearInterval(moveInterval);
         boss.isCharging = false;
