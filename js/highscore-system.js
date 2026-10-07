@@ -32,6 +32,7 @@ function resetHighscoreRunState() {
 /** Reads and sorts the stored Top-100 entries. */
 function readHighscores() {
   try {
+    if (localStorage.getItem(HIGHSCORE_SCHEMA_KEY) !== HIGHSCORE_SCHEMA_VERSION) return [];
     var list = JSON.parse(localStorage.getItem("highScoreTable") || "[]");
     if (!Array.isArray(list)) return [];
     return sortHighscores(list);
@@ -82,6 +83,7 @@ function createHighscoreEntryId() {
 
 /** Stores one score, trims the table to 100 entries, and marks the new row. */
 function storeHighscore(name, score) {
+  initializeHighscoreStorage();
   var entry = createHighscoreEntry(name, score);
   var list = readHighscores();
   list.push(entry);
@@ -311,4 +313,3 @@ function closeHighscoreSaved() {
   openHighscore(highscoreFlowContext);
 }
 
-initializeHighscoreStorage();
