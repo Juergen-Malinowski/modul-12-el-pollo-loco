@@ -45,7 +45,7 @@
   );
   max-height: none;
   text-align: center;
-  font-family: "Rye", Arial, Helvetica, sans-serif;
+  font-family: "Smokum", Arial, Helvetica, sans-serif;
   color: var(--color-text-dark);
   display: flex;
   flex-direction: column;
@@ -83,7 +83,7 @@
 
 .highscoreRow {
   display: grid;
-  grid-template-columns: minmax(44px, 0.45fr) minmax(0, 2fr) minmax(90px, 1fr);
+  grid-template-columns: minmax(44px, 0.45fr) minmax(0, 2fr) max-content;
   gap: clamp(6px, 1.5vw, 22px);
   align-items: center;
   padding: clamp(2px, 0.5vh, 7px) clamp(5px, 1vw, 14px);
@@ -103,6 +103,7 @@
 
 .highscoreScore {
   text-align: right;
+  white-space: nowrap;
 }
 
 .highscoreRow.isNew {
@@ -137,7 +138,7 @@
   border-radius: clamp(8px, 1vh, 16px);
   padding: clamp(4px, 1vh, 14px) clamp(14px, 2.4vw, 36px);
   cursor: pointer;
-  font-family: "Rye", Arial, Helvetica, sans-serif;
+  font-family: "Smokum", Arial, Helvetica, sans-serif;
   font-size: clamp(0.95rem, calc(0.55rem + 1.5vh), 2rem);
 }
 
@@ -204,7 +205,7 @@
 }
 
 footer .copyright {
-  font-family: "Rye", Arial, Helvetica, sans-serif;
+  font-family: "Smokum", Arial, Helvetica, sans-serif;
   font-size: clamp(1.65rem, calc(0.9rem + 2.7vw), 4rem);
 
   color: var(--color-text-dark);
@@ -225,7 +226,7 @@ footer .copyright {
     clamp(4px, 1.1vh, 16px)
     clamp(14px, calc(var(--overlay-stage-width) * 0.022), 44px);
   cursor: pointer;
-  font-family: "Rye", Arial, Helvetica, sans-serif;
+  font-family: "Smokum", Arial, Helvetica, sans-serif;
   font-size: clamp(0.95rem, calc(0.55rem + 1.6vh), 2.5rem);
   transition:
     transform 0.2s ease-in-out,
@@ -268,7 +269,7 @@ body.main_grafik .href_grafik:hover {
 }
 
 .infoContent {
-  font-family: "Rye", Arial, Helvetica, sans-serif;
+  font-family: "Smokum", Arial, Helvetica, sans-serif;
   font-size: 1.6em;
   line-height: 0.5;
   margin-top: 0;
