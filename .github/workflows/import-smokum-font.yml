@@ -1,0 +1,36 @@
+name: Import Smokum font
+
+on:
+  push:
+    branches:
+      - release/legal-and-assets
+    paths:
+      - .github/workflows/import-smokum-font.yml
+
+permissions:
+  contents: write
+
+jobs:
+  import-font:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+        with:
+          ref: release/legal-and-assets
+
+      - name: Download official Smokum font
+        run: |
+          curl --fail --location \
+            https://raw.githubusercontent.com/google/fonts/main/apache/smokum/Smokum-Regular.ttf \
+            --output assets/fonts/Smokum-Regular.ttf
+          test "$(git hash-object assets/fonts/Smokum-Regular.ttf)" = "dd825aa182b435cefe2e270e361d254d51eca8d0"
+
+      - name: Commit font file
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/fonts/Smokum-Regular.ttf
+          git diff --cached --quiet && exit 0
+          git commit -m "ASSET: Add local Smokum font file"
+          git push origin HEAD:release/legal-and-assets
