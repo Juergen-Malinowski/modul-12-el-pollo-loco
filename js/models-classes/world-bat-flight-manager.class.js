@@ -17,9 +17,9 @@ class WorldBatFlightManager {
 
   /** Loads the four-frame flight sequence from three Bat sprites. */
   loadImages() {
-    const middle = this.createImage("./assets/img/flying_bat/bat_mid.png");
-    const up = this.createImage("./assets/img/flying_bat/bat_up.png");
-    const down = this.createImage("./assets/img/flying_bat/bat_down.png");
+    const middle = this.createImage("./assets/img/flying_bat/bat_mid.webp");
+    const up = this.createImage("./assets/img/flying_bat/bat_up.webp");
+    const down = this.createImage("./assets/img/flying_bat/bat_down.webp");
     return [middle, up, middle, down];
   }
 

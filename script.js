@@ -32,9 +32,9 @@ var INITIAL_GAME_ASSETS = [
   "./assets/img/7_statusbars/1_statusbar/3_statusbar_bottle/blue/40.png",
   "./assets/img/7_statusbars/1_statusbar/1_statusbar_coin/orange/0.png",
   "./assets/img/7_statusbars/2_statusbar_endboss/green/green100.png",
-  "./assets/img/flying_bat/bat_mid.png",
-  "./assets/img/flying_bat/bat_up.png",
-  "./assets/img/flying_bat/bat_down.png"
+  "./assets/img/flying_bat/bat_mid.webp",
+  "./assets/img/flying_bat/bat_up.webp",
+  "./assets/img/flying_bat/bat_down.webp"
 ];
 
 /** Starts a fresh game after the first-frame assets are available. */
