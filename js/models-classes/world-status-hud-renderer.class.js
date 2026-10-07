@@ -100,17 +100,18 @@ class WorldStatusHudRenderer {
   setMobileStatusBarLayout(bars) {
     const layout = this.hudRenderer.getMobileHudLayout();
     const canvasWidth = this.world.canvas.width;
+    const itemWidth = layout.barWidth + layout.valueWidth;
     const gap =
-      (canvasWidth - layout.edge * 2 - layout.barWidth * bars.length) /
+      (canvasWidth - layout.edge * 2 - itemWidth * bars.length) /
       (bars.length - 1);
     for (let i = 0; i < bars.length; i++) {
-      this.setMobileStatusBar(bars[i], layout, gap, i);
+      this.setMobileStatusBar(bars[i], layout, gap, itemWidth, i);
     }
   }
 
   /** Applies one calculated mobile status-bar position. */
-  setMobileStatusBar(bar, layout, gap, index) {
-    bar.x = layout.edge + index * (layout.barWidth + gap);
+  setMobileStatusBar(bar, layout, gap, itemWidth, index) {
+    bar.x = layout.edge + index * (itemWidth + gap);
     bar.y = layout.barY;
     bar.width = layout.barWidth;
     bar.heigth = layout.barHeight;

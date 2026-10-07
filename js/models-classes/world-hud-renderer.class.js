@@ -20,13 +20,15 @@ class WorldHudRenderer {
   /** Returns the shared mobile HUD dimensions. */
   getMobileHudLayout() {
     const edge = 10;
-    const barWidth = 140;
+    const barWidth = 120;
+    const valueWidth = 36;
     const barHeight = 46;
     const rowTop = 6;
     const rowHeight = 54;
     return {
       edge: edge,
       barWidth: barWidth,
+      valueWidth: valueWidth,
       barHeight: barHeight,
       barY: rowTop + (rowHeight - barHeight) / 2,
       bottom: rowTop + rowHeight,

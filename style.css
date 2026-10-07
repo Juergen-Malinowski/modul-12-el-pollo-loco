@@ -144,6 +144,14 @@ canvas {
   letter-spacing: 1px;
 }
 
+#leftBtn,
+#rightBtn {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: clamp(2.2rem, 11vh, 2.8rem);
+  font-weight: bold;
+  line-height: 0.9;
+}
+
 #mobileControls button::before {
   content: "";
   position: absolute;
