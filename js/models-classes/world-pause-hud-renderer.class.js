@@ -23,7 +23,7 @@ class WorldPauseHudRenderer {
     const ctx = this.world.ctx;
     ctx.save();
     this.drawPauseButtonBackground(ctx, area);
-    ctx.font = "bold 30px Zabars";
+    ctx.font = "bold 30px Rye";
     ctx.fillStyle = getGameColor("--color-text-dark");
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
@@ -41,7 +41,7 @@ class WorldPauseHudRenderer {
     const ctx = this.world.ctx;
     ctx.save();
     this.drawPauseButtonBackground(ctx, area);
-    ctx.font = "bold 28px Zabars";
+    ctx.font = "bold 28px Rye";
     ctx.letterSpacing = "2px";
     ctx.fillStyle = getGameColor("--color-text-dark");
     ctx.textAlign = "center";

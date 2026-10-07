@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Rye&display=swap");
+
 
 /* Global page layout */
 html,
@@ -125,7 +127,7 @@ canvas {
   color: var(--color-text-dark);
   border: 2px solid var(--color-text-dark);
   border-radius: 12px;
-  font-family: "Zabars", Arial, Helvetica, sans-serif;
+  font-family: "Rye", Arial, Helvetica, sans-serif;
   font-size: clamp(1rem, 4.5vh, 1.4rem);
   line-height: 1;
   pointer-events: auto;
@@ -159,17 +161,10 @@ canvas {
 }
 
 /* Typography */
-@font-face {
-  font-family: "Zabars";
-  src: url("./assets/fonts/zabars.ttf") format("truetype");
-  font-weight: normal;
-  font-style: normal;
-}
-
 body,
 canvas,
 h1 {
-  font-family: "Zabars", Arial, Helvetica, sans-serif;
+  font-family: "Rye", Arial, Helvetica, sans-serif;
 }
 
 h1 {
@@ -203,7 +198,7 @@ h1 {
 }
 
 .menuButton {
-  font-family: "Zabars", Arial, Helvetica, sans-serif;
+  font-family: "Rye", Arial, Helvetica, sans-serif;
   font-size: clamp(1.15rem, calc(var(--stage-width) * 0.022), 2.6rem);
   color: var(--color-text-light);
   background-color: var(--color-ui-primary);
@@ -315,7 +310,7 @@ button:hover {
 
 #startButton {
   margin-top: 20px;
-  font-family: "Zabars", Arial, Helvetica, sans-serif;
+  font-family: "Rye", Arial, Helvetica, sans-serif;
   font-size: 2em;
   padding: 10px 30px;
   border: none;
@@ -332,7 +327,7 @@ button:hover {
 #copyright {
   margin: 0;
   text-align: center;
-  font-family: "Zabars", Arial, Helvetica, sans-serif;
+  font-family: "Rye", Arial, Helvetica, sans-serif;
   font-size: clamp(1rem, calc(var(--stage-width) * 0.022), 2.5rem);
   color: var(--color-text-dark);
   z-index: 5;

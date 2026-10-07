@@ -128,7 +128,7 @@ class WorldHighscoreManager {
     overlay.style.padding = "30px 50px";
     overlay.style.border = "4px solid " + getGameColor("--color-border-dark");
     overlay.style.borderRadius = "15px";
-    overlay.style.fontFamily = "'Zabars', Arial, Helvetica, sans-serif";
+    overlay.style.fontFamily = "'Rye', Arial, Helvetica, sans-serif";
     overlay.style.fontSize = "2em";
     overlay.style.textAlign = "center";
     overlay.style.zIndex = "9999";

@@ -23,7 +23,7 @@
     clamp(8px, 2.2vh, 40px)
     clamp(12px, calc(var(--overlay-stage-width) * 0.035), 70px);
   text-align: center;
-  font-family: "Zabars", Arial, Helvetica, sans-serif;
+  font-family: "Rye", Arial, Helvetica, sans-serif;
   width: min(
     92vw,
     clamp(500px, calc(var(--overlay-stage-width) * 0.62), 1150px)
@@ -69,7 +69,7 @@
     clamp(8px, 2.2vh, 40px)
     clamp(12px, calc(var(--overlay-stage-width) * 0.035), 70px);
   text-align: center;
-  font-family: "Zabars", Arial, Helvetica, sans-serif;
+  font-family: "Rye", Arial, Helvetica, sans-serif;
   color: var(--color-text-dark);
   width: min(
     92vw,
@@ -124,7 +124,7 @@
   padding: clamp(4px, 0.9vh, 12px) clamp(14px, 2.2vw, 34px);
   margin-top: clamp(8px, 1.5vh, 20px);
   cursor: pointer;
-  font-family: "Zabars", Arial, Helvetica, sans-serif;
+  font-family: "Rye", Arial, Helvetica, sans-serif;
   font-size: clamp(0.95rem, calc(0.6rem + 1vh), 1.8rem);
   transition:
     transform 0.2s ease-in-out,
@@ -161,7 +161,7 @@
     clamp(8px, 2.2vh, 40px)
     clamp(12px, calc(var(--overlay-stage-width) * 0.035), 70px);
   text-align: center;
-  font-family: "Zabars", Arial, Helvetica, sans-serif;
+  font-family: "Rye", Arial, Helvetica, sans-serif;
   width: min(
     92vw,
     clamp(600px, calc(var(--overlay-stage-width) * 0.7), 1350px)
@@ -201,7 +201,7 @@
   padding: clamp(4px, 0.9vh, 12px) clamp(14px, 2.4vw, 36px);
   margin-top: clamp(6px, 1.8vh, 30px);
   cursor: pointer;
-  font-family: "Zabars", Arial, Helvetica, sans-serif;
+  font-family: "Rye", Arial, Helvetica, sans-serif;
   font-size: clamp(0.95rem, calc(0.65rem + 1.15vh), 1.9rem);
   transition:
     transform 0.2s ease-in-out,
@@ -241,7 +241,7 @@
   padding:
     clamp(5px, 1.1vh, 16px)
     clamp(14px, calc(var(--overlay-stage-width) * 0.022), 44px);
-  font-family: "Zabars", Arial, Helvetica, sans-serif;
+  font-family: "Rye", Arial, Helvetica, sans-serif;
   font-size: clamp(1rem, calc(0.55rem + 1.6vh), 2.5rem);
   cursor: pointer;
   transition:
@@ -265,7 +265,7 @@
   padding: clamp(4px, 0.9vh, 12px) clamp(14px, 2.4vw, 36px);
   margin-top: clamp(6px, 1.8vh, 30px);
   cursor: pointer;
-  font-family: "Zabars", Arial, Helvetica, sans-serif;
+  font-family: "Rye", Arial, Helvetica, sans-serif;
   font-size: clamp(0.95rem, calc(0.65rem + 1.15vh), 1.9rem);
   transition:
     transform 0.2s ease-in-out,

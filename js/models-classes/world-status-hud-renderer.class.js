@@ -140,7 +140,7 @@ class WorldStatusHudRenderer {
   /** Applies shared typography for numeric status values. */
   prepareStatusValueContext(mobileOverlayHud) {
     const ctx = this.world.ctx;
-    ctx.font = mobileOverlayHud ? "bold 28px Zabars" : "bold 36px Zabars";
+    ctx.font = mobileOverlayHud ? "bold 28px Rye" : "bold 36px Rye";
     ctx.fillStyle = getGameColor("--color-text-light");
     ctx.textAlign = "left";
   }
