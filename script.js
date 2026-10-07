@@ -10,29 +10,125 @@ function getGameColor(variableName) {
     .trim();
 }
 
-/**
- * Starts a fresh game world and activates the gameplay UI.
- */
+var gameStartLoading = false;
+var initialGameAssetsReady = false;
+var initialGameAssetsLoaded = 0;
+
+var INITIAL_GAME_ASSETS = [
+  "./assets/img/2_charakter_pepe/2_walk/W-21.png",
+  "./assets/img/3_feinde_huehner/chicken_normal/1_walk/1_w.png",
+  "./assets/img/3_feinde_huehner/chicken_small/1_walk/1_w.png",
+  "./assets/img/5_hintergrund/layers/air.png",
+  "./assets/img/5_hintergrund/layers/1_first_layer/1.png",
+  "./assets/img/5_hintergrund/layers/1_first_layer/2.png",
+  "./assets/img/5_hintergrund/layers/2_second_layer/1.png",
+  "./assets/img/5_hintergrund/layers/2_second_layer/2.png",
+  "./assets/img/5_hintergrund/layers/3_third_layer/1.png",
+  "./assets/img/5_hintergrund/layers/3_third_layer/2.png",
+  "./assets/img/5_hintergrund/layers/4_clouds/1.png",
+  "./assets/img/6_salsa_flasche/1_salsa_bottle_on_ground.png",
+  "./assets/img/8_muenzen/coin_2.png",
+  "./assets/img/7_statusbars/1_statusbar/2_statusbar_health/green/100.png",
+  "./assets/img/7_statusbars/1_statusbar/3_statusbar_bottle/blue/40.png",
+  "./assets/img/7_statusbars/1_statusbar/1_statusbar_coin/orange/0.png",
+  "./assets/img/7_statusbars/2_statusbar_endboss/green/green100.png",
+  "./assets/img/flying_bat/bat_mid.png",
+  "./assets/img/flying_bat/bat_up.png",
+  "./assets/img/flying_bat/bat_down.png"
+];
+
+/** Starts a fresh game after the first-frame assets are available. */
 function startGame() {
+  if (gameStartLoading) return;
+  if (initialGameAssetsReady) {
+    beginFreshGame();
+    return;
+  }
+  gameStartLoading = true;
+  initialGameAssetsLoaded = 0;
+  showGameLoading();
+  preloadInitialGameAssets().then(function () {
+    initialGameAssetsReady = true;
+    gameStartLoading = false;
+    beginFreshGame();
+  });
+}
+
+/** Initializes the existing gameplay flow after startup loading. */
+function beginFreshGame() {
   resetCurrentLevel();
   score = 0;
   if (typeof resetHighscoreRunState === "function") resetHighscoreRunState();
-
-  var start = document.getElementById("startScreen");
-  if (start) {
-    start.style.display = "none";
-  }
-
-  var cvs = document.getElementById("canvas");
-  if (cvs) {
-    cvs.style.display = "block";
-  }
-
-  if (typeof init === "function") {
-    init();
-  }
-
+  hideStartScreen();
+  showGameCanvas();
+  if (typeof init === "function") init();
+  hideGameLoading();
   activateGameplayUi();
+}
+
+/** Hides the start menu before gameplay becomes visible. */
+function hideStartScreen() {
+  var start = document.getElementById("startScreen");
+  if (start) start.style.display = "none";
+}
+
+/** Shows the game Canvas after the startup preload. */
+function showGameCanvas() {
+  var canvas = document.getElementById("canvas");
+  if (canvas) canvas.style.display = "block";
+}
+
+/** Shows and resets the startup loading overlay. */
+function showGameLoading() {
+  var overlay = document.getElementById("gameLoadingOverlay");
+  if (overlay) overlay.classList.add("is_visible");
+  updateGameLoadingProgress();
+}
+
+/** Hides the startup loading overlay. */
+function hideGameLoading() {
+  var overlay = document.getElementById("gameLoadingOverlay");
+  if (overlay) overlay.classList.remove("is_visible");
+}
+
+/** Preloads the assets needed for the first visible game frame. */
+function preloadInitialGameAssets() {
+  var requests = INITIAL_GAME_ASSETS.map(function (path) {
+    return preloadInitialGameAsset(path);
+  });
+  return Promise.all(requests);
+}
+
+/** Loads one startup image and always resolves its preload request. */
+function preloadInitialGameAsset(path) {
+  return new Promise(function (resolve) {
+    var image = new Image();
+    image.onload = function () {
+      finishInitialGameAsset(resolve);
+    };
+    image.onerror = function () {
+      console.warn("Failed to preload game asset:", path);
+      finishInitialGameAsset(resolve);
+    };
+    image.src = path;
+  });
+}
+
+/** Completes one startup asset and refreshes the visible progress. */
+function finishInitialGameAsset(resolve) {
+  initialGameAssetsLoaded++;
+  updateGameLoadingProgress();
+  resolve();
+}
+
+/** Updates the startup loading percentage and progress bar. */
+function updateGameLoadingProgress() {
+  var total = INITIAL_GAME_ASSETS.length;
+  var percent = Math.round(initialGameAssetsLoaded / total * 100);
+  var bar = document.getElementById("gameLoadingProgress");
+  var label = document.getElementById("gameLoadingPercent");
+  if (bar) bar.style.width = percent + "%";
+  if (label) label.textContent = percent + "%";
 }
 
 /**

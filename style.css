@@ -78,6 +78,61 @@ canvas {
   border-radius: 15px;
 }
 
+/* Initial gameplay asset loading */
+#gameLoadingOverlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(100vw, calc(100dvh * 1.5));
+  aspect-ratio: 3 / 2;
+  transform: translate(-50%, -50%);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  background-color: var(--color-surface-dark);
+  border: 6px solid var(--color-ui-primary);
+  border-radius: 15px;
+  z-index: 30;
+}
+
+#gameLoadingOverlay.is_visible {
+  display: flex;
+}
+
+#gameLoadingBox {
+  width: min(72%, 560px);
+  text-align: center;
+  color: var(--color-ui-primary);
+}
+
+#gameLoadingBox h2 {
+  margin: 0 0 18px;
+  font-size: clamp(1.8rem, 7vh, 4rem);
+}
+
+#gameLoadingTrack {
+  width: 100%;
+  height: clamp(18px, 4vh, 32px);
+  overflow: hidden;
+  border: 3px solid var(--color-ui-primary);
+  border-radius: 10px;
+  background-color: var(--color-text-light);
+}
+
+#gameLoadingProgress {
+  width: 0;
+  height: 100%;
+  background-color: var(--color-ui-primary);
+  transition: width 0.15s linear;
+}
+
+#gameLoadingPercent {
+  margin: 12px 0 0;
+  font-size: clamp(1.2rem, 4vh, 2.2rem);
+  font-weight: bold;
+}
+
 /* Mobile touch controls */
 #mobileControls {
   --touch-inward-extension: 20px;
