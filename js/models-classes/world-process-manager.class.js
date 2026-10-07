@@ -225,13 +225,14 @@ class WorldProcessManager {
     const enemies = this.world.level && this.world.level.enemies;
     if (!Array.isArray(enemies)) return;
 
+    const manager = this;
     enemies.forEach(function (enemy) {
       if (!enemy) return;
       enemy.speed = 0;
       enemy.acceleration = 0;
-      this.clearEnemyInterval(enemy, "animateInterval");
-      this.clearEnemyInterval(enemy, "chargeInterval");
-      this.clearEnemyInterval(enemy, "walkAnimInterval");
+      manager.clearEnemyInterval(enemy, "animateInterval");
+      manager.clearEnemyInterval(enemy, "chargeInterval");
+      manager.clearEnemyInterval(enemy, "walkAnimInterval");
     });
   }
 
