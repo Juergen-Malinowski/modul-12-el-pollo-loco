@@ -4,6 +4,38 @@ El Pollo Loco is a browser-based jump-and-run game built with Vanilla JavaScript
 
 The player controls Pepe through three increasingly demanding desert levels, collects coins and salsa bottles, defeats normal and small chickens, and fights an Endboss at the end of each level. The game supports desktop keyboard controls, responsive touch controls in mobile landscape mode, audio settings, pause/resume, Game Over, level transitions, Victory, and local Top-100 highscore handling.
 
+## Table of contents
+
+- [Technology](#technology)
+- [Live demo](#live-demo)
+- [Current gameplay flow](#current-gameplay-flow)
+- [Three-level configuration](#three-level-configuration)
+- [Level creation](#level-creation)
+- [Level progression](#level-progression)
+- [Bottle and coin HUD](#bottle-and-coin-hud)
+- [Player movement boundaries](#player-movement-boundaries)
+- [Chicken movement](#chicken-movement)
+- [Airborne stomp combo](#airborne-stomp-combo)
+- [Chicken Scatter reaction](#chicken-scatter-reaction)
+- [Endboss movement and combat](#endboss-movement-and-combat)
+- [Ground bottle pickup collision](#ground-bottle-pickup-collision)
+- [Pause system](#pause-system)
+- [Player controls](#player-controls)
+- [Game Over flow](#game-over-flow)
+- [Final Victory flow](#final-victory-flow)
+- [Current scoring state](#current-scoring-state)
+- [World architecture](#world-architecture)
+- [Audio management](#audio-management)
+- [Responsive behavior](#responsive-behavior)
+- [Typography](#typography)
+- [Privacy and browser storage](#privacy-and-browser-storage)
+- [Project context and credits](#project-context-and-credits)
+- [Responsive release targets](#responsive-release-targets)
+- [Important source files](#important-source-files)
+- [Release status](#release-status)
+- [Release packaging note](#release-packaging-note)
+- [Developer Akademie release checklist](#developer-akademie-release-checklist)
+
 ## Technology
 
 - HTML5
