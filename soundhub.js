@@ -14,10 +14,11 @@ class SoundHub {
 
     /** Creates and configures the looping background music source. */
     initializeBackgroundMusic() {
-        this.backgroundMusic = new Audio('./assets/sound/background-music.mp3');
+        this.backgroundMusic = new Audio();
+        this.backgroundMusic.preload = 'none';
         this.backgroundMusic.loop = true;
         this.backgroundMusic.volume = 0.3;
-        this.backgroundMusic.preload = 'auto';
+        this.backgroundMusic.src = './assets/sound/background-music.mp3';
     }
 
     /** Creates all shared gameplay effect sources. */
