@@ -121,7 +121,7 @@ class EndbossLifecycleManager {
         this.stopThunderAttackSound();
     }
 
-    /** Pauses active SoundHub effects exactly as the previous boss cleanup did. */
+    /** Pauses active SoundHub effects during boss lifecycle cleanup. */
     pauseActiveEffects() {
         try {
             if (typeof soundHub === "undefined" || !soundHub || soundHub.isMuted) return;
