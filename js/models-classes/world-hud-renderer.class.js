@@ -215,7 +215,9 @@ class WorldHudRenderer {
 
     ctx.save();
     ctx.font = "bold " + fontSize + "px Zabars";
-    const maxWidth = Math.max(...lines.map((line) => ctx.measureText(line).width));
+    const maxWidth = Math.max(...lines.map(function (line) {
+      return ctx.measureText(line).width;
+    }));
     ctx.restore();
 
     return rightEdge - maxWidth;

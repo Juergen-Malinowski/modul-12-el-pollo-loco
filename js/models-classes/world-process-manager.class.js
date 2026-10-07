@@ -18,7 +18,7 @@ class WorldProcessManager {
     }
     if (!world.level || !world.level.enemies) return;
 
-    world.level.enemies.forEach((enemy) => {
+    world.level.enemies.forEach(function (enemy) {
       if (
         enemy instanceof Endboss &&
         typeof enemy.forceStopBossAudio === "function"
@@ -141,7 +141,7 @@ class WorldProcessManager {
     const enemies = this.world.level && this.world.level.enemies;
     if (!enemies) return;
 
-    enemies.forEach((enemy) => {
+    enemies.forEach(function (enemy) {
       if (!(enemy instanceof Endboss)) return;
       if (typeof enemy.stopAllBossSounds === "function") {
         enemy.stopAllBossSounds();
@@ -181,7 +181,7 @@ class WorldProcessManager {
     const enemies = this.world.level && this.world.level.enemies;
     if (!enemies) return;
 
-    enemies.forEach((enemy) => {
+    enemies.forEach(function (enemy) {
       if (
         enemy instanceof Endboss &&
         typeof enemy.forceStopBossAudio === "function"
@@ -225,7 +225,7 @@ class WorldProcessManager {
     const enemies = this.world.level && this.world.level.enemies;
     if (!Array.isArray(enemies)) return;
 
-    enemies.forEach((enemy) => {
+    enemies.forEach(function (enemy) {
       if (!enemy) return;
       enemy.speed = 0;
       enemy.acceleration = 0;
@@ -254,7 +254,7 @@ class WorldProcessManager {
    */
   freezeObjects(objects) {
     if (!Array.isArray(objects)) return;
-    objects.forEach((object) => {
+    objects.forEach(function (object) {
       if (object) object.speed = 0;
     });
   }

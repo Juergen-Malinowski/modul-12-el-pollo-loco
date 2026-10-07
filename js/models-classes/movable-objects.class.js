@@ -41,11 +41,12 @@ class MovableObject extends DrawableObjects {
      * Applies gravity using a shared gameplay interval.
      */
     applyGravity() {
-        soundHub.registerInterval(setInterval(() => {
+        const movableObject = this;
+        soundHub.registerInterval(setInterval(function () {
             if (typeof isGamePaused === "function" && isGamePaused()) return;
             if (this.isAboveGround() || this.speedY > 0) {
-                this.y -= this.speedY;
-                this.speedY -= this.acceleration;
+                movableObject.y -= movableObject.speedY;
+                movableObject.speedY -= movableObject.acceleration;
             }
         }, 30));
     }

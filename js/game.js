@@ -114,7 +114,7 @@ window.addEventListener("keydown", function (e) {
   }
 });
 
-window.addEventListener("keyup", (e) => {
+window.addEventListener("keyup", function (e) {
   switch (e.code) {
     case "ArrowLeft":
       keyboard.LEFT = false;

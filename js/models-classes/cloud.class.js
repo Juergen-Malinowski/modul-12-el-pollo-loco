@@ -16,9 +16,10 @@ class Cloud extends MovableObject {
      * Moves the cloud continuously as part of the parallax background.
      */
     animate() {
-        this.animationInterval = soundHub.registerInterval(setInterval(() => {
+        const cloud = this;
+        this.animationInterval = soundHub.registerInterval(setInterval(function () {
             if (typeof isGamePaused === "function" && isGamePaused()) return;
-            this.moveLeft();
+            cloud.moveLeft();
         }, 100));
     }
 }

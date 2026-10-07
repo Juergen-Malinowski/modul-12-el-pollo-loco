@@ -15,7 +15,7 @@ class WorldHighscoreManager {
     world.blinkVisible = true;
     if (world.scoreBlinkInterval !== null) return;
 
-    world.scoreBlinkInterval = world.setManagedInterval(() => {
+    world.scoreBlinkInterval = world.setManagedInterval(function () {
       if (!world.blinkActive) return;
       world.blinkVisible = !world.blinkVisible;
     }, 500);
@@ -90,7 +90,9 @@ class WorldHighscoreManager {
   getMinimumQualifyingScore(highScores) {
     const limit = typeof getHighscoreLimit === "function" ? getHighscoreLimit() : 100;
     if (highScores.length < limit) return 0;
-    const sortedScores = [...highScores].sort((a, b) => b.score - a.score);
+    const sortedScores = [...highScores].sort(function (a, b) {
+      return b.score - a.score;
+    });
     return sortedScores[limit - 1].score;
   }
 
@@ -106,7 +108,9 @@ class WorldHighscoreManager {
     this.styleHighscoreMessage(overlay);
     document.body.appendChild(overlay);
 
-    this.world.setManagedTimeout(() => overlay.remove(), 3000);
+    this.world.setManagedTimeout(function () {
+      overlay.remove();
+    }, 3000);
   }
 
   /**
@@ -163,7 +167,7 @@ class WorldHighscoreManager {
     const enemies = this.world.level && this.world.level.enemies;
     if (!enemies) return;
 
-    enemies.forEach((enemy) => {
+    enemies.forEach(function (enemy) {
       if (!(enemy instanceof Endboss)) return;
       if (typeof enemy.stopAllBossSounds === "function") {
         enemy.stopAllBossSounds();

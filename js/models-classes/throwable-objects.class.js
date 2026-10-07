@@ -56,7 +56,8 @@ class ThrowableObjects extends MovableObject {
         this.speedY = 30;
         this.applyGravity();
 
-        soundHub.registerInterval(setInterval(() => {
+        const bottle = this;
+        soundHub.registerInterval(setInterval(function () {
             if (typeof isGamePaused === "function" && isGamePaused()) return;
             this.x += 10 * this.direction;
         }, 20));

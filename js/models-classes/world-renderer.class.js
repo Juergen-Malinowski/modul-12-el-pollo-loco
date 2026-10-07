@@ -290,7 +290,10 @@ class WorldRenderer {
    * @param {Array} objects - Drawable objects.
    */
   addObjectsToMap(objects) {
-    objects.forEach((object) => this.addToMap(object));
+    const renderer = this;
+    objects.forEach(function (object) {
+      renderer.addToMap(object);
+    });
   }
 
   /**
@@ -347,7 +350,8 @@ class WorldRenderer {
    * Schedules the next animation frame through World.
    */
   scheduleNextFrame() {
-    this.world.animationFrameId = requestAnimationFrame(() => {
+    const renderer = this;
+    this.world.animationFrameId = requestAnimationFrame(function () {
       this.world.draw();
     });
   }
