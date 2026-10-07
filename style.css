@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Rye&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Smokum&display=swap");
 
 
 /* Global page layout */
@@ -127,7 +127,7 @@ canvas {
   color: var(--color-text-dark);
   border: 2px solid var(--color-text-dark);
   border-radius: 12px;
-  font-family: "Rye", Arial, Helvetica, sans-serif;
+  font-family: "Smokum", Arial, Helvetica, sans-serif;
   font-size: clamp(1rem, 4.5vh, 1.4rem);
   line-height: 1;
   pointer-events: auto;
@@ -164,7 +164,7 @@ canvas {
 body,
 canvas,
 h1 {
-  font-family: "Rye", Arial, Helvetica, sans-serif;
+  font-family: "Smokum", Arial, Helvetica, sans-serif;
 }
 
 h1 {
@@ -198,7 +198,7 @@ h1 {
 }
 
 .menuButton {
-  font-family: "Rye", Arial, Helvetica, sans-serif;
+  font-family: "Smokum", Arial, Helvetica, sans-serif;
   font-size: clamp(1.15rem, calc(var(--stage-width) * 0.022), 2.6rem);
   color: var(--color-text-light);
   background-color: var(--color-ui-primary);
@@ -310,7 +310,7 @@ button:hover {
 
 #startButton {
   margin-top: 20px;
-  font-family: "Rye", Arial, Helvetica, sans-serif;
+  font-family: "Smokum", Arial, Helvetica, sans-serif;
   font-size: 2em;
   padding: 10px 30px;
   border: none;
@@ -327,7 +327,7 @@ button:hover {
 #copyright {
   margin: 0;
   text-align: center;
-  font-family: "Rye", Arial, Helvetica, sans-serif;
+  font-family: "Smokum", Arial, Helvetica, sans-serif;
   font-size: clamp(1rem, calc(var(--stage-width) * 0.022), 2.5rem);
   color: var(--color-text-dark);
   z-index: 5;

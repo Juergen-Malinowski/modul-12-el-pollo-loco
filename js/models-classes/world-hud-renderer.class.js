@@ -44,7 +44,7 @@ class WorldHudRenderer {
     if (!world.blinkActive || (world.blinkActive && world.blinkVisible)) {
       const layout = this.getScoreLayout(mobileOverlayHud);
       world.ctx.save();
-      world.ctx.font = "bold " + layout.fontSize + "px Rye";
+      world.ctx.font = "bold " + layout.fontSize + "px Smokum";
       world.ctx.letterSpacing = "2px";
       world.ctx.fillStyle = getGameColor("--color-ui-primary");
       world.ctx.textAlign = layout.textAlign;
@@ -80,7 +80,7 @@ class WorldHudRenderer {
     const ctx = this.world.ctx;
     const fontSize = 32;
     ctx.save();
-    ctx.font = "bold " + fontSize + "px Rye";
+    ctx.font = "bold " + fontSize + "px Smokum";
     ctx.letterSpacing = "2px";
     const textWidth = ctx.measureText(text).width;
     ctx.restore();
@@ -97,7 +97,7 @@ class WorldHudRenderer {
     const lineHeight = 30;
 
     ctx.save();
-    ctx.font = "bold " + fontSize + "px Rye";
+    ctx.font = "bold " + fontSize + "px Smokum";
     ctx.letterSpacing = "0px";
     ctx.fillStyle = getGameColor("--color-text-dark");
     ctx.textAlign = "right";
@@ -214,7 +214,7 @@ class WorldHudRenderer {
     const ctx = this.world.ctx;
 
     ctx.save();
-    ctx.font = "bold " + fontSize + "px Rye";
+    ctx.font = "bold " + fontSize + "px Smokum";
     const maxWidth = Math.max(...lines.map(function (line) {
       return ctx.measureText(line).width;
     }));
@@ -228,7 +228,7 @@ class WorldHudRenderer {
     const world = this.world;
     const area = this.getSoundIconArea(mobileOverlayHud);
     world.ctx.save();
-    world.ctx.font = "70px Rye";
+    world.ctx.font = "70px Smokum";
     world.ctx.textAlign = "center";
     world.ctx.textBaseline = "middle";
     world.ctx.fillStyle = getGameColor("--color-text-light");
@@ -249,7 +249,7 @@ class WorldHudRenderer {
     const world = this.world;
     const scoreLayout = this.getScoreLayout(mobileOverlayHud);
     world.ctx.save();
-    world.ctx.font = "bold " + scoreLayout.fontSize + "px Rye";
+    world.ctx.font = "bold " + scoreLayout.fontSize + "px Smokum";
     world.ctx.letterSpacing = "2px";
     world.ctx.fillStyle = getGameColor("--color-ui-primary");
     world.ctx.textAlign = "center";

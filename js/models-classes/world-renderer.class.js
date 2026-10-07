@@ -119,7 +119,7 @@ class WorldRenderer {
   drawTemporaryFeedback(text, x, y, fontSize, colorVariable, opacity) {
     const world = this.world;
     world.ctx.save();
-    world.ctx.font = "bold " + fontSize + "px Rye";
+    world.ctx.font = "bold " + fontSize + "px Smokum";
     world.ctx.globalAlpha = opacity;
     world.ctx.fillStyle = getGameColor(colorVariable);
     world.ctx.fillText(text, x - world.cameraX, y);
@@ -169,7 +169,7 @@ class WorldRenderer {
   drawCoffinLabel(centerX, centerY, coffinHeight) {
     const ctx = this.world.ctx;
     ctx.save();
-    ctx.font = "bold 90px Rye";
+    ctx.font = "bold 90px Smokum";
     ctx.fillStyle = getGameColor("--color-effect-bottle-pickup");
     ctx.textAlign = "center";
     ctx.fillText("R . i . P.", centerX, centerY - coffinHeight + 65);
@@ -255,7 +255,7 @@ class WorldRenderer {
 
     ctx.save();
     ctx.lineWidth = 4;
-    ctx.font = "bold 36px Rye";
+    ctx.font = "bold 36px Smokum";
     ctx.letterSpacing = "2px";
     ctx.textBaseline = "middle";
     ctx.textAlign = "center";
