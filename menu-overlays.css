@@ -94,6 +94,7 @@
 
 #helpText {
   font-size: clamp(1rem, calc(0.45rem + 2.8vh), 3rem);
+  font-weight: bold;
   line-height: 1.25;
   color: var(--color-text-dark);
   margin: 0;
