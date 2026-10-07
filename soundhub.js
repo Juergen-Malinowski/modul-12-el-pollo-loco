@@ -30,8 +30,8 @@ class SoundHub {
         this.soundJumping = new Audio('./assets/sound/jumping.mp3');
         this.soundChickenHit = new Audio('./assets/sound/chicken-clucking.mp3');
         this.soundBottlePickup = new Audio('./assets/sound/plopp.mp3');
-        this.soundBossStart = new Audio('./assets/sound/great-Chicken-Cry.mp3');
-        this.soundBossCharge = new Audio('./assets/sound/thunder-attack.mp3');
+        this.soundBossStart = new Audio();
+        this.soundBossCharge = new Audio();
         this.soundScatter = new Audio('./assets/sound/scatter-sound.mp3');
         this.soundSpecialJump = new Audio('./assets/sound/special-jump.mp3');
         this.soundBat = new Audio('./assets/sound/bat-sound.mp3');
@@ -76,8 +76,29 @@ class SoundHub {
 
     playEffect(audio) {
         if (typeof isGamePaused === "function" && isGamePaused()) return;
+        this.prepareDeferredEffect(audio);
         if (this.isMuted || !audio) return;
         this.playAudioBestEffort(audio, 0);
+    }
+
+    /** Prepares deferred effect sources when their gameplay phase begins. */
+    prepareDeferredEffect(audio) {
+        if (audio !== this.soundBossStart && audio !== this.soundBossCharge) return;
+        this.prepareBossEffects();
+    }
+
+    /** Loads both boss sounds when the boss encounter first needs audio. */
+    prepareBossEffects() {
+        this.loadDeferredEffect(this.soundBossStart, './assets/sound/great-Chicken-Cry.mp3');
+        this.loadDeferredEffect(this.soundBossCharge, './assets/sound/thunder-attack.mp3');
+    }
+
+    /** Assigns and preloads one deferred effect source once. */
+    loadDeferredEffect(audio, path) {
+        if (!audio || audio.getAttribute('src')) return;
+        audio.preload = 'auto';
+        audio.src = path;
+        audio.load();
     }
 
     /** Plays the Special Jump sound after its silent intro section. */
