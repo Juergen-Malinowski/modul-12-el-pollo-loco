@@ -98,7 +98,7 @@ class WorldHudRenderer {
 
     ctx.save();
     ctx.font = "bold " + fontSize + "px Smokum";
-    ctx.letterSpacing = "0px";
+    ctx.letterSpacing = mobileControlsActive ? "0px" : "1px";
     ctx.fillStyle = getGameColor("--color-text-dark");
     ctx.textAlign = "right";
     ctx.textBaseline = "top";

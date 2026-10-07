@@ -141,6 +141,7 @@
   cursor: pointer;
   font-family: "Smokum", Arial, Helvetica, sans-serif;
   font-size: clamp(0.95rem, calc(0.55rem + 1.5vh), 2rem);
+  font-weight: bold;
 }
 
 .highscoreActionButton:hover {
@@ -229,6 +230,7 @@ footer .copyright {
   cursor: pointer;
   font-family: "Smokum", Arial, Helvetica, sans-serif;
   font-size: clamp(0.95rem, calc(0.55rem + 1.6vh), 2.5rem);
+  font-weight: bold;
   transition:
     transform 0.2s ease-in-out,
     background-color 0.2s ease-in-out;

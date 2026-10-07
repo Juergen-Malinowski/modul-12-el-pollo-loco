@@ -153,6 +153,19 @@
   #toggleMuteButton {
     font-size: clamp(1rem, calc(0.7rem + 1.4vh), 1.4rem);
   }
+
+  #closeHelpHint,
+  #closeGameControlHint,
+  #toggleMuteButton,
+  #closeAudioHint,
+  .highscoreActionButton,
+  #highscoreNameActions .menuButton,
+  #closeHighscoreSavedButton,
+  #startNextLevelButton,
+  #legalOverlayActions button,
+  .legal_page_button {
+    letter-spacing: 1px;
+  }
 }
 
 /* Narrows the rotation message box on phone-sized viewports. */
@@ -186,6 +199,7 @@
     clamp(16px, 2.4vw, 36px);
   font-family: "Smokum", Arial, Helvetica, sans-serif;
   font-size: clamp(1rem, calc(0.65rem + 1vw), 1.8rem);
+  font-weight: bold;
   text-decoration: none;
   cursor: pointer;
   transition:

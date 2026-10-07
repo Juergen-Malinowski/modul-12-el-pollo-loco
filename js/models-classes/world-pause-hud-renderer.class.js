@@ -45,13 +45,19 @@ class WorldPauseHudRenderer {
     ctx.letterSpacing = "2px";
     ctx.fillStyle = getGameColor("--color-text-dark");
     ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillText(
-      "PAUSED - RESUME",
-      area.x + area.width / 2,
-      area.y + area.height / 2,
-    );
+    ctx.textBaseline = "alphabetic";
+    const label = "PAUSED - RESUME";
+    const textY = this.getVerticallyCenteredTextY(ctx, area, label);
+    ctx.fillText(label, area.x + area.width / 2, textY);
     ctx.restore();
+  }
+
+  /** Returns a baseline that centers the rendered glyphs vertically. */
+  getVerticallyCenteredTextY(ctx, area, text) {
+    const metrics = ctx.measureText(text);
+    const centerY = area.y + area.height / 2;
+    return centerY +
+      (metrics.actualBoundingBoxAscent - metrics.actualBoundingBoxDescent) / 2;
   }
 
   /** Draws the shared pause-button background and border. */
