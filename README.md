@@ -26,6 +26,7 @@ The player controls Pepe through three increasingly demanding desert levels, col
 - [Current scoring state](#current-scoring-state)
 - [World architecture](#world-architecture)
 - [Audio management](#audio-management)
+- [Startup loading and asset performance](#startup-loading-and-asset-performance)
 - [Responsive behavior](#responsive-behavior)
 - [Typography](#typography)
 - [Privacy and browser storage](#privacy-and-browser-storage)
@@ -50,15 +51,15 @@ The project does not use a frontend framework, backend API, analytics service, a
 
 ## Live demo
 
-The production deployment is currently being prepared for:
+The production Live Demo is deployed on ALL-INKL and available via HTTPS:
 
-`https://el-pollo-loco.juergen-malinowski.de`
+[https://el-pollo-loco.juergen-malinowski.de](https://el-pollo-loco.juergen-malinowski.de)
 
-The URL will be treated as the final Live Demo only after the All-Inkl deployment, HTTPS configuration, and live regression tests have been completed.
+The current `release/documentation-and-deployment` branch also contains post-deployment fixes and performance optimizations. Until the next FTP synchronization, the public Live Demo may temporarily trail the latest branch state.
 
 ## Current gameplay flow
 
-The current release candidate contains a complete three-level progression flow.
+The current version contains a complete three-level progression flow.
 
 ```mermaid
 flowchart TD
@@ -649,6 +650,32 @@ Mute and volume settings are stored in `localStorage`.
 
 Pause temporarily pauses active playback without treating the game as muted.
 
+Audio loading is staged by gameplay relevance:
+
+- background music is not preloaded on the start screen and begins loading when gameplay starts;
+- regular gameplay effects, including Bat, Scatter, and Special Jump sounds, remain available early to avoid a first-use delay;
+- Endboss scream and charge audio sources are assigned and loaded when the boss encounter first needs them;
+- snoring audio is created only when the snoring state is used.
+
+The background music was technically re-encoded for web delivery from about 5.14 MB to about 1.22 MB while retaining the existing runtime filename and integration.
+
+## Startup loading and asset performance
+
+The first game start uses a dedicated responsive loading overlay before the World becomes visible.
+
+`script.js` preloads the image assets required for the first visible gameplay frame and displays progress as a percentage and progress bar. The initial image preload runs once per page session; later restarts reuse the already prepared assets.
+
+Runtime asset optimizations include:
+
+- Bat flight frames use optimized WebP files instead of the former PNG versions;
+- the three Bat flight frames were reduced from about 3.85 MB combined to about 84 KB combined;
+- the start screen reuses the optimized `bat_mid.webp` asset instead of maintaining a duplicate Bat PNG;
+- background music download size was reduced from about 5.14 MB to about 1.22 MB;
+- background music loading is deferred until gameplay starts;
+- Endboss scream and charge sounds are deferred until the boss encounter.
+
+Localhost is used for functional loading, path, Network, and console verification. Final real-world loading performance is evaluated on the deployed HTTPS version because local transfer speed is not representative of the production host.
+
 ## Responsive behavior
 
 The internal game canvas keeps its fixed logical dimensions while CSS scales the visible stage proportionally.
@@ -708,6 +735,8 @@ El Pollo Loco was developed as a training project in the Developer Akademie curr
 Selected base graphics and project assets were provided by Developer Akademie as part of the training project and are used for the non-commercial portfolio presentation and Live Demo.
 
 Additional external graphics, music, and sound effects are credited individually in `info.html`. Original audio recordings created specifically for this project are identified there separately.
+
+Third-party audio may be technically re-encoded or compressed for web delivery; source and authorship attribution remain unchanged.
 
 ## Responsive release targets
 
@@ -769,12 +798,13 @@ The mobile HUD keeps Health, Endboss, Bottle, and Coin information inside the vi
 
 ## Release status
 
-The functional game and release-relevant UI work are complete for the current release candidate.
+The project has been deployed to ALL-INKL and is publicly available via HTTPS. The current branch is in a post-deployment stabilization and performance pass.
 
 Verified areas include:
 
 - complete Level 1 → Level 2 → Level 3 progression;
 - Game Over, restart, level transition, and final Victory flows;
+- Game Over priority when lethal Pepe damage and a terminal boss hit occur in the same combat sequence;
 - desktop keyboard controls;
 - responsive mobile landscape controls;
 - Special Jump after Endboss activation;
@@ -786,30 +816,31 @@ Verified areas include:
 - menu overlays on desktop and mobile;
 - Legal Notice and Privacy Policy navigation;
 - locally hosted Smokum font;
+- optimized Bat WebP runtime assets;
+- first-start image loading overlay;
+- compressed and staged audio loading;
 - removal of obsolete Zabars and Rye font assets;
-- no known console errors in the final local regression pass.
+- no known console errors in the latest local regression passes.
 
-The remaining release work is deployment-specific:
+The remaining deployment work for the latest branch state is:
 
-1. configure the All-Inkl production target and HTTPS;
-2. define the exact production ZIP contents;
-3. upload the production package to the FTP server;
-4. verify all files and asset paths from the public HTTPS URL;
-5. confirm that no external font, analytics, or unexpected network requests occur;
-6. run the final desktop and mobile live-site regression tests;
-7. replace the pending Live Demo status in this README with the verified public URL.
+1. synchronize the verified post-deployment changes to the ALL-INKL production directory;
+2. run a cold-load Network test on the public HTTPS version;
+3. repeat desktop and mobile live-site regression tests, including a real Samsung device;
+4. verify direct `info.html` and `privacy.html` access and external credit links;
+5. confirm that no external font, analytics, tracker, or other unexpected runtime requests occur.
 
 ## Release packaging note
 
 The Git repository and the production FTP package are intentionally not identical.
 
-Before deployment, a dedicated ZIP package will be created containing only the files required by the browser at runtime. Repository metadata, GitHub-specific files, development-only material, and other non-runtime files will be excluded from the production upload.
+The initial ALL-INKL deployment has been completed. Production uploads contain the browser runtime files required by the game, while repository metadata, local deployment artifacts, backups, and development-only material are kept out of the public web package.
 
-The exact **include / exclude** list will be finalized immediately before the first All-Inkl deployment so the uploaded package matches the tested release state.
+Subsequent production updates should follow the same runtime-only packaging approach so the hosted version stays aligned with the verified release state without publishing unnecessary project files.
 
 ## Developer Akademie release checklist
 
-The release candidate follows the project constraints used during final cleanup, including:
+The current release follows the project constraints used during final cleanup, including:
 
 - no page reload for restart;
 - no unnecessary console output;
