@@ -8,7 +8,6 @@
   color: var(--color-text-dark);
   background-color: var(--color-surface-light);
   padding: clamp(10px, 3vw, 48px);
-  letter-spacing: clamp(1px, 0.25vw, 4px);
 
 }
 
@@ -20,6 +19,7 @@
 .info_content p,
 .info_content li {
   font-size: 1em;
+  font-weight: bold;
   line-height: 1.45;
   margin-top: 0;
 }
@@ -141,7 +141,12 @@
     font-size: clamp(0.95rem, calc(0.6rem + 1.9vh), 1.45rem);
   }
 
-  #helpText {
+  .audioControlRow,
+  #gameControlText,
+  #helpText,
+  #highscoreContent,
+  .info_content p,
+  .info_content li {
     letter-spacing: 1px;
   }
 

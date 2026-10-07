@@ -185,6 +185,7 @@
 
 #gameControlText {
   font-size: clamp(1rem, calc(0.45rem + 3.3vh), 3.5rem);
+  font-weight: bold;
   color: var(--color-text-dark);
   margin: 0 0 clamp(8px, 2vh, 32px);
   text-align: center;
@@ -217,6 +218,7 @@
 .audioControlRow {
   margin: clamp(6px, 2vh, 32px) 0;
   font-size: clamp(1rem, calc(0.45rem + 3vh), 3.3rem);
+  font-weight: bold;
   color: var(--color-text-dark);
 }
 
