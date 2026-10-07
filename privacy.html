@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>El Pollo Loco – Privacy Policy</title>
+    <link rel="stylesheet" href="./variables.css">
+    <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="./overlays.css">
+    <link rel="stylesheet" href="./responsive.css">
+</head>
+
+<body class="main_grafik">
+    <main class="main_grafik info_content privacy_content">
+        <h1>Privacy Policy</h1>
+
+        <section>
+            <h2>1. Controller</h2>
+            <p class="privacy_centered">
+                Jürgen Malinowski<br>
+                Grüner Jäger 1<br>
+                38159 Vechelde, Germany<br>
+                Email: kontakt@juergen-malinowski.de
+            </p>
+            <p>
+                This privacy policy applies to the public El Pollo Loco learning-project live demo.
+            </p>
+        </section>
+
+        <section>
+            <h2>2. Hosting and Server Log Files</h2>
+            <p>
+                The website is hosted by ALL-INKL.COM – Neue Medien Münnich, Inhaber: René Münnich,
+                Hauptstraße 68, 02742 Friedersdorf, Germany. The hosting infrastructure is located in Germany.
+            </p>
+            <p>
+                When the website is accessed, technical connection and access data may be processed by the
+                hosting provider. This can include the IP address, date and time of access, the requested file,
+                access status, transferred data volume, referrer information, browser, operating system,
+                interface, browser language and browser version.
+            </p>
+            <p>
+                This processing is required to deliver the website, maintain reliable operation and protect
+                the hosting infrastructure against misuse and attacks. The legal basis is Art. 6(1)(f) GDPR.
+                The legitimate interest is the secure and reliable provision of this website.
+            </p>
+            <p>
+                According to ALL-INKL.COM, server log files are generally deleted no later than seven days
+                after creation. Longer storage may occur in individual cases, for example when required to
+                investigate attacks or misuse.
+            </p>
+            <p>
+                Further information is available in the
+                <a class="href_grafik" href="https://all-inkl.com/datenschutzinformationen/"
+                    target="_blank" rel="noopener noreferrer">privacy information of ALL-INKL.COM</a>.
+            </p>
+        </section>
+
+        <section>
+            <h2>3. Local Storage</h2>
+            <p>
+                This game uses the browser's local storage only for functions requested by the player.
+                The stored information remains in the browser on the user's device and is not transmitted
+                to the operator of this website.
+            </p>
+            <p>
+                <strong>Highscore:</strong> When a qualifying score is saved, the browser stores the selected
+                player name or pseudonym, score, creation time and a locally generated identifier. A real name
+                is not required. The highscore table is limited to 100 entries. A temporary marker for the
+                newest entry is removed when the related highscore flow is closed.
+            </p>
+            <p>
+                <strong>Audio settings:</strong> If the player changes audio settings, the selected music
+                volume, effects volume and mute state can be stored locally so that these settings remain
+                available on later visits.
+            </p>
+            <p>
+                Local-storage entries remain on the device until they are replaced by the game, removed by
+                the relevant game logic or deleted through the browser settings. The storage is used solely
+                for the requested game functions and not for tracking, advertising or profiling. To the extent
+                that Section 25 TDDDG applies to storing or reading these entries, the processing is based on
+                Section 25(2)(2) TDDDG for functions explicitly requested by the user.
+            </p>
+            <p>
+                If a chosen player name constitutes personal data, the processing serves the local highscore
+                function. The legal basis is Art. 6(1)(f) GDPR; the legitimate interest is providing this
+                user-requested game feature while keeping the data exclusively on the user's device.
+            </p>
+        </section>
+
+        <section>
+            <h2>4. Cookies, Analytics and External Services</h2>
+            <p>
+                This project does not set cookies and does not use analytics, advertising, tracking services,
+                external APIs or third-party scripts. The game font is hosted locally and therefore does not
+                require a connection to an external font provider.
+            </p>
+        </section>
+
+        <section>
+            <h2>5. External Links</h2>
+            <p>
+                The Legal Notice & Credits page contains links to external source and author pages, primarily
+                on Pixabay. A connection to those external websites is established only after the user actively
+                follows such a link. The privacy rules of the respective external provider then apply.
+            </p>
+        </section>
+
+        <section>
+            <h2>6. Rights of Data Subjects</h2>
+            <p>
+                Subject to the applicable legal requirements, data subjects may have rights to access,
+                rectification, erasure, restriction of processing, data portability and objection. They also
+                have the right to lodge a complaint with a competent data protection supervisory authority.
+            </p>
+            <p>
+                Highscore and audio information stored locally can also be deleted directly through the
+                browser's site-data or local-storage settings.
+            </p>
+        </section>
+
+        <section>
+            <h2>7. Automated Decision-Making</h2>
+            <p>
+                No automated decision-making within the meaning of Art. 22 GDPR and no user profiling are used.
+            </p>
+        </section>
+
+        <section>
+            <h2>8. Status</h2>
+            <p class="privacy_centered">October 2026</p>
+        </section>
+
+        <div class="legal_page_actions">
+            <a class="legal_page_button" href="./info.html">Back</a>
+            <button class="legal_page_button" type="button" onclick="closeLegalView()">Click to close</button>
+        </div>
+    </main>
+
+    <script>
+        /** Closes the parent legal overlay or returns a directly opened page to the start screen. */
+        function closeLegalView() {
+            if (
+                window.parent !== window &&
+                typeof window.parent.closeImpressum === "function"
+            ) {
+                window.parent.closeImpressum();
+                return;
+            }
+            window.location.href = "./index.html";
+        }
+    </script>
+</body>
+
+</html>
