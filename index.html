@@ -230,13 +230,21 @@
 
       <div id="mobileControls">
         <div class="leftControls">
-          <button id="leftBtn">←</button>
+          <button id="leftBtn" aria-label="Move left">
+            <svg class="direction_arrow" viewBox="0 0 48 48" aria-hidden="true">
+              <path d="M2 24 L22 4 L22 15 H46 V33 H22 V44 Z"></path>
+            </svg>
+          </button>
           <button id="leftJumpBtn">JUMP</button>
           <button id="leftThrowBtn">THROW</button>
         </div>
 
         <div class="rightControls">
-          <button id="rightBtn">→</button>
+          <button id="rightBtn" aria-label="Move right">
+            <svg class="direction_arrow" viewBox="0 0 48 48" aria-hidden="true">
+              <path d="M46 24 L26 4 L26 15 H2 V33 H26 V44 Z"></path>
+            </svg>
+          </button>
           <button id="rightJumpBtn">JUMP</button>
           <button id="rightThrowBtn">THROW</button>
         </div>
