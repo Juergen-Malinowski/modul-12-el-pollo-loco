@@ -2,11 +2,31 @@
 
 El Pollo Loco is a browser-based jump-and-run game built with Vanilla JavaScript, HTML, CSS, and the Canvas API.
 
-The player controls Pepe through three increasingly demanding desert levels, collects coins and salsa bottles, defeats normal and small chickens, and fights an Endboss at the end of each level. The game supports desktop keyboard controls, responsive touch controls in mobile landscape mode, audio settings, pause/resume, Game Over, level transitions, Victory, and local highscore handling.
+The player controls Pepe through three increasingly demanding desert levels, collects coins and salsa bottles, defeats normal and small chickens, and fights an Endboss at the end of each level. The game supports desktop keyboard controls, responsive touch controls in mobile landscape mode, audio settings, pause/resume, Game Over, level transitions, Victory, and local Top-100 highscore handling.
+
+## Technology
+
+- HTML5
+- CSS3
+- Vanilla JavaScript
+- Canvas 2D API
+- DOM APIs and Pointer Events
+- browser `localStorage`
+- native HTML audio
+
+The project does not use a frontend framework, backend API, analytics service, advertising service, or third-party runtime script.
+
+## Live demo
+
+The production deployment is currently being prepared for:
+
+`https://el-pollo-loco.juergen-malinowski.de`
+
+The URL will be treated as the final Live Demo only after the All-Inkl deployment, HTTPS configuration, and live regression tests have been completed.
 
 ## Current gameplay flow
 
-The current development branch contains a complete three-level progression flow.
+The current release candidate contains a complete three-level progression flow.
 
 ```mermaid
 flowchart TD
@@ -362,6 +382,8 @@ Two quick JUMP presses within 500 ms use the same Special Jump detection as the 
 
 Short transfer windows continue to allow the player to slide between movement and action controls without immediately interrupting movement.
 
+The left and right direction controls use symmetric inline SVG arrows so their appearance does not depend on device-specific Unicode or emoji font rendering.
+
 ## Game Over flow
 
 When Pepe reaches zero energy:
@@ -612,12 +634,72 @@ The current responsive implementation includes:
 - adaptive sound-icon placement;
 - touch controls that can move inside or outside the stage depending on available viewport space.
 
+## Typography
+
+The game uses the **Smokum** display font.
+
+Smokum is self-hosted from:
+
+`assets/fonts/Smokum-Regular.ttf`
+
+The corresponding Apache License 2.0 text is included in:
+
+`assets/fonts/LICENSE-Smokum.txt`
+
+The game does not request Google Fonts or another external font service at runtime.
+
+## Privacy and browser storage
+
+The game runs entirely in the browser and does not require a user account or backend connection.
+
+The current implementation:
+
+- does not set cookies;
+- does not use analytics or advertising;
+- does not load third-party runtime scripts;
+- does not call external APIs during gameplay;
+- stores audio preferences locally in the browser;
+- stores qualifying Top-100 highscore entries locally in the browser;
+- does not require a real name for highscore entries.
+
+The highscore storage contains the selected player name or pseudonym, score, creation timestamp, and a local entry ID.
+
+Legal and privacy information is available both from the game menu and as direct pages:
+
+- `info.html` – Legal Notice, project notices, credits, graphics, audio, and font sources;
+- `privacy.html` – Privacy Policy for the public Live Demo.
+
+## Project context and credits
+
+El Pollo Loco was developed as a training project in the Developer Akademie curriculum and is presented as a non-commercial portfolio project.
+
+Selected base graphics and project assets were provided by Developer Akademie as part of the training project and are used for the non-commercial portfolio presentation and Live Demo.
+
+Additional external graphics, music, and sound effects are credited individually in `info.html`. Original audio recordings created specifically for this project are identified there separately.
+
+## Responsive release targets
+
+The game is designed for desktop and mobile landscape play. Portrait mobile orientation shows a rotation notice instead of the active game controls.
+
+Reference viewport sizes used throughout responsive regression testing include:
+
+- `896x414`
+- `720x480`
+- `667x375`
+- `568x320`
+
+The mobile HUD keeps Health, Endboss, Bottle, and Coin information inside the visible Canvas, including their numeric values. Touch controls remain outside or overlap the stage depending on the available viewport geometry.
+
 ## Important source files
 
 | File | Main responsibility |
 | --- | --- |
 | `index.html` | Static page structure, overlays, and script loading |
 | `variables.css` | Shared color variables |
+| `info.html` | Legal Notice, project context, credits, graphics, audio, and font attribution |
+| `privacy.html` | Privacy Policy for the public Live Demo |
+| `assets/fonts/Smokum-Regular.ttf` | Locally hosted Smokum game font |
+| `assets/fonts/LICENSE-Smokum.txt` | Apache License 2.0 text for Smokum |
 | `style.css` | Global layout, game stage, touch controls, typography, and start screen |
 | `overlays.css` | Shared overlay sizing, Top 100 display, Legal Notice, and Canvas initial state |
 | `menu-overlays.css` | Audio, Help, and Game Control overlays |
@@ -653,82 +735,61 @@ The current responsive implementation includes:
 | `js/models-classes/throwable-objects.class.js` | Ground and thrown salsa bottles |
 | `js/models-classes/coin.class.js` | Coin behavior |
 
-## Current development status
+## Release status
 
-Completed or substantially completed:
+The functional game and release-relevant UI work are complete for the current release candidate.
 
-- stable game lifecycle without page reload;
-- responsive canvas and overlays;
-- responsive mobile controls;
-- concise Help overlay for key gameplay mechanics;
-- architecture refactoring into dedicated World subsystems;
-- three-level configuration;
-- Level 1 → Level 2 → Level 3 transitions;
-- different world widths and gameplay quantities per level;
-- dynamic background extension;
-- full playable world boundaries;
-- randomized distributed chicken spawning;
-- chicken boundary reversal with new random speed;
-- bottle inventory carryover between levels;
-- twenty-segment bottle and coin HUD bars;
-- accurate ground-bottle pickup collision;
-- Pepe-death priority over simultaneous boss completion;
-- boss knockback protection against false stomps;
-- full-edge Pepe and Endboss movement;
-- safe pre-calculated Endboss charge knockback;
-- level-specific Pepe health and Endboss charge pressure;
-- numeric Pepe and Endboss health values in the HUD;
-- centralized level-specific score and bonus configuration;
-- airborne stomp-combo scoring;
-- randomized Chicken Scatter reactions with panic hops and dedicated sound;
-- boss recovery with symmetric temporary damage protection;
-- grounded-only normal Endboss contact damage;
-- Endboss activation after three accepted pre-fight bottle hits;
-- boss-fight Special Jump with double-input detection, curved flight, edge reflection, and safe landing logic;
-- gameplay pause/resume with keyboard and HUD control;
-- unified Top-100 highscore system for menu, Game Over, and Victory;
-- unique highscore-entry IDs with exact newest-placement highlighting;
-- automatic scrolling to a newly stored Top-100 position;
-- Game Over highscore confirmation followed by the shared stored highscore overview;
-- Victory Top-100 presentation with Play again and Menu actions.
+Verified areas include:
 
-## Planned next development steps
+- complete Level 1 → Level 2 → Level 3 progression;
+- Game Over, restart, level transition, and final Victory flows;
+- desktop keyboard controls;
+- responsive mobile landscape controls;
+- Special Jump after Endboss activation;
+- airborne stomp combo and Chicken Scatter behavior;
+- responsive Health, Endboss, Bottle, and Coin HUD;
+- pause/resume;
+- mute and audio settings;
+- shared Top-100 highscore flow;
+- menu overlays on desktop and mobile;
+- Legal Notice and Privacy Policy navigation;
+- locally hosted Smokum font;
+- removal of obsolete Zabars and Rye font assets;
+- no known console errors in the final local regression pass.
 
-The remaining work now focuses on final progression, presentation, architecture, and release quality.
+The remaining release work is deployment-specific:
 
-1. Finalize three-level Game Over, restart, and Victory details.
-2. Complete final HUD and responsive tests.
-3. Refactor oversized source files while preserving the completed gameplay behavior.
-4. Enforce the remaining Developer Akademie function-size and file-size requirements.
-5. Audit all user-facing text and code documentation for one consistent language.
-6. Run final audio, cleanup, gameplay, and regression tests.
-7. Review all release-relevant legal and attribution content: Legal Notice / Impressum, Privacy Policy, non-commercial project notices, external links, and complete Credits / Thanks for all used graphics, music, and sound effects.
-8. Prepare the production release for the All-Inkl FTP server and perform a live-site regression check for asset paths, audio, responsive behavior, favicon, legal pages, links, and HTTPS delivery.
-9. Complete final documentation and merge the finished feature branch.
+1. configure the All-Inkl production target and HTTPS;
+2. define the exact production ZIP contents;
+3. upload the production package to the FTP server;
+4. verify all files and asset paths from the public HTTPS URL;
+5. confirm that no external font, analytics, or unexpected network requests occur;
+6. run the final desktop and mobile live-site regression tests;
+7. replace the pending Live Demo status in this README with the verified public URL.
 
-## Developer Akademie compliance notes
+## Release packaging note
 
-The project is being prepared against the current Developer Akademie checklist.
+The Git repository and the production FTP package are intentionally not identical.
 
-Important final requirements include:
+Before deployment, a dedicated ZIP package will be created containing only the files required by the browser at runtime. Repository metadata, GitHub-specific files, development-only material, and other non-runtime files will be excluded from the production upload.
 
-- no console errors;
-- no unnecessary `console.log` output;
-- functional buttons and links;
-- local fonts and favicon;
-- landscape-only mobile gameplay with portrait rotation notice;
-- mobile touch controls only where appropriate;
-- no small-screen scrollbars;
-- descriptive and consistent filenames;
-- single-responsibility functions;
-- functions limited to approximately 14 commands;
-- source files targeted at a maximum of 400 LOC;
-- JSDoc documentation;
-- no browser reload for restart;
-- correct enemy hit detection and offsets;
-- correct status-bar updates;
-- no player movement after death;
-- complete sound and mute cleanup;
-- one consistent project language.
+The exact **include / exclude** list will be finalized immediately before the first All-Inkl deployment so the uploaded package matches the tested release state.
 
-The project currently uses English as the target language for UI text and technical documentation. Remaining mixed-language content will be corrected during the final cleanup.
+## Developer Akademie release checklist
+
+The release candidate follows the project constraints used during final cleanup, including:
+
+- no page reload for restart;
+- no unnecessary console output;
+- responsive landscape mobile gameplay;
+- portrait rotation notice;
+- local font delivery;
+- functional favicon, buttons, and links;
+- focused classes and manager responsibilities;
+- professional English code documentation;
+- approximately 14 commands maximum per function as a review guideline;
+- source files targeted below 400 lines;
+- complete gameplay and audio cleanup on terminal states;
+- consistent English user-facing game text.
+
+Further gameplay ideas and optional animation refinements are intentionally outside this release branch and should be implemented in separate feature branches after deployment.
