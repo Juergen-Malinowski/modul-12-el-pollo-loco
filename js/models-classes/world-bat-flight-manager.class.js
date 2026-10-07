@@ -86,15 +86,23 @@ class WorldBatFlightManager {
     return 1 + (peak - 1) * phase;
   }
 
-  /** Returns the smooth dive height with its lowest point above Pepe's head. */
+  /** Returns the smooth dive height with its lowest point above Pepe's visible head. */
   getFlightY(progress) {
     const config = BAT_FLIGHT_CONFIG;
+    const headY = this.getStandingPepeHeadY();
     const lowestY = Math.max(
       config.startY,
-      this.world.character.y - config.characterGap - this.height,
+      headY - config.characterGap - this.height,
     );
     return config.startY +
       (lowestY - config.startY) * Math.sin(Math.PI * progress);
+  }
+
+  /** Returns Pepe's visible head height while he stands on the ground. */
+  getStandingPepeHeadY() {
+    const character = this.world.character;
+    const visibleTopOffset = character.offset ? character.offset.top : 0;
+    return 130 + visibleTopOffset;
   }
 
   /** Advances the mid-up-mid-down wing animation. */
