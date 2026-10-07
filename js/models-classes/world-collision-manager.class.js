@@ -100,9 +100,10 @@ class WorldCollisionManager {
 
   /** Schedules removal of a defeated enemy. */
   removeEnemyLater(enemy) {
-    this.world.setManagedTimeout(() => {
-      const index = this.world.level.enemies.indexOf(enemy);
-      if (index > -1) this.world.level.enemies.splice(index, 1);
+    const world = this.world;
+    world.setManagedTimeout(function () {
+      const index = world.level.enemies.indexOf(enemy);
+      if (index > -1) world.level.enemies.splice(index, 1);
     }, 2000);
   }
 
@@ -126,7 +127,10 @@ class WorldCollisionManager {
     character.x += 300 * direction;
     character.isBossJumpAttack = false;
     character.isBouncingOffBoss = true;
-    this.world.setManagedTimeout(() => this.finishBossBounce(), 500);
+    const manager = this;
+    this.world.setManagedTimeout(function () {
+      manager.finishBossBounce();
+    }, 500);
   }
 
   /** Resolves a safe horizontal bounce direction. */
@@ -283,7 +287,9 @@ class WorldCollisionManager {
 
   /** Checks thrown bottles against the Endboss. */
   checkBottleBossHits() {
-    const boss = this.world.level.enemies.find((enemy) => enemy instanceof Endboss);
+    const boss = this.world.level.enemies.find(function (enemy) {
+      return enemy instanceof Endboss;
+    });
     if (!boss || boss.isDeadBoss) return;
     for (let i = this.world.throwableObjects.length - 1; i >= 0; i--) {
       const bottle = this.world.throwableObjects[i];

@@ -183,7 +183,10 @@ class Endboss extends MovableObject {
 
         this.isHurtBoss = true;
         this.playAnimation(this.imagesHurt);
-        this.world.setManagedTimeout(() => this.isHurtBoss = false, 400);
+        const boss = this;
+        this.world.setManagedTimeout(function () {
+            boss.isHurtBoss = false;
+        }, 400);
 
         if (this.energieBoss <= 0) {
             this.die();

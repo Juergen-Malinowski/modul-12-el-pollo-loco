@@ -236,23 +236,25 @@ class Character extends MovableObject {
         this.acceleration = 0;
 
         let i = 0;
-        const deathInterval = soundHub.registerInterval(setInterval(() => {
+        const character = this;
+        const deathInterval = soundHub.registerInterval(setInterval(function () {
             if (typeof isGamePaused === "function" && isGamePaused()) return;
-            if (i < this.imagesDead.length) {
-                const path = this.imagesDead[i];
-                this.img = this.imageCache[path];
+            if (i < character.imagesDead.length) {
+                const path = character.imagesDead[i];
+                character.img = character.imageCache[path];
                 i++;
             } else {
                 clearInterval(deathInterval);
-                this.world.setManagedTimeout(() => {
-                    this.img = this.imageCache[this.imagesDead[this.imagesDead.length - 1]];
+                character.world.setManagedTimeout(function () {
+                    character.img =
+                        character.imageCache[character.imagesDead[character.imagesDead.length - 1]];
                 }, 200);
             }
         }, 200));
 
         if (this.world) {
-            this.world.setManagedTimeout(() => {
-                this.world.startCoffinAnimation();
+            this.world.setManagedTimeout(function () {
+                character.world.startCoffinAnimation();
             }, 1000);
         }
     }
@@ -263,15 +265,18 @@ class Character extends MovableObject {
     playThrowAnimation() {
         this.lastActionTime = Date.now();
         this.isThrowing = true;
-        this.world.setManagedTimeout(() => this.isThrowing = false, 400);
+        const character = this;
+        this.world.setManagedTimeout(function () {
+            character.isThrowing = false;
+        }, 400);
         if (this.isDeadAnimationPlaying) return;
 
         let i = 0;
-        const throwInterval = soundHub.registerInterval(setInterval(() => {
+        const throwInterval = soundHub.registerInterval(setInterval(function () {
             if (typeof isGamePaused === "function" && isGamePaused()) return;
-            if (i < this.imagesThrowing.length) {
-                const path = this.imagesThrowing[i];
-                this.img = this.imageCache[path];
+            if (i < character.imagesThrowing.length) {
+                const path = character.imagesThrowing[i];
+                character.img = character.imageCache[path];
                 i++;
             } else {
                 clearInterval(throwInterval);

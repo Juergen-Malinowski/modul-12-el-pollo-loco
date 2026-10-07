@@ -28,14 +28,15 @@ class WorldGameStateManager {
     let rotationSpeed = 15;
     let spins = 0;
 
-    world.coffinSpin = world.setManagedInterval(() => {
+    const manager = this;
+    world.coffinSpin = world.setManagedInterval(function () {
       world.coffinRotation += rotationSpeed;
       if (world.coffinRotation >= 360) {
         world.coffinRotation = 0;
         spins++;
       }
       if (spins >= 3 && rotationSpeed > 0) {
-        rotationSpeed = this.slowCoffinRotation(rotationSpeed);
+        rotationSpeed = manager.slowCoffinRotation(rotationSpeed);
       }
     }, 30);
   }
@@ -104,9 +105,10 @@ class WorldGameStateManager {
   bindGameOverClickHandler() {
     const world = this.world;
     const canvas = world.canvas;
-    world.gameOverClickHandlerBound = (event) => {
+    const manager = this;
+    world.gameOverClickHandlerBound = function (event) {
       const point = getCanvasCoordinates(event, canvas);
-      this.handleGameOverClick(point.x, point.y);
+      manager.handleGameOverClick(point.x, point.y);
     };
     canvas.addEventListener("mousedown", world.gameOverClickHandlerBound);
   }
@@ -121,9 +123,10 @@ class WorldGameStateManager {
       return;
     }
 
-    world.setManagedTimeout(() => {
+    const manager = this;
+    world.setManagedTimeout(function () {
       world.showGameOver = false;
-      this.returnToMenu();
+      manager.returnToMenu();
     }, 500);
   }
 
@@ -212,7 +215,7 @@ class WorldGameStateManager {
     world.keyboard = new Keyboard();
     this.stopBossSounds();
 
-    world.setManagedTimeout(() => {
+    world.setManagedTimeout(function () {
       world.startCoffinAnimation();
     }, 1500);
   }
@@ -234,7 +237,7 @@ class WorldGameStateManager {
     const enemies = this.world.level && this.world.level.enemies;
     if (!enemies) return;
 
-    enemies.forEach((enemy) => {
+    enemies.forEach(function (enemy) {
       if (
         enemy instanceof Endboss &&
         typeof enemy.stopAllBossSounds === "function"
@@ -248,7 +251,9 @@ class WorldGameStateManager {
   findBoss() {
     const enemies = this.world.level && this.world.level.enemies;
     if (!enemies) return undefined;
-    return enemies.find((enemy) => enemy instanceof Endboss);
+    return enemies.find(function (enemy) {
+      return enemy instanceof Endboss;
+    });
   }
 
   /**

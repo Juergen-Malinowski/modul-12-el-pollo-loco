@@ -124,9 +124,9 @@ class World {
   setWorld() {
     this.character.world = this;
 
-    this.level.enemies.forEach((enemy) => {
+    this.level.enemies.forEach(function (enemy) {
       enemy.world = this;
-    });
+    }, this);
   }
 
   /**
@@ -137,8 +137,9 @@ class World {
    * @returns {number} Browser timeout identifier.
    */
   setManagedTimeout(callback, delay) {
-    const timeoutId = setTimeout(() => {
-      this.managedTimeouts.delete(timeoutId);
+    const world = this;
+    const timeoutId = setTimeout(function () {
+      world.managedTimeouts.delete(timeoutId);
       callback();
     }, delay);
     this.managedTimeouts.add(timeoutId);
@@ -149,7 +150,9 @@ class World {
    * Cancels all delayed callbacks owned by this World instance.
    */
   clearManagedTimeouts() {
-    this.managedTimeouts.forEach((timeoutId) => clearTimeout(timeoutId));
+    this.managedTimeouts.forEach(function (timeoutId) {
+      clearTimeout(timeoutId);
+    });
     this.managedTimeouts.clear();
   }
 
@@ -184,7 +187,9 @@ class World {
    * Stops every recurring callback owned by this World instance.
    */
   clearManagedIntervals() {
-    this.managedIntervals.forEach((intervalId) => clearInterval(intervalId));
+    this.managedIntervals.forEach(function (intervalId) {
+      clearInterval(intervalId);
+    });
     this.managedIntervals.clear();
   }
 
@@ -198,7 +203,9 @@ class World {
     this.clearManagedIntervals();
     document
       .querySelectorAll(".highscoreMessageOverlay")
-      .forEach((overlay) => overlay.remove());
+      .forEach(function (overlay) {
+        overlay.remove();
+      });
 
     if (this.animationFrameId !== null) {
       cancelAnimationFrame(this.animationFrameId);
