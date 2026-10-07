@@ -59,7 +59,7 @@ class ThrowableObjects extends MovableObject {
         const bottle = this;
         soundHub.registerInterval(setInterval(function () {
             if (typeof isGamePaused === "function" && isGamePaused()) return;
-            this.x += 10 * this.direction;
+            bottle.x += 10 * bottle.direction;
         }, 20));
     }
 }

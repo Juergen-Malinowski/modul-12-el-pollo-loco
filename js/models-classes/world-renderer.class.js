@@ -352,7 +352,7 @@ class WorldRenderer {
   scheduleNextFrame() {
     const renderer = this;
     this.world.animationFrameId = requestAnimationFrame(function () {
-      this.world.draw();
+      renderer.world.draw();
     });
   }
 }
