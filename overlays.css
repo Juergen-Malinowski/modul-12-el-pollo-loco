@@ -194,12 +194,13 @@
   background-color: var(--color-surface-light);
 }
 
-#closeImpressumHint {
-  font-family: "Zabars", Arial, Helvetica, sans-serif;
-  font-size: 1.7em;
-  color: var(--color-text-dark);
-  margin-top: 10px;
+#legalOverlayActions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: clamp(8px, 2vw, 24px);
   flex: 0 0 auto;
+  margin-top: clamp(6px, 1.8vh, 30px);
 }
 
 footer .copyright {
@@ -211,31 +212,29 @@ footer .copyright {
   margin-top: clamp(8px, 1.5vw, 20px);
 }
 
-#closeImpressumHint {
+#legalOverlayActions button {
   display: inline-block;
-  align-self: center;
-  flex: 0 0 auto;
   width: fit-content;
-  max-width: calc(100% - 20px);
   box-sizing: border-box;
   white-space: nowrap;
   background-color: var(--color-ui-primary);
   color: var(--color-text-dark);
   border: 2px solid var(--color-text-dark);
-  border-radius: 10px;
-  padding: clamp(4px, 0.9vh, 12px) clamp(14px, 2.2vw, 34px);
-  margin-top: clamp(20px, 2.2vh, 40px);
+  border-radius: clamp(8px, 1vh, 16px);
+  padding:
+    clamp(4px, 1.1vh, 16px)
+    clamp(14px, calc(var(--overlay-stage-width) * 0.022), 44px);
   cursor: pointer;
   font-family: "Zabars", Arial, Helvetica, sans-serif;
-  font-size: clamp(0.95rem, calc(0.6rem + 1vh), 1.8rem);
+  font-size: clamp(0.95rem, calc(0.55rem + 1.6vh), 2.5rem);
   transition:
     transform 0.2s ease-in-out,
     background-color 0.2s ease-in-out;
 }
 
-#closeImpressumHint:hover {
+#legalOverlayActions button:hover {
   background-color: var(--color-ui-primary-hover);
-  transform: scale(1.2);
+  transform: scale(1.12);
 }
 
 /* Impressum document */

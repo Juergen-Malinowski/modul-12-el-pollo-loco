@@ -132,23 +132,15 @@
             <p class="privacy_centered">October 2026</p>
         </section>
 
-        <div class="legal_page_actions">
+        <div class="legal_page_actions direct_legal_actions">
             <a class="legal_page_button" href="./info.html">Back</a>
-            <button class="legal_page_button" type="button" onclick="closeLegalView()">Click to close</button>
+            <a class="legal_page_button" href="./index.html">Click to close</a>
         </div>
     </main>
 
     <script>
-        /** Closes the parent legal overlay or returns a directly opened page to the start screen. */
-        function closeLegalView() {
-            if (
-                window.parent !== window &&
-                typeof window.parent.closeImpressum === "function"
-            ) {
-                window.parent.closeImpressum();
-                return;
-            }
-            window.location.href = "./index.html";
+        if (window.parent !== window) {
+            document.body.classList.add("embedded_legal_page");
         }
     </script>
 </body>

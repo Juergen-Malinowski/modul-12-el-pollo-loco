@@ -278,8 +278,7 @@
 }
 
 #closeAudioHint,
-#closeGameControlHint,
-#closeImpressumHint {
+#closeGameControlHint {
   border-radius: clamp(8px, 1vh, 16px);
   padding:
     clamp(4px, 1.1vh, 16px)

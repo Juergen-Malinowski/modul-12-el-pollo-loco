@@ -211,3 +211,8 @@
 .privacy_content .privacy_centered {
   text-align: center;
 }
+
+
+.embedded_legal_page .direct_legal_actions {
+  display: none;
+}

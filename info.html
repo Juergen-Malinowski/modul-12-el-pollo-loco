@@ -23,9 +23,6 @@
             <p>All content is used exclusively to demonstrate HTML, CSS, and JavaScript techniques.</p>
         </section>
 
-        <div class="legal_page_actions">
-            <a class="legal_page_button" href="./privacy.html">Privacy Policy</a>
-        </div>
 
         <section class="info_content_boxes">
             <h3>Credits / Sources – Graphics</h3>
@@ -159,11 +156,20 @@
             </div>
         </section>
 
+        <div class="legal_page_actions direct_legal_actions">
+            <a class="legal_page_button" href="./privacy.html">Privacy Policy</a>
+            <a class="legal_page_button" href="./index.html">Click to close</a>
+        </div>
     </main>
 
     <footer>
         <p class="copyright">© Jürgen Malinowski, October 2026</p>
     </footer>
+    <script>
+        if (window.parent !== window) {
+            document.body.classList.add("embedded_legal_page");
+        }
+    </script>
 </body>
 
 </html>

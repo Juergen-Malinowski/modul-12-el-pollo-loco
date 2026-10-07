@@ -91,7 +91,6 @@ var __prevBodyOverflow = "";
  */
 function openImpressum() {
   var overlay = document.getElementById("impressumOverlay");
-  var frame = document.getElementById("impressumFrame");
 
   __prevHtmlOverflow = document.documentElement.style.overflow;
   __prevBodyOverflow = document.body.style.overflow;
@@ -99,12 +98,36 @@ function openImpressum() {
   document.documentElement.style.overflow = "auto";
   document.body.style.overflow = "auto";
 
-  if (frame) {
-    frame.src = "./info.html";
-  }
+  showLegalNotice();
   if (overlay) {
     overlay.style.display = "flex";
   }
+}
+
+/** Shows the legal notice and configures the shared legal navigation. */
+function showLegalNotice() {
+  setLegalFrame("./info.html");
+  setLegalSecondaryAction("Privacy Policy", openPrivacyPolicy);
+}
+
+/** Shows the privacy policy and configures the shared legal navigation. */
+function openPrivacyPolicy() {
+  setLegalFrame("./privacy.html");
+  setLegalSecondaryAction("Back", showLegalNotice);
+}
+
+/** Loads one legal document into the shared iframe. */
+function setLegalFrame(source) {
+  var frame = document.getElementById("impressumFrame");
+  if (frame) frame.src = source;
+}
+
+/** Updates the secondary action beside the permanent close button. */
+function setLegalSecondaryAction(label, handler) {
+  var button = document.getElementById("legalSecondaryButton");
+  if (!button) return;
+  button.textContent = label;
+  button.onclick = handler;
 }
 
 /**
