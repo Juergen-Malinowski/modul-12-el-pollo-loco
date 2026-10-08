@@ -52,13 +52,13 @@ class World {
     this.initializeCharacterHealth();
     this.initializeBottleInventory();
     this.initializeManagers();
-    this.initializeResultImages();
     this.setWorld();
     this.levelManager.applyLevelSetup();
     this.draw();
     this.run();
     this.initializeResourceState();
     this.startInitialBatFlight();
+    this.scheduleResultImagePreload();
   }
 
   /** Stores the dependencies and level metadata required by this World. */
@@ -88,6 +88,17 @@ class World {
   /** Starts the one automatic Bat flight when Level 1 begins. */
   startInitialBatFlight() {
     if (this.currentLevel === 1) this.batFlightManager.startFlight();
+  }
+
+  /** Defers terminal image requests until after the first gameplay paint. */
+  scheduleResultImagePreload() {
+    const world = this;
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        if (!world.isRunning) return;
+        world.initializeResultImages();
+      });
+    });
   }
 
   /** Assigns terminal-state image sources. */
