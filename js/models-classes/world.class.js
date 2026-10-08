@@ -92,10 +92,10 @@ class World {
 
   /** Assigns terminal-state image sources. */
   initializeResultImages() {
-    this.coffinImg.src = "./assets/img/2_charakter_pepe/5_dead/coffin.png";
+    this.coffinImg.src = "./assets/img/2_charakter_pepe/5_dead/coffin.webp";
     this.youWinImg.src = "./assets/img/0_you_won_you_lost/You Win A.png";
     this.gameOverImg.src =
-      "./assets/img/9_intro_outro_bildschirm/game_over/game over.png";
+      "./assets/img/9_intro_outro_bildschirm/game_over/game over.webp";
   }
 
   /** Restores the accumulated score and initializes resource bars. */

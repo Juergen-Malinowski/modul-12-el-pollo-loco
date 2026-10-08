@@ -15,14 +15,14 @@ var initialGameAssetsReady = false;
 var initialGameAssetsLoaded = 0;
 
 var INITIAL_GAME_ASSETS = [
-  "./assets/img/2_charakter_pepe/2_walk/W-21.png",
+  "./assets/img/2_charakter_pepe/2_walk/W-21.webp",
   "./assets/img/3_feinde_huehner/chicken_normal/1_walk/1_w.png",
   "./assets/img/3_feinde_huehner/chicken_small/1_walk/1_w.png",
   "./assets/img/5_hintergrund/layers/air.png",
-  "./assets/img/5_hintergrund/layers/1_first_layer/1.png",
-  "./assets/img/5_hintergrund/layers/1_first_layer/2.png",
-  "./assets/img/5_hintergrund/layers/2_second_layer/1.png",
-  "./assets/img/5_hintergrund/layers/2_second_layer/2.png",
+  "./assets/img/5_hintergrund/layers/1_first_layer/1.webp",
+  "./assets/img/5_hintergrund/layers/1_first_layer/2.webp",
+  "./assets/img/5_hintergrund/layers/2_second_layer/1.webp",
+  "./assets/img/5_hintergrund/layers/2_second_layer/2.webp",
   "./assets/img/5_hintergrund/layers/3_third_layer/1.png",
   "./assets/img/5_hintergrund/layers/3_third_layer/2.png",
   "./assets/img/5_hintergrund/layers/4_clouds/1.png",

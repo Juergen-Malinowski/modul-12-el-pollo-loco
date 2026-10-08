@@ -114,27 +114,27 @@ function createBackgroundObjects() {
     return [
         new BackgroundObject('./assets/img/5_hintergrund/layers/air.png', -720),
         new BackgroundObject('./assets/img/5_hintergrund/layers/3_third_layer/2.png', -720),
-        new BackgroundObject('./assets/img/5_hintergrund/layers/2_second_layer/2.png', -720),
-        new BackgroundObject('./assets/img/5_hintergrund/layers/1_first_layer/2.png', -720),
+        new BackgroundObject('./assets/img/5_hintergrund/layers/2_second_layer/2.webp', -720),
+        new BackgroundObject('./assets/img/5_hintergrund/layers/1_first_layer/2.webp', -720),
 
         new BackgroundObject('./assets/img/5_hintergrund/layers/air.png', 0),
         new BackgroundObject('./assets/img/5_hintergrund/layers/3_third_layer/1.png', 0),
-        new BackgroundObject('./assets/img/5_hintergrund/layers/2_second_layer/1.png', 0),
-        new BackgroundObject('./assets/img/5_hintergrund/layers/1_first_layer/1.png', 0),
+        new BackgroundObject('./assets/img/5_hintergrund/layers/2_second_layer/1.webp', 0),
+        new BackgroundObject('./assets/img/5_hintergrund/layers/1_first_layer/1.webp', 0),
 
         new BackgroundObject('./assets/img/5_hintergrund/layers/air.png', 720),
         new BackgroundObject('./assets/img/5_hintergrund/layers/3_third_layer/2.png', 720),
-        new BackgroundObject('./assets/img/5_hintergrund/layers/2_second_layer/2.png', 720),
-        new BackgroundObject('./assets/img/5_hintergrund/layers/1_first_layer/2.png', 720),
+        new BackgroundObject('./assets/img/5_hintergrund/layers/2_second_layer/2.webp', 720),
+        new BackgroundObject('./assets/img/5_hintergrund/layers/1_first_layer/2.webp', 720),
 
         new BackgroundObject('./assets/img/5_hintergrund/layers/air.png', 1440),
         new BackgroundObject('./assets/img/5_hintergrund/layers/3_third_layer/1.png', 1440),
-        new BackgroundObject('./assets/img/5_hintergrund/layers/2_second_layer/1.png', 1440),
-        new BackgroundObject('./assets/img/5_hintergrund/layers/1_first_layer/1.png', 1440),
+        new BackgroundObject('./assets/img/5_hintergrund/layers/2_second_layer/1.webp', 1440),
+        new BackgroundObject('./assets/img/5_hintergrund/layers/1_first_layer/1.webp', 1440),
 
         new BackgroundObject('./assets/img/5_hintergrund/layers/air.png', 2160),
         new BackgroundObject('./assets/img/5_hintergrund/layers/3_third_layer/2.png', 2160),
-        new BackgroundObject('./assets/img/5_hintergrund/layers/2_second_layer/2.png', 2160),
-        new BackgroundObject('./assets/img/5_hintergrund/layers/1_first_layer/2.png', 2160),
+        new BackgroundObject('./assets/img/5_hintergrund/layers/2_second_layer/2.webp', 2160),
+        new BackgroundObject('./assets/img/5_hintergrund/layers/1_first_layer/2.webp', 2160),
     ];
 }
