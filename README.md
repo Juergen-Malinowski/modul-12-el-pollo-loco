@@ -2,7 +2,40 @@
 
 El Pollo Loco is a browser-based jump-and-run game built with Vanilla JavaScript, HTML, CSS, and the Canvas API.
 
+It originated as a project during the frontend training program at Developer Akademie. Over time, the enjoyment of programming and game design led it to grow far beyond the original mandatory scope.
+
 The player controls Pepe through three increasingly demanding desert levels, collects coins and salsa bottles, defeats normal and small chickens, and fights an Endboss at the end of each level. The game supports desktop keyboard controls, responsive touch controls in mobile landscape mode, audio settings, pause/resume, Game Over, level transitions, Victory, and local Top-100 highscore handling.
+
+## Setup
+
+The game has no build step and does not require package installation. It can be served directly from the repository root with any local static web server.
+
+Clone the repository and enter the project directory:
+
+```bash
+git clone https://github.com/Juergen-Malinowski/modul-12-el-pollo-loco.git
+cd modul-12-el-pollo-loco
+```
+
+Start a local server, for example with Python 3:
+
+```bash
+python -m http.server 5500
+```
+
+On Windows, the Python launcher can be used instead:
+
+```powershell
+py -m http.server 5500
+```
+
+Then open:
+
+```text
+http://localhost:5500/
+```
+
+Alternatively, the repository root can be served with a local development-server extension such as VS Code Live Server.
 
 ## Table of contents
 
@@ -12,12 +45,11 @@ The player controls Pepe through three increasingly demanding desert levels, col
 - [Three-level configuration](#three-level-configuration)
 - [Level creation](#level-creation)
 - [Level progression](#level-progression)
-- [Bottle and coin HUD](#bottle-and-coin-hud)
-- [Player movement boundaries](#player-movement-boundaries)
-- [Chicken movement](#chicken-movement)
+- [HUD and status bars](#hud-and-status-bars)
+- [Player, Chicken and Endboss movement boundaries](#player-chicken-and-endboss-movement-boundaries)
 - [Airborne stomp combo](#airborne-stomp-combo)
 - [Chicken Scatter reaction](#chicken-scatter-reaction)
-- [Endboss movement and combat](#endboss-movement-and-combat)
+- [Endboss action and combat](#endboss-action-and-combat)
 - [Ground bottle pickup collision](#ground-bottle-pickup-collision)
 - [Pause system](#pause-system)
 - [Player controls](#player-controls)
@@ -31,6 +63,7 @@ The player controls Pepe through three increasingly demanding desert levels, col
 - [Typography](#typography)
 - [Privacy and browser storage](#privacy-and-browser-storage)
 - [Project context and credits](#project-context-and-credits)
+- [Developer Akademie compliance notes](#developer-akademie-compliance-notes)
 - [Responsive release targets](#responsive-release-targets)
 - [Important source files](#important-source-files)
 - [Deployment and runtime delivery](#deployment-and-runtime-delivery)
@@ -93,9 +126,33 @@ flowchart TD
 
 Pepe's death has priority over boss completion. If Pepe and the Endboss die during the same combat sequence, the run always follows the Game Over path and cannot open the next-level dialog or Victory flow.
 
+### Flow inside a level
+
+Each level follows the same core structure while its size, enemy count, resources, scoring values, Pepe energy, and Endboss parameters increase through the three configurations.
+
+```mermaid
+flowchart TD
+    A[Level starts] --> B[World, HUD and resources initialized]
+    B --> C[Explore the level]
+    C --> D[Collect coins and bottles / fight chickens / build score]
+    D --> E{Pepe defeated?}
+    E -->|Yes| Z[Game Over]
+    E -->|No| F{Endboss activated?}
+    F -->|No| C
+    F -->|Proximity trigger or 3 pre-fight bottle hits| G[Boss alert sequence]
+    G --> H[Active Endboss fight]
+    H --> I{Combat result}
+    I -->|Pepe defeated| Z
+    I -->|Endboss still alive| H
+    I -->|Endboss defeated| J[Level-end bonus]
+    J --> K{Level 1 or 2?}
+    K -->|Yes| L[Bottle carryover and next-level transition]
+    K -->|No - Level 3| M[Final Victory]
+```
+
 ## Three-level configuration
 
-All level-specific balancing values are centralized in `levels/level-config.js`.
+All level-specific balancing values are centralized in `levels/level-config.js`. Normal and small chicken movement speeds increase through level-specific random speed ranges, and the layered background is extended dynamically to the configured end of each level.
 
 | Value | Level 1 | Level 2 | Level 3 |
 | --- | ---: | ---: | ---: |
@@ -114,13 +171,9 @@ All level-specific balancing values are centralized in `levels/level-config.js`.
 | Endboss charge cooldown | 7000 ms | 6000 ms | 5000 ms |
 | Endboss hit cooldown | 400 ms | 350 ms | 300 ms |
 
-Normal and small chicken movement speeds also increase through level-specific random speed ranges.
-
-The background is extended dynamically to the configured end of the active level.
-
 ## Level creation
 
-`levels/level1.js` is the shared level factory for all three configured levels.
+The original Developer Akademie training project specified a single level, which explains the historical filename `levels/level1.js`. After the game was expanded to three levels with increasing difficulty, this file became the shared level factory for all three configurations.
 
 For every configured level it creates:
 
@@ -159,13 +212,11 @@ remaining bottles from Level 1
 
 There is no artificial global bottle cap.
 
-## Bottle and coin HUD
+## HUD and status bars
 
-Bottle and coin resources use custom twenty-segment HUD bars.
+Bottle and coin resources use custom twenty-segment HUD bars. Each segment represents five percent of the active level resource range, while the exact numeric counts remain visible beside the bars.
 
-Each segment represents five percent of the active level resource range.
-
-The exact numeric counts remain visible beside the bars.
+Pepe's health and Endboss energy use image-based status bars with exact numeric values. Both start each level at their full configured values, while the Endboss's full energy increases from 300 in Level 1 to 400 in Level 2 and 500 in Level 3.
 
 ### Bottle bar
 
@@ -183,32 +234,13 @@ The coin bar is scaled against the configured number of coins in the current lev
 
 Coin collection starts from zero again when a new World is created for the next level.
 
-Health and Endboss energy use image-based status bars with exact numeric values displayed beside them.
+## Player, Chicken and Endboss movement boundaries
 
-The combat HUD keeps the order Health, Endboss, Bottles, Coins so the most important fight information remains grouped together.
+Each level has fixed left and right world boundaries. Pepe can move freely in both directions at any time while remaining inside those boundaries, which allows backtracking instead of forcing the player into one-way progression.
 
-## Player movement boundaries
+Living normal and small chickens also remain inside the level; when they reach either boundary, they turn around and receive a new random movement speed from the active level configuration.
 
-Pepe may move across the complete playable world while remaining fully visible.
-
-```text
-left boundary  = 0
-right boundary = levelEndX - Pepe.width
-```
-
-The camera is clamped to the playable level and no longer reveals technical background space beyond the configured world end.
-
-## Chicken movement
-
-Living chickens remain inside the current level until they are defeated or the level ends.
-
-When a chicken reaches either level boundary:
-
-- it turns around;
-- it stays completely inside the level;
-- it receives a new random movement speed from the current level configuration.
-
-This applies to both normal and small chickens.
+The Endboss waits at a fixed position near the end of the level until the boss-fight sequence begins. Once active, it can move freely within the level boundaries and pursues Pepe.
 
 ## Airborne stomp combo
 
@@ -232,13 +264,13 @@ The combo resets when Pepe returns to the ground, dies, restarts, or enters the 
 
 Bottle kills and Endboss stomps are excluded from this combo system.
 
+This Stomp Combo is the key mechanic for exceptional high scores. Because enemy positions, movement speeds, Scatter behavior, and the resulting airborne chain vary during play, it cannot be reproduced as a fixed scoring pattern.
+
 ## Chicken Scatter reaction
 
-A dense Chicken group can react to the beginning of a stomp combo by scattering.
+The Scatter reaction is designed to break up very dense groups of chickens when Pepe begins an airborne Stomp Combo, making exceptionally long chains harder to sustain. Because each escaping chicken receives randomized movement behavior and other chickens continue moving through the level, Scatter can also occasionally create an even denser group later. These rare situations can reward skilled positioning with unusually long Stomp Combos.
 
-The reaction is triggered when the first stomp finds at least five living normal or small chickens within a 400-pixel radius.
-
-The stomped Chicken counts toward the density check but does not flee itself.
+On the first killing stomp of an airborne combo, Scatter is triggered when at least five normal or small chickens are within a 400-pixel radius around Pepe at that moment. The chicken hit by that stomp counts toward this density check.
 
 Scattering chickens:
 
@@ -250,18 +282,13 @@ Scattering chickens:
 - cannot damage Pepe while they are actively scattering;
 - resume normal movement after the scatter movement ends.
 
-The complete group reaction uses one dedicated scatter sound effect.
+The group reaction uses a dedicated Scatter sound effect and is visually accompanied by an animated Bat fly-by that dives across the scene with its own sound effect.
 
-## Endboss movement and combat
+## Endboss action and combat
 
-The Endboss can also move across the complete playable level while remaining fully visible.
+The Endboss begins each level at a fixed position near the far end of the world and waits for Pepe. When Pepe reaches the configured proximity trigger, the boss enters its alert sequence and the active fight begins.
 
-```text
-left boundary  = 0
-right boundary = levelEndX - Endboss.width
-```
-
-Normal body contact and the charge attack intentionally behave differently.
+Normal body contact and the Charge Attack intentionally behave differently.
 
 ### Normal Endboss contact
 
@@ -269,9 +296,11 @@ Normal contact causes continuous contact damage only while Pepe has ground conta
 
 As soon as Pepe is airborne, normal body overlap no longer causes this continuous contact damage. This allows a deliberate jump attack from close range without continuously losing health during the ascent.
 
-Normal contact does not automatically knock Pepe away, so the player can still move through the boss and reach the other side of the arena.
+Normal contact does not automatically knock Pepe away, so the player can still move through the boss and reach the other side of the arena. A successful Charge Attack is the Endboss contact that applies knockback and throws Pepe away from the boss.
 
 ### Charge attack
+
+The Charge Attack is the Endboss's powerful and only direct attack; otherwise the boss damages Pepe through normal body contact. After the alert sequence, the Endboss starts pursuing Pepe, launches an immediate first charge, and then repeats charge attacks using the level-specific cooldown.
 
 Charge pressure increases across the three levels through speed and range, while charge damage remains fixed at 100.
 
@@ -279,8 +308,8 @@ A successful charge:
 
 - causes 100 damage;
 - launches Pepe vertically;
-- applies a horizontal boss knockback;
-- marks the movement as boss-caused so it cannot be interpreted as a stomp attack.
+- hurls Pepe horizontally away from the Endboss;
+- marks Pepe's movement as boss-caused so the following descent cannot be interpreted as a player-initiated stomp attack.
 
 Before Pepe is moved, the complete horizontal knockback target is calculated.
 
@@ -290,7 +319,7 @@ This prevents corner traps without producing a visible double knockback.
 
 ### Boss stomp and recovery rules
 
-A boss-caused knockback cannot become an accidental stomp when Pepe falls back down.
+A boss-caused knockback is explicitly marked so Pepe's descent cannot be evaluated as a player-initiated stomp attack on the Endboss.
 
 A genuine player-initiated jump remains a valid boss attack even while Pepe is inside his Hurt animation period. Boss-facing direction is irrelevant to stomp damage.
 
@@ -300,17 +329,17 @@ After an accepted hit, the Endboss enters a short level-specific recovery period
 - Level 2: 350 ms;
 - Level 3: 300 ms.
 
-During this shared recovery window, the Endboss cannot receive another hit and cannot damage Pepe through normal contact or charge collision.
+During this shared recovery window, the Endboss cannot receive another hit and Pepe cannot receive Endboss damage through normal contact or charge collision. The protection applies to both sides so the recovery timing does not create an unfair combat advantage.
 
 ### Pre-fight bottle activation
 
-Pepe can still attack the visible Endboss with long-range bottle throws before crossing the normal proximity trigger.
+A jump can considerably increase Pepe's bottle-throwing range, which makes it possible in some situations to hit the Endboss before Pepe reaches the normal proximity trigger. This tactical advantage remains available, but it is limited.
 
 Accepted bottle hits are counted while the boss is still inactive. The third accepted pre-fight bottle hit starts the same alert and attack sequence that would normally be triggered by reaching the configured alert position.
 
 ### Boss-fight Special Jump
 
-Pepe has a dedicated escape move during an active Endboss fight.
+Once the Endboss fight has been activated, the Special Jump is available throughout the level and is not tied to Pepe's distance from the boss. As long as Pepe is not already in a boss-caused knockback, it can be triggered even from the direct contact area with the Endboss, making it an escape move for close-range pressure.
 
 Two separate Jump inputs within 500 ms trigger the Special Jump. The same input timing works with desktop keyboard input, touch controls, and pen input through Pointer Events.
 
@@ -356,8 +385,9 @@ Active gameplay can be paused and resumed without rebuilding the World.
 
 | Input | Action |
 | --- | --- |
-| P | Pause / Resume |
-| PAUSED - RESUME HUD button | Resume |
+| P on desktop | Pause / Resume |
+| Compact Canvas control on mobile | Pause / Resume |
+| Desktop `PAUSED - RESUME` HUD action while paused | Resume |
 
 While paused:
 
@@ -372,11 +402,7 @@ While paused:
 - active game audio is paused at its current playback position;
 - held gameplay input is cleared.
 
-The render loop remains active so the pause indicator stays visible and clickable.
-
-The visible pause button is positioned below the level indicator.
-
-Pause is disabled once terminal Boss-defeat, Game Over, or Victory handling has started.
+The render loop remains active so the pause state and resume interaction remain visible. On desktop, active gameplay is paused and resumed with the `P` key; on mobile, a compact pause/resume control is placed near the sound control.
 
 ## Player controls
 
@@ -473,6 +499,20 @@ All combat, collectible, throw, boss, and level-end score values are centralized
 | Endboss bottle hit | 40 | 50 | 60 |
 | Successful boss charge dodge | 150 | 220 | 300 |
 | Endboss kill | 300 | 500 | 1000 |
+
+Airborne Chicken stomps can add an exponential Stomp Combo bonus on top of the normal stomp score:
+
+| Stomp in the same airborne chain | Additional combo score |
+| --- | ---: |
+| 1st stomp | +0 |
+| 2nd stomp | +20 |
+| 3rd stomp | +40 |
+| 4th stomp | +80 |
+| 5th stomp | +160 |
+| 6th stomp | +320 |
+| Each further stomp | previous combo bonus ×2 |
+
+The regular Chicken or Little Chicken stomp score is always awarded in addition to this bonus. This exponential combo scoring is the central mechanic behind exceptionally high scores.
 
 The end-of-level bonus is also level-specific:
 
@@ -737,13 +777,42 @@ Legal and privacy information is available both from the game menu and as direct
 
 ## Project context and credits
 
-El Pollo Loco was developed as a training project in the Developer Akademie curriculum and is presented as a non-commercial portfolio project.
+El Pollo Loco is presented as a non-commercial portfolio project.
 
 Selected base graphics and project assets were provided by Developer Akademie as part of the training project and are used for the non-commercial portfolio presentation and Live Demo.
 
 Additional external graphics, music, and sound effects are credited individually in `info.html`. Original audio recordings created specifically for this project are identified there separately.
 
 Third-party audio may be technically re-encoded or compressed for web delivery; source and authorship attribution remain unchanged.
+
+## Developer Akademie compliance notes
+
+The final project was reviewed against the Developer Akademie checklist used for the training assignment. These checklist items represent the minimum technical and presentation requirements of the original project.
+
+The finished game goes substantially beyond that minimum scope. The three-level progression with increasing difficulty, Pepe's Special Jump, the airborne Stomp Combo and Chicken Scatter system, the extended Endboss attack mechanics, additional animated sequences such as the Bat fly-by, the individually designed animation behavior, and the complete Top-100 highscore system were added beyond the original assignment requirements.
+
+Checklist: Important final requirements include:
+
+- no console errors;
+- no unnecessary `console.log` output;
+- functional buttons and links;
+- local fonts and favicon;
+- landscape-only mobile gameplay with portrait rotation notice;
+- mobile touch controls only where appropriate;
+- no small-screen scrollbars;
+- descriptive and consistent filenames;
+- single-responsibility functions;
+- functions limited to approximately 14 commands;
+- source files targeted at a maximum of 400 LOC;
+- JSDoc documentation;
+- no browser reload for restart;
+- correct enemy hit detection and offsets;
+- correct status-bar updates;
+- no player movement after death;
+- complete sound and mute cleanup;
+- one consistent project language.
+
+English is used consistently for user-facing game text and technical documentation.
 
 ## Responsive release targets
 
