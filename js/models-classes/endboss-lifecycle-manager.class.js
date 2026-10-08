@@ -11,7 +11,6 @@ class EndbossLifecycleManager {
         if (this.boss.isDeadBoss) return;
         this.prepareDeathState();
         this.startDeathAnimation();
-        this.stopThunderAttackSound();
     }
 
     /** Stops active gameplay and marks the boss as terminal. */
@@ -118,7 +117,6 @@ class EndbossLifecycleManager {
         this.clearBossInterval("screamInterval");
         this.clearBossInterval("chargeInterval");
         this.pauseActiveEffects();
-        this.stopThunderAttackSound();
     }
 
     /** Pauses active SoundHub effects during boss lifecycle cleanup. */
@@ -134,16 +132,6 @@ class EndbossLifecycleManager {
         } catch (error) { }
     }
 
-    /** Stops the boss-owned thunder attack audio instance. */
-    stopThunderAttackSound() {
-        try {
-            const thunderAttack = this.boss.thunderAttack;
-            if (!thunderAttack) return;
-            thunderAttack.pause();
-            thunderAttack.currentTime = 0;
-        } catch (error) { }
-    }
-
     /** Resets boss state and stops boss activity after the player loses. */
     onGameOverCleanup() {
         try {
@@ -153,7 +141,6 @@ class EndbossLifecycleManager {
             this.stopAllBossSounds();
             this.stopBossAudioAndTimers();
             this.stopBossEffects();
-            this.stopThunderAttackSound();
         } catch (error) { }
     }
 
@@ -174,7 +161,6 @@ class EndbossLifecycleManager {
             this.clearBossInterval("chargeInterval");
             this.clearBossInterval("animateInterval");
             this.markBossAsStopped();
-            this.stopThunderAttackSound();
             if (typeof soundHub !== "undefined" &&
                 typeof soundHub.stopBossCharge === "function") {
                 soundHub.stopBossCharge();

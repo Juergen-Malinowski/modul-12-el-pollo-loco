@@ -98,7 +98,6 @@ class Endboss extends MovableObject {
         this.lifecycleManager = new EndbossLifecycleManager(this);
         this.combatManager = new EndbossCombatManager(this);
         this.animate();
-        this.thunderAttack = new Audio('./assets/sound/thunder-attack.mp3'); this.thunderAttack.preload = 'auto';
     }
 
     /** Applies level-specific boss strength, position, and timing values. */
@@ -212,11 +211,6 @@ class Endboss extends MovableObject {
     /** Delegates recurring boss-sound cleanup to the lifecycle manager. */
     stopAllBossSounds() {
         this.lifecycleManager.stopAllBossSounds();
-    }
-
-    /** Delegates thunder-attack audio cleanup to the lifecycle manager. */
-    stopThunderAttackSound() {
-        this.lifecycleManager.stopThunderAttackSound();
     }
 
     /** Delegates Game Over boss cleanup to the lifecycle manager. */

@@ -72,13 +72,9 @@ class WorldPauseManager {
     this.pausedAudio = [];
   }
 
-  /** Returns SoundHub and Endboss-owned audio sources. */
+  /** Returns the SoundHub-managed audio sources used by gameplay. */
   getAudioSources() {
     const sources = [soundHub.backgroundMusic].concat(soundHub.getAllEffects());
-    const boss = this.world.level.enemies.find(function (enemy) {
-      return enemy instanceof Endboss;
-    });
-    if (boss && boss.thunderAttack) sources.push(boss.thunderAttack);
     return sources.filter(function (audio, index) {
       return audio && sources.indexOf(audio) === index;
     });
