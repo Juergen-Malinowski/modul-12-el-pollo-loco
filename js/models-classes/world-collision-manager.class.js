@@ -12,6 +12,7 @@ class WorldCollisionManager {
   checkCollisions() {
     if (this.world.gameOver) return;
     this.checkEnemyCollisions();
+    if (this.world.gameOver) return;
     this.checkBottlePickups();
     this.checkCoinPickups();
     this.checkBottleEnemyHits();
@@ -22,6 +23,7 @@ class WorldCollisionManager {
   checkEnemyCollisions() {
     for (let i = this.world.level.enemies.length - 1; i >= 0; i--) {
       this.handleEnemyCollision(this.world.level.enemies[i]);
+      if (this.world.gameOver) return;
     }
   }
 
@@ -196,6 +198,7 @@ class WorldCollisionManager {
     world.percentage =
       (world.character.energie / world.character.holeEnergie) * 100;
     world.statusBar.setPercentage(world.percentage);
+    world.character.startDeathAnimationIfNeeded();
   }
 
   /** Checks collectible bottle collisions. */

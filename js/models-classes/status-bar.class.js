@@ -43,34 +43,20 @@ class StatusBar extends DrawableObjects {
         };
     }
 
-    /** Returns the bottle status bar configuration. */
+    /** Returns the segmented bottle status configuration. */
     getBottleConfig() {
         return {
-            images: [
-                './assets/img/7_statusbars/1_statusbar/3_statusbar_bottle/blue/100.png',
-                './assets/img/7_statusbars/1_statusbar/3_statusbar_bottle/blue/80.png',
-                './assets/img/7_statusbars/1_statusbar/3_statusbar_bottle/blue/60.png',
-                './assets/img/7_statusbars/1_statusbar/3_statusbar_bottle/blue/40.png',
-                './assets/img/7_statusbars/1_statusbar/3_statusbar_bottle/blue/20.png',
-                './assets/img/7_statusbars/1_statusbar/3_statusbar_bottle/blue/0.png'
-            ],
+            images: [],
             x: 10,
             y: 70,
             defaultPercentage: 0
         };
     }
 
-    /** Returns the coin status bar configuration. */
+    /** Returns the segmented coin status configuration. */
     getCoinConfig() {
         return {
-            images: [
-                './assets/img/7_statusbars/1_statusbar/1_statusbar_coin/orange/100.png',
-                './assets/img/7_statusbars/1_statusbar/1_statusbar_coin/orange/80.png',
-                './assets/img/7_statusbars/1_statusbar/1_statusbar_coin/orange/60.png',
-                './assets/img/7_statusbars/1_statusbar/1_statusbar_coin/orange/40.png',
-                './assets/img/7_statusbars/1_statusbar/1_statusbar_coin/orange/20.png',
-                './assets/img/7_statusbars/1_statusbar/1_statusbar_coin/orange/0.png'
-            ],
+            images: [],
             x: 10,
             y: 130,
             defaultPercentage: 0
@@ -101,7 +87,7 @@ class StatusBar extends DrawableObjects {
         this.y = config.y;
         this.width = 150;
         this.heigth = 50;
-        this.loadImages(this.images);
+        if (this.images.length > 0) this.loadImages(this.images);
         this.setPercentage(config.defaultPercentage);
     }
 
@@ -112,6 +98,7 @@ class StatusBar extends DrawableObjects {
      */
     setPercentage(percentage) {
         this.percentage = percentage;
+        if (this.images.length === 0) return;
         var path = this.images[this.getImageIndex()];
         this.img = this.imageCache[path];
     }

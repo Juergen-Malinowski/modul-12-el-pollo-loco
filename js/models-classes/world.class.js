@@ -52,13 +52,13 @@ class World {
     this.initializeCharacterHealth();
     this.initializeBottleInventory();
     this.initializeManagers();
-    this.initializeResultImages();
     this.setWorld();
     this.levelManager.applyLevelSetup();
     this.draw();
     this.run();
     this.initializeResourceState();
     this.startInitialBatFlight();
+    this.scheduleResultImagePreload();
   }
 
   /** Stores the dependencies and level metadata required by this World. */
@@ -90,12 +90,23 @@ class World {
     if (this.currentLevel === 1) this.batFlightManager.startFlight();
   }
 
+  /** Defers terminal image requests until after the first gameplay paint. */
+  scheduleResultImagePreload() {
+    const world = this;
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        if (!world.isRunning) return;
+        world.initializeResultImages();
+      });
+    });
+  }
+
   /** Assigns terminal-state image sources. */
   initializeResultImages() {
-    this.coffinImg.src = "./assets/img/2_charakter_pepe/5_dead/coffin.png";
+    this.coffinImg.src = "./assets/img/2_charakter_pepe/5_dead/coffin.webp";
     this.youWinImg.src = "./assets/img/0_you_won_you_lost/You Win A.png";
     this.gameOverImg.src =
-      "./assets/img/9_intro_outro_bildschirm/game_over/game over.png";
+      "./assets/img/9_intro_outro_bildschirm/game_over/game over.webp";
   }
 
   /** Restores the accumulated score and initializes resource bars. */

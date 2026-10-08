@@ -5,10 +5,8 @@ class WorldStatusHudRenderer {
   constructor(world, hudRenderer) {
     this.world = world;
     this.hudRenderer = hudRenderer;
-    this.bottleIcon = new Image();
-    this.coinIcon = new Image();
-    this.bottleIcon.src = "./assets/img/6_salsa_flasche/1_salsa_bottle_on_ground.png";
-    this.coinIcon.src = "./assets/img/8_muenzen/coin_2.png";
+    this.bottleIcon = getRuntimeImage("./assets/img/6_salsa_flasche/1_salsa_bottle_on_ground.png");
+    this.coinIcon = getRuntimeImage("./assets/img/8_muenzen/coin_2.png");
   }
 
   /** Draws status bars and their numeric values. */

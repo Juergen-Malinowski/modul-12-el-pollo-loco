@@ -39,8 +39,8 @@ class WorldLevelManager {
     this.world.level.backgroundObjects.push(
       new BackgroundObject(basePath + "air.png", x),
       new BackgroundObject(basePath + "3_third_layer/" + segmentNumber + ".png", x),
-      new BackgroundObject(basePath + "2_second_layer/" + segmentNumber + ".png", x),
-      new BackgroundObject(basePath + "1_first_layer/" + segmentNumber + ".png", x),
+      new BackgroundObject(basePath + "2_second_layer/" + segmentNumber + ".webp", x),
+      new BackgroundObject(basePath + "1_first_layer/" + segmentNumber + ".webp", x),
     );
   }
 

@@ -149,9 +149,6 @@ class WorldProcessManager {
       if (typeof enemy.stopBossAudioAndTimers === "function") {
         enemy.stopBossAudioAndTimers();
       }
-      if (typeof enemy.stopThunderAttackSound === "function") {
-        enemy.stopThunderAttackSound();
-      }
     });
   }
 

@@ -29,55 +29,55 @@ class Endboss extends MovableObject {
     offset = { top: 50, buttom: 10, left: 20, right: 20 };
 
     imagesWalking = [
-        './assets/img/4_feinde_boss_huhn/1_walk/G1.png',
-        './assets/img/4_feinde_boss_huhn/1_walk/G2.png',
-        './assets/img/4_feinde_boss_huhn/1_walk/G3.png',
-        './assets/img/4_feinde_boss_huhn/1_walk/G4.png',
+        './assets/img/4_feinde_boss_huhn/1_walk/G1.webp',
+        './assets/img/4_feinde_boss_huhn/1_walk/G2.webp',
+        './assets/img/4_feinde_boss_huhn/1_walk/G3.webp',
+        './assets/img/4_feinde_boss_huhn/1_walk/G4.webp',
     ];
 
     imagesAlert = [
 
-        './assets/img/4_feinde_boss_huhn/2_alert/G5.png',
-        './assets/img/4_feinde_boss_huhn/2_alert/G6.png',
-        './assets/img/4_feinde_boss_huhn/2_alert/G7.png',
-        './assets/img/4_feinde_boss_huhn/2_alert/G8.png',
-        './assets/img/4_feinde_boss_huhn/2_alert/G9.png',
-        './assets/img/4_feinde_boss_huhn/2_alert/G10.png',
-        './assets/img/4_feinde_boss_huhn/2_alert/G11.png',
-        './assets/img/4_feinde_boss_huhn/2_alert/G12.png',
+        './assets/img/4_feinde_boss_huhn/2_alert/G5.webp',
+        './assets/img/4_feinde_boss_huhn/2_alert/G6.webp',
+        './assets/img/4_feinde_boss_huhn/2_alert/G7.webp',
+        './assets/img/4_feinde_boss_huhn/2_alert/G8.webp',
+        './assets/img/4_feinde_boss_huhn/2_alert/G9.webp',
+        './assets/img/4_feinde_boss_huhn/2_alert/G10.webp',
+        './assets/img/4_feinde_boss_huhn/2_alert/G11.webp',
+        './assets/img/4_feinde_boss_huhn/2_alert/G12.webp',
     ];
 
     imagesAttack = [
 
-        './assets/img/4_feinde_boss_huhn/3_attack/G13.png',
-        './assets/img/4_feinde_boss_huhn/3_attack/G14.png',
-        './assets/img/4_feinde_boss_huhn/3_attack/G15.png',
-        './assets/img/4_feinde_boss_huhn/3_attack/G16.png',
-        './assets/img/4_feinde_boss_huhn/3_attack/G17.png',
-        './assets/img/4_feinde_boss_huhn/3_attack/G18.png',
-        './assets/img/4_feinde_boss_huhn/3_attack/G19.png',
-        './assets/img/4_feinde_boss_huhn/3_attack/G20.png',
+        './assets/img/4_feinde_boss_huhn/3_attack/G13.webp',
+        './assets/img/4_feinde_boss_huhn/3_attack/G14.webp',
+        './assets/img/4_feinde_boss_huhn/3_attack/G15.webp',
+        './assets/img/4_feinde_boss_huhn/3_attack/G16.webp',
+        './assets/img/4_feinde_boss_huhn/3_attack/G17.webp',
+        './assets/img/4_feinde_boss_huhn/3_attack/G18.webp',
+        './assets/img/4_feinde_boss_huhn/3_attack/G19.webp',
+        './assets/img/4_feinde_boss_huhn/3_attack/G20.webp',
     ];
 
     imagesThunderRun = [
 
-        './assets/img/4_feinde_boss_huhn/3_attack/G17.png',
-        './assets/img/4_feinde_boss_huhn/3_attack/G18.png',
-        './assets/img/4_feinde_boss_huhn/1_walk/G1.png',
-        './assets/img/4_feinde_boss_huhn/3_attack/G18.png',
-        './assets/img/4_feinde_boss_huhn/1_walk/G3.png',
+        './assets/img/4_feinde_boss_huhn/3_attack/G17.webp',
+        './assets/img/4_feinde_boss_huhn/3_attack/G18.webp',
+        './assets/img/4_feinde_boss_huhn/1_walk/G1.webp',
+        './assets/img/4_feinde_boss_huhn/3_attack/G18.webp',
+        './assets/img/4_feinde_boss_huhn/1_walk/G3.webp',
     ];
 
     imagesHurt = [
-        './assets/img/4_feinde_boss_huhn/4_hurt/G21.png',
-        './assets/img/4_feinde_boss_huhn/4_hurt/G22.png',
-        './assets/img/4_feinde_boss_huhn/4_hurt/G23.png',
+        './assets/img/4_feinde_boss_huhn/4_hurt/G21.webp',
+        './assets/img/4_feinde_boss_huhn/4_hurt/G22.webp',
+        './assets/img/4_feinde_boss_huhn/4_hurt/G23.webp',
     ];
 
     imagesDead = [
-        './assets/img/4_feinde_boss_huhn/5_dead/G24.png',
-        './assets/img/4_feinde_boss_huhn/5_dead/G25.png',
-        './assets/img/4_feinde_boss_huhn/5_dead/G26.png',
+        './assets/img/4_feinde_boss_huhn/5_dead/G24.webp',
+        './assets/img/4_feinde_boss_huhn/5_dead/G25.webp',
+        './assets/img/4_feinde_boss_huhn/5_dead/G26.webp',
     ];
 
     isAlerted = false;
@@ -87,7 +87,7 @@ class Endboss extends MovableObject {
     alertPlayed = false;
 
     constructor(levelConfig = getLevelConfig(1)) {
-        super().loadImage('./assets/img/4_feinde_boss_huhn/2_alert/G5.png');
+        super().loadImage('./assets/img/4_feinde_boss_huhn/2_alert/G5.webp');
         this.applyLevelConfig(levelConfig);
         this.loadImages(this.imagesWalking);
         this.loadImages(this.imagesAlert);
@@ -98,7 +98,6 @@ class Endboss extends MovableObject {
         this.lifecycleManager = new EndbossLifecycleManager(this);
         this.combatManager = new EndbossCombatManager(this);
         this.animate();
-        this.thunderAttack = new Audio('./assets/sound/thunder-attack.mp3'); this.thunderAttack.preload = 'auto';
     }
 
     /** Applies level-specific boss strength, position, and timing values. */
@@ -212,11 +211,6 @@ class Endboss extends MovableObject {
     /** Delegates recurring boss-sound cleanup to the lifecycle manager. */
     stopAllBossSounds() {
         this.lifecycleManager.stopAllBossSounds();
-    }
-
-    /** Delegates thunder-attack audio cleanup to the lifecycle manager. */
-    stopThunderAttackSound() {
-        this.lifecycleManager.stopThunderAttackSound();
     }
 
     /** Delegates Game Over boss cleanup to the lifecycle manager. */
