@@ -2,6 +2,11 @@
  * Handles highscore qualification and terminal highscore routing.
  */
 class WorldHighscoreManager {
+  /**
+   * Creates the highscore manager for one World.
+   *
+   * @param {World} world - Owning game World.
+   */
   constructor(world) {
     this.world = world;
   }

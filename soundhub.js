@@ -3,6 +3,7 @@
  */
 class SoundHub {
 
+    /** Initializes shared audio sources, settings, state, and timer tracking. */
     constructor() {
         this.initializeBackgroundMusic();
         this.initializeEffects();
@@ -50,6 +51,7 @@ class SoundHub {
         this.activeTimeouts = [];
     }
 
+    /** Starts the looping background music when gameplay and mute state allow it. */
     playBackgroundMusic() {
         if (typeof isGamePaused === "function" && isGamePaused()) return;
         if (this.isMuted) return;
@@ -67,6 +69,7 @@ class SoundHub {
         });
     }
 
+    /** Stops and rewinds the background music. */
     stopBackgroundMusic() {
         if (this.backgroundMusic && !this.backgroundMusic.paused) {
             this.backgroundMusic.pause();
@@ -74,6 +77,11 @@ class SoundHub {
         }
     }
 
+    /**
+     * Plays one gameplay effect when audio is available.
+     *
+     * @param {HTMLAudioElement} audio - Effect source to play.
+     */
     playEffect(audio) {
         if (typeof isGamePaused === "function" && isGamePaused()) return;
         this.prepareDeferredEffect(audio);
@@ -124,6 +132,11 @@ class SoundHub {
         }
     }
 
+    /**
+     * Returns all currently managed gameplay effect sources.
+     *
+     * @returns {HTMLAudioElement[]} Managed effect sources.
+     */
     getAllEffects() {
         const list = [
             this.soundThrow,
@@ -147,6 +160,11 @@ class SoundHub {
         return list;
     }
 
+    /**
+     * Applies and stores the background-music volume.
+     *
+     * @param {string|number} value - Requested volume between 0 and 1.
+     */
     setMusicVolume(value) {
         var v = parseFloat(value);
         if (isNaN(v)) return;
@@ -156,6 +174,11 @@ class SoundHub {
         this.storeAudioSetting('audio_music_volume', v.toString());
     }
 
+    /**
+     * Applies and stores the shared effects volume.
+     *
+     * @param {string|number} value - Requested volume between 0 and 1.
+     */
     setEffectsVolume(value) {
         var v = parseFloat(value);
         if (isNaN(v)) return;
@@ -169,15 +192,22 @@ class SoundHub {
         this.storeAudioSetting('audio_effects_volume', v.toString());
     }
 
+    /** @returns {number} Current background-music volume. */
     getMusicVolume() {
         return this.backgroundMusic.volume;
     }
 
+    /** @returns {number} Current shared effects volume. */
     getEffectsVolume() {
         var effects = this.getAllEffects();
         return effects.length > 0 ? effects[0].volume : 1.0;
     }
 
+    /**
+     * Applies and stores the global mute state.
+     *
+     * @param {boolean} isMuted - Whether all game audio should be muted.
+     */
     setMuted(isMuted) {
         this.isMuted = !!isMuted;
         this.backgroundMusic.muted = this.isMuted;
@@ -201,10 +231,17 @@ class SoundHub {
         }
     }
 
+    /** Toggles the global mute state. */
     toggleMute() {
         this.setMuted(!this.isMuted);
     }
 
+    /**
+     * Stops and rewinds one gameplay effect.
+     *
+     * @param {HTMLAudioElement} audio - Effect source to stop.
+     * @returns {boolean} Whether the effect was stopped successfully.
+     */
     stopEffect(audio) {
         if (!audio) return false;
         try {
@@ -216,6 +253,7 @@ class SoundHub {
         }
     }
 
+    /** Stops and rewinds all managed gameplay effects. */
     stopAllEffects() {
         var effects = this.getAllEffects();
         for (var i = 0; i < effects.length; i++) {
@@ -223,6 +261,7 @@ class SoundHub {
         }
     }
 
+    /** Stops and rewinds the Endboss charge and alert sounds. */
     stopBossCharge() {
         try {
             if (this.soundBossCharge) {
@@ -240,6 +279,7 @@ class SoundHub {
         }
     }
 
+    /** Restores persisted music, effects, and mute settings from local storage. */
     loadSettings() {
         try {
             var m = localStorage.getItem('audio_music_volume');

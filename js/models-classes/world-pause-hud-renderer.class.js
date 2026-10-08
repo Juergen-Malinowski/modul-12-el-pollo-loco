@@ -2,6 +2,12 @@
  * Renders and handles pause controls inside the Canvas HUD.
  */
 class WorldPauseHudRenderer {
+  /**
+   * Creates the pause HUD renderer for one World.
+   *
+   * @param {World} world - Owning game World.
+   * @param {WorldHudRenderer} hudRenderer - Parent HUD renderer.
+   */
   constructor(world, hudRenderer) {
     this.world = world;
     this.hudRenderer = hudRenderer;

@@ -89,6 +89,7 @@ class Character extends MovableObject {
 
     lastActionTime = Date.now();
 
+    /** Initializes Pepe's sprites, physics, and recurring animation loops. */
     constructor() {
         super().loadImage('./assets/img/2_charakter_pepe/2_walk/W-21.webp');
         this.loadImages(this.imagesWalking);

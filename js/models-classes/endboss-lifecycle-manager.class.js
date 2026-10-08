@@ -2,6 +2,11 @@
  * Handles Endboss death, terminal cleanup, timers, and boss-owned audio.
  */
 class EndbossLifecycleManager {
+    /**
+     * Creates the lifecycle manager for one Endboss.
+     *
+     * @param {Endboss} boss - Endboss controlled by this manager.
+     */
     constructor(boss) {
         this.boss = boss;
     }

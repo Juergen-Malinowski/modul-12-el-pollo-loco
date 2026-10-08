@@ -2,6 +2,11 @@
  * Renders and positions the in-game HUD and handles its sound control.
  */
 class WorldHudRenderer {
+  /**
+   * Creates the HUD renderer for one World.
+   *
+   * @param {World} world - Owning game World.
+   */
   constructor(world) {
     this.world = world;
     this.statusRenderer = new WorldStatusHudRenderer(world, this);

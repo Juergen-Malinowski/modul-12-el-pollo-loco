@@ -88,6 +88,37 @@
         </div>
       </div>
 
+      <div id="highscoreNameOverlay">
+        <div id="highscoreNameBox">
+          <h2>🏆 New Highscore!</h2>
+          <p>Your score: <strong id="highscoreNameScore">0</strong></p>
+          <input
+            id="highscoreNameInput"
+            type="text"
+            maxlength="16"
+            placeholder="Your name"
+          />
+          <div id="highscoreNameActions">
+            <button
+              class="menuButton"
+              type="button"
+              id="saveHighscoreNameButton"
+              onclick="submitHighscoreName()"
+            >
+              Save
+            </button>
+            <button
+              class="menuButton"
+              type="button"
+              id="cancelHighscoreNameButton"
+              onclick="cancelHighscoreNameDialog()"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+
       <div
         id="highscoreSavedOverlay"
         onclick="closeHighscoreSaved()"

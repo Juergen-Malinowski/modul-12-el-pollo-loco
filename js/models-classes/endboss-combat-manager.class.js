@@ -2,6 +2,11 @@
  * Controls Endboss pursuit, alert behavior, and charge attacks.
  */
 class EndbossCombatManager {
+    /**
+     * Creates the combat manager for one Endboss.
+     *
+     * @param {Endboss} boss - Endboss controlled by this manager.
+     */
     constructor(boss) {
         this.boss = boss;
     }

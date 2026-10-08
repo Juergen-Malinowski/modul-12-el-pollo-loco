@@ -346,6 +346,7 @@ function openAudioSettings() {
   syncAudioUIFromSoundHub();
 }
 
+/** Closes the audio settings overlay. */
 function closeAudioSettings() {
   var overlay = document.getElementById("audioOverlay");
   if (overlay) {
@@ -353,10 +354,12 @@ function closeAudioSettings() {
   }
 }
 
+/** Opens the game-control instructions overlay. */
 function openGameControl() {
   document.getElementById("gameControlOverlay").style.display = "flex";
 }
 
+/** Closes the game-control instructions overlay. */
 function closeGameControl() {
   document.getElementById("gameControlOverlay").style.display = "none";
 }

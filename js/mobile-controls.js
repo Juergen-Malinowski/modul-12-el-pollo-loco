@@ -44,10 +44,16 @@ function bindMobileControls() {
 function bindMobileControlButton(binding) {
   var button = document.getElementById(binding.id);
   if (!button) return;
+  button.addEventListener("contextmenu", preventMobileContextMenu);
   button.addEventListener("pointerdown", function (event) {
     activateMobileControl(event, binding);
   });
   bindMobileReleaseEvents(button, binding);
+}
+
+/** Prevents the browser context menu on dedicated mobile game controls. */
+function preventMobileContextMenu(event) {
+  event.preventDefault();
 }
 
 /** Binds all pointer events that release one touch control. */

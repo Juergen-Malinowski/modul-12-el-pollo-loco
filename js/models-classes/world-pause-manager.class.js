@@ -2,6 +2,11 @@
  * Controls pausing and resuming active gameplay without rebuilding the World.
  */
 class WorldPauseManager {
+  /**
+   * Creates the pause manager for one World.
+   *
+   * @param {World} world - Owning game World.
+   */
   constructor(world) {
     this.world = world;
     this.pausedAudio = [];

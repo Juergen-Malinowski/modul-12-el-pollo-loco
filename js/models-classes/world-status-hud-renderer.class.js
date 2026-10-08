@@ -2,6 +2,12 @@
  * Renders health, boss, bottle, and coin status information.
  */
 class WorldStatusHudRenderer {
+  /**
+   * Creates the status HUD renderer for one World.
+   *
+   * @param {World} world - Owning game World.
+   * @param {WorldHudRenderer} hudRenderer - Parent HUD renderer.
+   */
   constructor(world, hudRenderer) {
     this.world = world;
     this.hudRenderer = hudRenderer;
