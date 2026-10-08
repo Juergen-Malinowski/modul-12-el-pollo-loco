@@ -47,6 +47,14 @@ class World {
   highscoreManager;
   renderer;
 
+  /**
+   * Creates one playable World and initializes its level systems.
+   *
+   * @param {HTMLCanvasElement} canvas - Canvas used to render the game.
+   * @param {Keyboard} keyboard - Shared keyboard input state.
+   * @param {Level} levelInstance - Level data used by this World.
+   * @param {Object} levelConfig - Configuration values for the active level.
+   */
   constructor(canvas, keyboard, levelInstance, levelConfig) {
     this.initializeDependencies(canvas, keyboard, levelInstance, levelConfig);
     this.initializeCharacterHealth();

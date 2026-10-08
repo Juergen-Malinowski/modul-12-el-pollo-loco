@@ -11,6 +11,11 @@ class WorldSpecialJumpManager {
   lastJumpPress = 0;
   intervalId = null;
 
+  /**
+   * Creates the Special Jump manager for one World.
+   *
+   * @param {World} world - Owning game World.
+   */
   constructor(world) {
     this.world = world;
   }

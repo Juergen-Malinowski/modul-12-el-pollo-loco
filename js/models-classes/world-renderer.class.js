@@ -2,6 +2,11 @@
  * Renders the World scene, terminal overlays, and movable objects.
  */
 class WorldRenderer {
+  /**
+   * Creates the renderer for one World.
+   *
+   * @param {World} world - Owning game World.
+   */
   constructor(world) {
     this.world = world;
   }

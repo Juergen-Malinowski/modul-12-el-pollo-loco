@@ -2,6 +2,11 @@
  * Tracks consecutive airborne chicken stomps and controls combo scatter behavior.
  */
 class WorldStompComboManager {
+  /**
+   * Creates the airborne stomp-combo manager for one World.
+   *
+   * @param {World} world - Owning game World.
+   */
   constructor(world) {
     this.world = world;
     this.stompCount = 0;
