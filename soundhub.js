@@ -87,7 +87,7 @@ class SoundHub {
         this.prepareBossEffects();
     }
 
-    /** Loads both boss sounds when the boss encounter first needs audio. */
+    /** Loads both boss sounds before the encounter or on first use as fallback. */
     prepareBossEffects() {
         this.loadDeferredEffect(this.soundBossStart, './assets/sound/great-Chicken-Cry.mp3');
         this.loadDeferredEffect(this.soundBossCharge, './assets/sound/thunder-attack.mp3');

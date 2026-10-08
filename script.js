@@ -140,10 +140,20 @@ function activateGameplayUi() {
     typeof soundHub.playBackgroundMusic === "function"
   ) {
     soundHub.playBackgroundMusic();
+    scheduleBossAudioPreload();
   }
   if (typeof bindGlobalCanvasSoundHandler === "function") {
     bindGlobalCanvasSoundHandler();
   }
+}
+
+/** Preloads deferred boss audio shortly after gameplay becomes visible. */
+function scheduleBossAudioPreload() {
+  if (typeof soundHub.prepareBossEffects !== "function") return;
+  var timeoutId = setTimeout(function () {
+    soundHub.prepareBossEffects();
+  }, 1000);
+  soundHub.registerTimeout(timeoutId);
 }
 
 /**
