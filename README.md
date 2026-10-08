@@ -357,7 +357,7 @@ With Pepe's current 150-pixel sprite width this results in:
 | Level 2 | 950 px |
 | Level 3 | 1000 px |
 
-The Special Jump always starts away from the Endboss.
+Once the Endboss fight is active, the Special Jump can be started from any position within the playable level, including direct contact with the Endboss. Its escape direction is then calculated away from the boss.
 
 If the flight reaches a level boundary, Pepe reflects from the boundary and continues across the arena without increasing the original total travel budget. The landing calculation aims to keep at least 100 pixels of free space between Pepe's and the Endboss's collision areas.
 
