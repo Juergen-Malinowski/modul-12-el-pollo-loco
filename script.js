@@ -16,8 +16,52 @@ var initialGameAssetsLoaded = 0;
 
 var INITIAL_GAME_ASSETS = [
   "./assets/img/2_charakter_pepe/2_walk/W-21.webp",
+  "./assets/img/2_charakter_pepe/2_walk/W-22.webp",
+  "./assets/img/2_charakter_pepe/2_walk/W-23.webp",
+  "./assets/img/2_charakter_pepe/2_walk/W-24.webp",
+  "./assets/img/2_charakter_pepe/2_walk/W-25.webp",
+  "./assets/img/2_charakter_pepe/2_walk/W-26.webp",
+  "./assets/img/2_charakter_pepe/3_jump/J-31.webp",
+  "./assets/img/2_charakter_pepe/3_jump/J-33.webp",
+  "./assets/img/2_charakter_pepe/3_jump/J-34.webp",
+  "./assets/img/2_charakter_pepe/3_jump/J-35.webp",
+  "./assets/img/2_charakter_pepe/3_jump/J-36.webp",
+  "./assets/img/2_charakter_pepe/3_jump/J-37.webp",
+  "./assets/img/2_charakter_pepe/3_jump/J-38.webp",
+  "./assets/img/2_charakter_pepe/3_jump/J-39.webp",
+  "./assets/img/2_charakter_pepe/5_dead/D-51.webp",
+  "./assets/img/2_charakter_pepe/5_dead/D-52.webp",
+  "./assets/img/2_charakter_pepe/5_dead/D-53.webp",
+  "./assets/img/2_charakter_pepe/5_dead/D-54.webp",
+  "./assets/img/2_charakter_pepe/5_dead/D-55.webp",
+  "./assets/img/2_charakter_pepe/5_dead/D-56.webp",
+  "./assets/img/2_charakter_pepe/4_hurt/H-41.webp",
+  "./assets/img/2_charakter_pepe/4_hurt/H-42.webp",
+  "./assets/img/2_charakter_pepe/4_hurt/H-43.webp",
+  "./assets/img/2_charakter_pepe/1_idle/idle/I-1.webp",
+  "./assets/img/2_charakter_pepe/1_idle/idle/I-4.webp",
+  "./assets/img/2_charakter_pepe/1_idle/idle/I-7.webp",
+  "./assets/img/2_charakter_pepe/1_idle/idle/I-8.webp",
+  "./assets/img/2_charakter_pepe/1_idle/idle/I-9.webp",
+  "./assets/img/2_charakter_pepe/1_idle/idle/I-10.webp",
+  "./assets/img/2_charakter_pepe/1_idle/long_idle/I-11.webp",
+  "./assets/img/2_charakter_pepe/1_idle/long_idle/I-12.webp",
+  "./assets/img/2_charakter_pepe/1_idle/long_idle/I-13.webp",
+  "./assets/img/2_charakter_pepe/1_idle/long_idle/I-14.webp",
+  "./assets/img/2_charakter_pepe/1_idle/long_idle/I-15.webp",
+  "./assets/img/2_charakter_pepe/1_idle/long_idle/I-16.webp",
+  "./assets/img/2_charakter_pepe/1_idle/long_idle/I-17.webp",
+  "./assets/img/2_charakter_pepe/1_idle/long_idle/I-18.webp",
+  "./assets/img/2_charakter_pepe/1_idle/long_idle/I-19.webp",
+  "./assets/img/2_charakter_pepe/1_idle/long_idle/I-20.webp",
   "./assets/img/3_feinde_huehner/chicken_normal/1_walk/1_w.png",
+  "./assets/img/3_feinde_huehner/chicken_normal/1_walk/2_w.png",
+  "./assets/img/3_feinde_huehner/chicken_normal/1_walk/3_w.png",
+  "./assets/img/3_feinde_huehner/chicken_normal/2_dead/dead.png",
   "./assets/img/3_feinde_huehner/chicken_small/1_walk/1_w.png",
+  "./assets/img/3_feinde_huehner/chicken_small/1_walk/2_w.png",
+  "./assets/img/3_feinde_huehner/chicken_small/1_walk/3_w.png",
+  "./assets/img/3_feinde_huehner/chicken_small/2_dead/dead.png",
   "./assets/img/5_hintergrund/layers/air.png",
   "./assets/img/5_hintergrund/layers/1_first_layer/1.webp",
   "./assets/img/5_hintergrund/layers/1_first_layer/2.webp",
@@ -27,13 +71,19 @@ var INITIAL_GAME_ASSETS = [
   "./assets/img/5_hintergrund/layers/3_third_layer/2.png",
   "./assets/img/5_hintergrund/layers/4_clouds/1.png",
   "./assets/img/6_salsa_flasche/1_salsa_bottle_on_ground.png",
+  "./assets/img/6_salsa_flasche/salsa_bottle.png",
   "./assets/img/8_muenzen/coin_2.png",
   "./assets/img/7_statusbars/1_statusbar/2_statusbar_health/green/100.png",
+  "./assets/img/7_statusbars/1_statusbar/2_statusbar_health/green/80.png",
+  "./assets/img/7_statusbars/1_statusbar/2_statusbar_health/green/60.png",
+  "./assets/img/7_statusbars/1_statusbar/2_statusbar_health/green/40.png",
+  "./assets/img/7_statusbars/1_statusbar/2_statusbar_health/orange/20.png",
+  "./assets/img/7_statusbars/1_statusbar/2_statusbar_health/orange/0.png",
   "./assets/img/7_statusbars/2_statusbar_endboss/green/green100.png",
   "./assets/img/flying_bat/bat_mid.webp",
   "./assets/img/flying_bat/bat_up.webp",
   "./assets/img/flying_bat/bat_down.webp"
-];
+]
 
 /** Starts a fresh game after the first-frame assets are available. */
 function startGame() {
@@ -49,7 +99,17 @@ function startGame() {
     initialGameAssetsReady = true;
     gameStartLoading = false;
     beginFreshGame();
+  }).catch(function (error) {
+    handleInitialGameLoadError(error);
   });
+}
+
+/** Keeps the loading overlay visible when a critical startup image fails. */
+function handleInitialGameLoadError(error) {
+  gameStartLoading = false;
+  console.error("Critical game asset failed to load:", error);
+  var label = document.getElementById("gameLoadingPercent");
+  if (label) label.textContent = "Load error";
 }
 
 /** Initializes the existing gameplay flow after startup loading. */
@@ -97,26 +157,17 @@ function preloadInitialGameAssets() {
   return Promise.all(requests);
 }
 
-/** Loads one startup image and always resolves its preload request. */
+/** Loads and decodes one shared startup image before gameplay begins. */
 function preloadInitialGameAsset(path) {
-  return new Promise(function (resolve) {
-    var image = new Image();
-    image.onload = function () {
-      finishInitialGameAsset(resolve);
-    };
-    image.onerror = function () {
-      console.warn("Failed to preload game asset:", path);
-      finishInitialGameAsset(resolve);
-    };
-    image.src = path;
+  return preloadRuntimeImage(path).then(function () {
+    finishInitialGameAsset();
   });
 }
 
 /** Completes one startup asset and refreshes the visible progress. */
-function finishInitialGameAsset(resolve) {
+function finishInitialGameAsset() {
   initialGameAssetsLoaded++;
   updateGameLoadingProgress();
-  resolve();
 }
 
 /** Updates the startup loading percentage and progress bar. */
