@@ -228,39 +228,19 @@ function hideHighscoreOverlay() {
 
 /** Opens player-name entry for a qualifying score. */
 function openHighscoreNameDialog(score, context) {
-  if (highscoreHandledForCurrentGame ||
-    document.getElementById("highscoreNameOverlay")) return;
+  if (highscoreHandledForCurrentGame) return;
+  var overlay = document.getElementById("highscoreNameOverlay");
+  var scoreValue = document.getElementById("highscoreNameScore");
+  var input = document.getElementById("highscoreNameInput");
+  if (!overlay || !scoreValue || !input) return;
   highscoreHandledForCurrentGame = true;
   highscoreFlowContext = context || "gameover";
-  document.body.appendChild(createHighscoreNameOverlay(score));
+  overlay.dataset.score = score;
+  overlay.dataset.submitted = "false";
+  scoreValue.textContent = score;
+  input.value = "";
+  overlay.style.display = "flex";
   focusHighscoreNameInput();
-}
-
-/** Builds the player-name overlay and its actions. */
-function createHighscoreNameOverlay(score) {
-  var overlay = document.createElement("div");
-  overlay.id = "highscoreNameOverlay";
-  overlay.innerHTML =
-    '<div id="highscoreNameBox">' +
-    '<h2>🏆 New Highscore!</h2>' +
-    '<p>Your score: <strong>' + score + '</strong></p>' +
-    '<input id="highscoreNameInput" type="text" maxlength="16" placeholder="Your name" />' +
-    '<div id="highscoreNameActions">' +
-    '<button class="menuButton" type="button" id="saveHighscoreNameButton">Save</button>' +
-    '<button class="menuButton" type="button" id="cancelHighscoreNameButton">Cancel</button>' +
-    '</div></div>';
-  bindHighscoreNameActions(overlay, score);
-  return overlay;
-}
-
-/** Connects the Save and Cancel buttons without inline score handlers. */
-function bindHighscoreNameActions(overlay, score) {
-  var saveButton = overlay.querySelector("#saveHighscoreNameButton");
-  var cancelButton = overlay.querySelector("#cancelHighscoreNameButton");
-  if (saveButton) saveButton.addEventListener("click", function () {
-    submitHighscoreName(score);
-  });
-  if (cancelButton) cancelButton.addEventListener("click", cancelHighscoreNameDialog);
 }
 
 /** Focuses the name input after the overlay was added to the document. */
@@ -272,12 +252,13 @@ function focusHighscoreNameInput() {
 }
 
 /** Validates and stores the entered player name. */
-function submitHighscoreName(score) {
+function submitHighscoreName() {
   var overlay = document.getElementById("highscoreNameOverlay");
   var input = document.getElementById("highscoreNameInput");
   if (!overlay || !input || overlay.dataset.submitted === "true") return;
+  var score = Number(overlay.dataset.score);
   var name = input.value.trim();
-  if (!name) {
+  if (!name || !Number.isFinite(score)) {
     input.focus();
     return;
   }
@@ -292,10 +273,15 @@ function cancelHighscoreNameDialog() {
   if (highscoreFlowContext === "victory") openHighscore("victory");
 }
 
-/** Removes the player-name overlay. */
+/** Hides and resets the player-name overlay. */
 function removeHighscoreNameDialog() {
   var overlay = document.getElementById("highscoreNameOverlay");
-  if (overlay) overlay.remove();
+  var input = document.getElementById("highscoreNameInput");
+  if (!overlay) return;
+  overlay.style.display = "none";
+  overlay.dataset.score = "";
+  overlay.dataset.submitted = "false";
+  if (input) input.value = "";
 }
 
 /** Shows confirmation after a score was stored. */
