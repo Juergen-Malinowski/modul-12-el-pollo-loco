@@ -8,7 +8,7 @@ The player controls Pepe through three increasingly demanding desert levels, col
 
 - [Technology](#technology)
 - [Live demo](#live-demo)
-- [Current gameplay flow](#current-gameplay-flow)
+- [Gameplay flow](#gameplay-flow)
 - [Three-level configuration](#three-level-configuration)
 - [Level creation](#level-creation)
 - [Level progression](#level-progression)
@@ -23,7 +23,7 @@ The player controls Pepe through three increasingly demanding desert levels, col
 - [Player controls](#player-controls)
 - [Game Over flow](#game-over-flow)
 - [Final Victory flow](#final-victory-flow)
-- [Current scoring state](#current-scoring-state)
+- [Scoring](#scoring)
 - [World architecture](#world-architecture)
 - [Audio management](#audio-management)
 - [Startup loading and asset performance](#startup-loading-and-asset-performance)
@@ -33,9 +33,7 @@ The player controls Pepe through three increasingly demanding desert levels, col
 - [Project context and credits](#project-context-and-credits)
 - [Responsive release targets](#responsive-release-targets)
 - [Important source files](#important-source-files)
-- [Release status](#release-status)
-- [Release packaging note](#release-packaging-note)
-- [Developer Akademie release checklist](#developer-akademie-release-checklist)
+- [Deployment and runtime delivery](#deployment-and-runtime-delivery)
 
 ## Technology
 
@@ -55,11 +53,11 @@ The production Live Demo is deployed on ALL-INKL and available via HTTPS:
 
 [https://el-pollo-loco.juergen-malinowski.de](https://el-pollo-loco.juergen-malinowski.de)
 
-The current `release/documentation-and-deployment` branch also contains post-deployment fixes and performance optimizations. Until the next FTP synchronization, the public Live Demo may temporarily trail the latest branch state.
+The public Live Demo reflects the finalized production build described in this README.
 
-## Current gameplay flow
+## Gameplay flow
 
-The current version contains a complete three-level progression flow.
+The game contains a complete three-level progression flow.
 
 ```mermaid
 flowchart TD
@@ -122,7 +120,7 @@ The background is extended dynamically to the configured end of the active level
 
 ## Level creation
 
-`levels/level1.js` is currently the shared level factory despite its historic filename.
+`levels/level1.js` is the shared level factory for all three configured levels.
 
 For every configured level it creates:
 
@@ -185,7 +183,7 @@ The coin bar is scaled against the configured number of coins in the current lev
 
 Coin collection starts from zero again when a new World is created for the next level.
 
-Health and Endboss energy continue to use the image-based status bars, but their exact remaining energy values are now displayed numerically beside the bars.
+Health and Endboss energy use image-based status bars with exact numeric values displayed beside them.
 
 The combat HUD keeps the order Health, Endboss, Bottles, Coins so the most important fight information remains grouped together.
 
@@ -443,7 +441,7 @@ Restart is performed without `location.reload()`.
 
 Defeating the Level 3 Endboss starts the final Victory flow.
 
-The current implementation:
+The Victory flow:
 
 - stops gameplay and audio;
 - adds the current end-of-level bonus;
@@ -458,9 +456,9 @@ The current implementation:
 
 The Top-100 qualification rule is strict when the table is full: a new score must be higher than the current rank-100 score.
 
-## Current scoring state
+## Scoring
 
-All current combat, collectible, throw, boss, and level-end score values are centralized inside each level configuration.
+All combat, collectible, throw, boss, and level-end score values are centralized inside each level configuration.
 
 | Score event | Level 1 | Level 2 | Level 3 |
 | --- | ---: | ---: | ---: |
@@ -629,8 +627,6 @@ Coordinates:
 - shared name entry and save confirmation;
 - context-specific Close, Play again, and Menu actions.
 
-The previous Canvas-specific Victory highscore implementation has been removed in favor of the shared DOM presentation.
-
 ## Audio management
 
 `SoundHub` centralizes:
@@ -661,26 +657,37 @@ The background music was technically re-encoded for web delivery from about 5.14
 
 ## Startup loading and asset performance
 
-The first game start uses a dedicated responsive loading overlay before the World becomes visible.
+The first game start uses a dedicated responsive loading overlay before the World becomes playable.
 
-`script.js` preloads the image assets required for the first visible gameplay frame and displays progress as a percentage and progress bar. The initial image preload runs once per page session; later restarts reuse the already prepared assets.
+The startup loader prepares **68 critical image assets** required for the first playable game state. This includes all Pepe animation frames used for walking, jumping, hurt, idle, long-idle, and death states, together with the immediately relevant Chicken, Little Chicken, bottle, coin, background, cloud, health-bar, Endboss-bar, and Bat assets.
 
-Runtime asset optimizations include:
+Critical startup images are:
 
-- Bat flight frames use optimized WebP files instead of the former PNG versions;
-- the three Bat flight frames were reduced from about 3.85 MB combined to about 84 KB combined;
-- the start screen reuses the optimized `bat_mid.webp` asset instead of maintaining a duplicate Bat PNG;
-- background music download size was reduced from about 5.14 MB to about 1.22 MB;
-- background music loading is deferred until gameplay starts;
-- Endboss scream and charge sounds are deferred until the boss encounter.
+- downloaded before gameplay begins;
+- decoded with the browser before they are marked ready;
+- stored in a shared runtime image cache;
+- reused by `DrawableObjects`, HUD rendering, Characters, enemies, collectibles, and backgrounds instead of creating duplicate image requests.
 
-Localhost is used for functional loading, path, Network, and console verification. Final real-world loading performance is evaluated on the deployed HTTPS version because local transfer speed is not representative of the production host.
+The loading overlay remains visible until all critical startup assets are ready. If a critical image fails to load, gameplay does not start and the loading state reports an error.
+
+Assets that cannot be needed during the first playable moments are prepared separately so they do not unnecessarily extend the initial loading phase. Endboss encounter assets and result-state assets remain available for their later gameplay states.
+
+Runtime delivery is additionally optimized through:
+
+- WebP animation assets for Pepe, the Endboss, Bat flight, and selected background layers;
+- optimized Bat flight frames totaling about 84 KB instead of about 3.85 MB for the earlier PNG set;
+- a compressed background-music file of about 1.22 MB instead of about 5.14 MB;
+- background music loading when gameplay starts rather than during the start screen;
+- staged Endboss and situational audio loading according to gameplay relevance;
+- browser-supported partial-content delivery for audio requests where applicable.
+
+The production deployment was verified with browser caching disabled so the startup sequence was tested against real network transfers instead of previously cached assets. The finalized live build starts with a short loading phase and enters gameplay with Pepe and all immediately usable player actions available from the first visible gameplay frame.
 
 ## Responsive behavior
 
 The internal game canvas keeps its fixed logical dimensions while CSS scales the visible stage proportionally.
 
-The current responsive implementation includes:
+The responsive implementation includes:
 
 - proportional 3:2 stage scaling;
 - canvas pointer-coordinate conversion;
@@ -711,7 +718,7 @@ The game does not request Google Fonts or another external font service at runti
 
 The game runs entirely in the browser and does not require a user account or backend connection.
 
-The current implementation:
+The game:
 
 - does not set cookies;
 - does not use analytics or advertising;
@@ -796,63 +803,32 @@ The mobile HUD keeps Health, Endboss, Bottle, and Coin information inside the vi
 | `js/models-classes/throwable-objects.class.js` | Ground and thrown salsa bottles |
 | `js/models-classes/coin.class.js` | Coin behavior |
 
-## Release status
+## Deployment and runtime delivery
 
-The project has been deployed to ALL-INKL and is publicly available via HTTPS. The current branch is in a post-deployment stabilization and performance pass.
+The production version is deployed on ALL-INKL and served through HTTPS at:
 
-Verified areas include:
+[https://el-pollo-loco.juergen-malinowski.de](https://el-pollo-loco.juergen-malinowski.de)
 
-- complete Level 1 → Level 2 → Level 3 progression;
-- Game Over, restart, level transition, and final Victory flows;
-- Game Over priority when lethal Pepe damage and a terminal boss hit occur in the same combat sequence;
-- desktop keyboard controls;
-- responsive mobile landscape controls;
-- Special Jump after Endboss activation;
-- airborne stomp combo and Chicken Scatter behavior;
-- responsive Health, Endboss, Bottle, and Coin HUD;
-- pause/resume;
-- mute and audio settings;
-- shared Top-100 highscore flow;
-- menu overlays on desktop and mobile;
-- Legal Notice and Privacy Policy navigation;
-- locally hosted Smokum font;
-- optimized Bat WebP runtime assets;
-- first-start image loading overlay;
-- compressed and staged audio loading;
-- removal of obsolete Zabars and Rye font assets;
-- no known console errors in the latest local regression passes.
+The production package contains the browser runtime files required by the game and intentionally excludes repository metadata, local deployment artifacts, backups, and development-only material.
 
-The remaining deployment work for the latest branch state is:
+The finalized runtime package used for the production synchronization contains:
 
-1. synchronize the verified post-deployment changes to the ALL-INKL production directory;
-2. run a cold-load Network test on the public HTTPS version;
-3. repeat desktop and mobile live-site regression tests, including a real Samsung device;
-4. verify direct `info.html` and `privacy.html` access and external credit links;
-5. confirm that no external font, analytics, tracker, or other unexpected runtime requests occur.
+- **166 files**;
+- approximately **3.89 MB** of uncompressed deployment data;
+- all **105 verified runtime image files** referenced by the game;
+- the JavaScript, CSS, HTML, font, sound, and level files required by the browser build.
 
-## Release packaging note
+The deployment process preserves the production directory structure so `index.html` remains directly inside the public game directory and all relative asset paths resolve unchanged.
 
-The Git repository and the production FTP package are intentionally not identical.
+Production verification included:
 
-The initial ALL-INKL deployment has been completed. Production uploads contain the browser runtime files required by the game, while repository metadata, local deployment artifacts, backups, and development-only material are kept out of the public web package.
+- a cold-load test with browser cache disabled;
+- the complete Level 1 → Level 2 → Level 3 progression through final Victory;
+- a separate death/Game Over path through the end of Level 1;
+- Endboss encounters and level transitions;
+- startup loading with all critical first-play assets ready before gameplay becomes visible;
+- responsive controls and HUD behavior;
+- audio playback and staged audio loading;
+- direct Legal Notice and Privacy Policy availability;
+- browser console verification without runtime errors during the final regression runs.
 
-Subsequent production updates should follow the same runtime-only packaging approach so the hosted version stays aligned with the verified release state without publishing unnecessary project files.
-
-## Developer Akademie release checklist
-
-The current release follows the project constraints used during final cleanup, including:
-
-- no page reload for restart;
-- no unnecessary console output;
-- responsive landscape mobile gameplay;
-- portrait rotation notice;
-- local font delivery;
-- functional favicon, buttons, and links;
-- focused classes and manager responsibilities;
-- professional English code documentation;
-- approximately 14 commands maximum per function as a review guideline;
-- source files targeted below 400 lines;
-- complete gameplay and audio cleanup on terminal states;
-- consistent English user-facing game text.
-
-Further gameplay ideas and optional animation refinements are intentionally outside this release branch and should be implemented in separate feature branches after deployment.
