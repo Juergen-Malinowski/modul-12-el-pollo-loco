@@ -2,6 +2,11 @@
  * Coordinates Game Over, Victory, restart, and menu transition flow.
  */
 class WorldGameStateManager {
+  /**
+   * Creates the game-state manager for one World.
+   *
+   * @param {World} world - Owning game World.
+   */
   constructor(world) {
     this.world = world;
   }

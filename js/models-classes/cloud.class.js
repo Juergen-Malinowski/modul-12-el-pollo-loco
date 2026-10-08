@@ -3,6 +3,12 @@ class Cloud extends MovableObject {
     speed = 0.2;
     animationInterval = null;
 
+    /**
+     * Creates one moving background cloud.
+     *
+     * @param {number} x - Initial horizontal position.
+     * @param {number} y - Initial vertical position.
+     */
     constructor(x, y) {
         super().loadImage('./assets/img/5_hintergrund/layers/4_clouds/1.png');
         this.x = x;

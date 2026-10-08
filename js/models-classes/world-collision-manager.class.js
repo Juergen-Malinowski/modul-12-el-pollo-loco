@@ -2,6 +2,11 @@
  * Handles collisions, collectible pickups, and projectile hits for one World.
  */
 class WorldCollisionManager {
+  /**
+   * Creates the collision manager for one World.
+   *
+   * @param {World} world - Owning game World.
+   */
   constructor(world) {
     this.world = world;
   }

@@ -2,6 +2,11 @@
  * Owns World cleanup, audio shutdown, freezing, and menu reset operations.
  */
 class WorldProcessManager {
+  /**
+   * Creates the process manager for one World.
+   *
+   * @param {World} world - Owning game World.
+   */
   constructor(world) {
     this.world = world;
   }

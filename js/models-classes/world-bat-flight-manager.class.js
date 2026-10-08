@@ -2,6 +2,11 @@
  * Controls the screen-space Bat attraction and its animated flight path.
  */
 class WorldBatFlightManager {
+  /**
+   * Creates the Bat flight manager for one World.
+   *
+   * @param {World} world - Owning game World.
+   */
   constructor(world) {
     this.world = world;
     this.width = BAT_FLIGHT_CONFIG.width;

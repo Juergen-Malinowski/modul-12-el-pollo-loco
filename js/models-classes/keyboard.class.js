@@ -8,5 +8,6 @@ class Keyboard {
     SHIFT = false;
     ENTER = false; 
 
+    /** Initializes the shared keyboard input state. */
     constructor() {}
 }

@@ -2,6 +2,11 @@
  * Applies level-specific world setup and coordinates successful level transitions.
  */
 class WorldLevelManager {
+  /**
+   * Creates the level manager for one World.
+   *
+   * @param {World} world - Owning game World.
+   */
   constructor(world) {
     this.world = world;
   }
